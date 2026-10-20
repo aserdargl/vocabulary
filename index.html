@@ -395,9 +395,8 @@
       <option value="Noun">Noun</option>
       <option value="Adverb">Adverb</option>
     </select>
-    <input type="text" id="inKelime" class="inp" placeholder="Word (e.g. Reluctant)" style="width:130px;">
-    <input type="text" id="inOkunus" class="inp" placeholder="Pronunciation (/rɪˈlʌk.tənt/)" style="width:155px;">
-    <input type="text" id="inAnlam" class="inp" placeholder="Meaning (Turkish)" style="width:165px;">
+    <input type="text" id="inKelime" class="inp" placeholder="Word (e.g. Reluctant)" style="width:140px;">
+    <input type="text" id="inAnlam" class="inp" placeholder="Meaning (Turkish)" style="width:180px;">
     <input type="text" id="inOrnek" class="inp" placeholder="Example Sentence" style="flex:1;min-width:190px;">
     <button class="btn btn-green" id="saveWordBtn" onclick="yeniKelimeKaydet()">Save</button>
     <button class="btn" onclick="ekleBarAcKapat()">Close</button>
@@ -412,7 +411,6 @@
           <th class="center">Level</th>
           <th>Type</th>
           <th>Word</th>
-          <th>Pronunciation</th>
           <th>Meaning</th>
           <th>Example Sentence</th>
           <th class="center">Status</th>
@@ -441,7 +439,6 @@
             <th class="center">Level</th>
             <th>Type</th>
             <th>Word</th>
-            <th>Pronunciation</th>
             <th>Meaning</th>
             <th>Example Sentence</th>
             <th class="col-date">Date</th>
@@ -857,7 +854,6 @@
             '<td class="col-lvl">' + escHtml(x.seviye) + '</td>' +
             '<td class="col-type">' + escHtml(turTemizle(x.tur)) + '</td>' +
             '<td class="col-word" onclick="kelimeOku(\'' + escJs(x.kelime) + '\', this)">' + escHtml(x.kelime) + '</td>' +
-            '<td class="col-phonetic">' + escHtml(x.okunus) + '</td>' +
             '<td class="col-meaning">' + escHtml(x.anlam) + '</td>' +
             '<td class="col-example">' + escHtml(x.ornek) + '</td>' +
             '<td class="col-status"><span class="status-pill ' + x.durum + '">' + durumMetniGetir(x.durum) + '</span></td>' +
@@ -866,7 +862,7 @@
           '</tr>'
         );
       }
-      document.getElementById("sheet1Body").innerHTML = s1Rows.join("") || '<tr><td colspan="11" class="center" style="padding:14px;">No words found.</td></tr>';
+      document.getElementById("sheet1Body").innerHTML = s1Rows.join("") || '<tr><td colspan="10" class="center" style="padding:14px;">No words found.</td></tr>';
 
       var sumLvls = ["A1", "A2", "B1", "B2", "C1", "C2"];
       var sumHtml = [];
@@ -893,7 +889,6 @@
             '<td class="col-lvl">' + escHtml(p.seviye) + '</td>' +
             '<td class="col-type">' + escHtml(turTemizle(p.tur)) + '</td>' +
             '<td class="col-word" onclick="kelimeOku(\'' + escJs(p.kelime) + '\', this)">' + escHtml(p.kelime) + '</td>' +
-            '<td class="col-phonetic">' + escHtml(p.okunus) + '</td>' +
             '<td class="col-meaning">' + escHtml(p.anlam) + '</td>' +
             '<td class="col-example">' + escHtml(p.ornek) + '</td>' +
             '<td class="col-date">' + escHtml(p.tarih) + '</td>' +
@@ -901,7 +896,7 @@
           '</tr>'
         );
       }
-      document.getElementById("poolBody").innerHTML = pRows.join("") || '<tr><td colspan="8" class="center" style="padding:14px;">No words in pool.</td></tr>';
+      document.getElementById("poolBody").innerHTML = pRows.join("") || '<tr><td colspan="7" class="center" style="padding:14px;">No words in pool.</td></tr>';
     }
 
     function kutucukDegisti(row, tip, isChecked) {
@@ -932,7 +927,7 @@
       var yeni = {
         tarih: today,
         kelime: kelime,
-        okunus: document.getElementById("inOkunus").value.trim(),
+        okunus: "",
         tur: document.getElementById("inTur").value,
         seviye: document.getElementById("inSeviye").value,
         anlam: anlam,
@@ -946,7 +941,6 @@
       kisiselDurumKaydet(kelime, "bilmiyorum");
 
       document.getElementById("inKelime").value = "";
-      document.getElementById("inOkunus").value = "";
       document.getElementById("inAnlam").value = "";
       document.getElementById("inOrnek").value = "";
 
