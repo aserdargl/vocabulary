@@ -700,7 +700,7 @@
         <span class="mini-stat unk" id="stUnk">In Pool: -</span>
         <span class="mini-stat knw" id="stKnw">Known: -</span>
       </div>
-      <span class="sync-badge" id="syncBadge" title="Word list syncs live from Google Sheets; your Known/Unknown checkboxes are saved personally in your browser">
+      <span class="sync-badge" id="syncBadge" title="Two-way live sync with Google Sheets (Sheet1)">
         <span class="sync-dot" id="syncDot"></span>
         <span id="syncText">Live</span>
       </span>
@@ -816,7 +816,7 @@
       <button class="sheet-tab" id="tabBtn-match" onclick="calismaModuAc('match')">🧩 Match</button>
     </div>
     <div class="bottom-info">
-      Personal progress is saved in your browser
+      Two-way live sync with Google Sheets
     </div>
   </div>
 
@@ -977,20 +977,33 @@
       return "Pending";
     }
 
-    function listeyiBirlestirVeHazirla(bazListe) {
+    var SON_YEREL_DEGISIM = {};
+
+    function listeyiBirlestirVeHazirla(bazListe, canliMi) {
       var durumMap = kisiselDurumlariAl();
       var eklenenler = kisiselEklenenleriAl();
       var birlesik = [];
       var gorulen = {};
+      var simdi = Date.now();
 
       for (var i = 0; i < bazListe.length; i++) {
         var item = bazListe[i];
         var key = (item.kelime || "").toString().trim().toLowerCase();
         if (!key) continue;
         gorulen[key] = true;
-        var kisiselDurum = durumMap[key] || item.durum || "bilmiyorum";
+        var kisiselDurum;
+        if (canliMi) {
+          if (SON_YEREL_DEGISIM[key] && (simdi - SON_YEREL_DEGISIM[key] < 8000) && durumMap[key]) {
+            kisiselDurum = durumMap[key];
+          } else {
+            kisiselDurum = item.durum || "bilmiyorum";
+            kisiselDurumKaydet(item.kelime, kisiselDurum);
+          }
+        } else {
+          kisiselDurum = durumMap[key] || item.durum || "bilmiyorum";
+        }
         birlesik.push({
-          row: i + 2,
+          row: item.row || (i + 2),
           tarih: item.tarih || "",
           seviye: item.seviye || "B2",
           tur: item.tur || "",
@@ -1004,11 +1017,13 @@
         });
       }
 
+      var kalanEklenenler = [];
       for (var j = 0; j < eklenenler.length; j++) {
         var ek = eklenenler[j];
         var ekKey = (ek.kelime || "").toString().trim().toLowerCase();
         if (!ekKey || gorulen[ekKey]) continue;
         gorulen[ekKey] = true;
+        kalanEklenenler.push(ek);
         var d = durumMap[ekKey] || ek.durum || "bilmiyorum";
         birlesik.push({
           row: birlesik.length + 2,
@@ -1023,6 +1038,9 @@
           biliyorum: d === "biliyorum",
           bilmiyorum: d === "bilmiyorum"
         });
+      }
+      if (canliMi && kalanEklenenler.length !== eklenenler.length) {
+        kisiselEklenenKaydet(kalanEklenenler);
       }
 
       TUM_KELIMELER = birlesik;
@@ -1119,7 +1137,7 @@
           var liste = gvizTablosunuCozumle(response.table);
           if (liste && liste.length > 0) {
             SHEET_KELIMELER = liste;
-            listeyiBirlestirVeHazirla(SHEET_KELIMELER);
+            listeyiBirlestirVeHazirla(SHEET_KELIMELER, true);
             document.getElementById("syncDot").className = "sync-dot";
             document.getElementById("syncText").innerText = "Live (" + liste.length + ")";
             return;
@@ -1132,48 +1150,35 @@
       document.getElementById("syncDot").className = "sync-dot loading";
       document.getElementById("syncText").innerText = "Syncing...";
 
-      // 1. Try JSONP from Google Sheets gviz endpoint (works cross-origin with zero CORS issues)
+      // 1. Primary live sync via Apps Script JSON endpoint (zero cache delay, exact row numbers)
+      appsScripttenYukle();
+
+      // 2. Fast JSONP from Google Sheets gviz endpoint
       var oldScript = document.getElementById("gvizJsonpScript");
       if (oldScript && oldScript.parentNode) oldScript.parentNode.removeChild(oldScript);
       var s = document.createElement("script");
       s.id = "gvizJsonpScript";
       s.src = "https://docs.google.com/spreadsheets/d/" + SHEET_ID + "/gviz/tq?tqx=responseHandler:__onSheetData&sheet=Sheet1&_=" + Date.now();
-      s.onerror = function() {
-        appsScripttenYukle();
-      };
       document.body.appendChild(s);
 
-      // 2. Also try Apps Script JSON endpoint as backup
-      setTimeout(function() {
-        if (SHEET_KELIMELER.length === 0) {
-          appsScripttenYukle();
-        }
-      }, 1800);
-
       if (bildirimli) {
-        bildirimGoster("🔄 Synced");
+        bildirimGoster("🔄 Synced with Google Sheet");
       }
     }
 
     function appsScripttenYukle() {
       if (!APPS_SCRIPT_URL) return;
-      fetch(APPS_SCRIPT_URL + "?action=json")
+      fetch(APPS_SCRIPT_URL + "?action=json&_=" + Date.now())
         .then(function(r) { return r.json(); })
         .then(function(res) {
           if (res && res.ok && res.words && res.words.length > 0) {
             SHEET_KELIMELER = res.words;
-            listeyiBirlestirVeHazirla(SHEET_KELIMELER);
+            listeyiBirlestirVeHazirla(SHEET_KELIMELER, true);
             document.getElementById("syncDot").className = "sync-dot";
             document.getElementById("syncText").innerText = "Live (" + res.words.length + ")";
-          } else {
-            document.getElementById("syncDot").className = "sync-dot";
-            document.getElementById("syncText").innerText = "Ready";
           }
         })
-        .catch(function() {
-          document.getElementById("syncDot").className = "sync-dot";
-          document.getElementById("syncText").innerText = "Ready";
-        });
+        .catch(function() {});
     }
 
     var FC_INDEX = 0;
@@ -2056,12 +2061,43 @@
       }
       if (!hedef) return;
       var yeniDurum = isChecked ? tip : "beklemede";
+      var key = (hedef.kelime || "").toString().trim().toLowerCase();
+      SON_YEREL_DEGISIM[key] = Date.now();
       hedef.durum = yeniDurum;
       hedef.biliyorum = yeniDurum === "biliyorum";
       hedef.bilmiyorum = yeniDurum === "bilmiyorum";
+      for (var s = 0; s < SHEET_KELIMELER.length; s++) {
+        if (SHEET_KELIMELER[s].row === row || (SHEET_KELIMELER[s].kelime || "").toLowerCase() === key) {
+          SHEET_KELIMELER[s].durum = yeniDurum;
+          SHEET_KELIMELER[s].biliyorum = yeniDurum === "biliyorum";
+          SHEET_KELIMELER[s].bilmiyorum = yeniDurum === "bilmiyorum";
+        }
+      }
       kisiselDurumKaydet(hedef.kelime, yeniDurum);
       tabloyuCiz();
-      bildirimGoster("Saved: " + hedef.kelime);
+      bildirimGoster("☁️ Saving to Sheet: " + hedef.kelime + "...");
+
+      if (APPS_SCRIPT_URL) {
+        document.getElementById("syncDot").className = "sync-dot loading";
+        document.getElementById("syncText").innerText = "Saving...";
+        fetch(APPS_SCRIPT_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({ action: "setStatus", row: hedef.row, status: yeniDurum })
+        })
+          .then(function(r) { return r.json(); })
+          .then(function(res) {
+            document.getElementById("syncDot").className = "sync-dot";
+            document.getElementById("syncText").innerText = "Live (" + TUM_KELIMELER.length + ")";
+            if (res && res.ok) {
+              bildirimGoster("✅ Synced to Google Sheet: " + hedef.kelime);
+            }
+          })
+          .catch(function() {
+            document.getElementById("syncDot").className = "sync-dot";
+            document.getElementById("syncText").innerText = "Live (" + TUM_KELIMELER.length + ")";
+          });
+      }
     }
 
     function ekleBarAcKapat() {
@@ -2089,13 +2125,42 @@
       eklenenler.push(yeni);
       kisiselEklenenKaydet(eklenenler);
       kisiselDurumKaydet(kelime, "bilmiyorum");
+      SON_YEREL_DEGISIM[kelime.toLowerCase()] = Date.now();
 
       document.getElementById("inKelime").value = "";
       document.getElementById("inAnlam").value = "";
       document.getElementById("inOrnek").value = "";
 
-      listeyiBirlestirVeHazirla(SHEET_KELIMELER.length ? SHEET_KELIMELER : FALLBACK_WORDS);
-      bildirimGoster("Added: " + kelime);
+      listeyiBirlestirVeHazirla(SHEET_KELIMELER.length ? SHEET_KELIMELER : FALLBACK_WORDS, false);
+      bildirimGoster("☁️ Adding to Google Sheet: " + kelime + "...");
+
+      if (APPS_SCRIPT_URL) {
+        var btn = document.getElementById("saveWordBtn");
+        if (btn) btn.disabled = true;
+        document.getElementById("syncDot").className = "sync-dot loading";
+        document.getElementById("syncText").innerText = "Saving...";
+        fetch(APPS_SCRIPT_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({ action: "addWords", words: [yeni] })
+        })
+          .then(function(r) { return r.json(); })
+          .then(function(res) {
+            if (btn) btn.disabled = false;
+            if (res && res.ok) {
+              bildirimGoster("✅ Added to Google Sheet: " + kelime);
+              appsScripttenYukle();
+            } else {
+              document.getElementById("syncDot").className = "sync-dot";
+              document.getElementById("syncText").innerText = "Live (" + TUM_KELIMELER.length + ")";
+            }
+          })
+          .catch(function() {
+            if (btn) btn.disabled = false;
+            document.getElementById("syncDot").className = "sync-dot";
+            document.getElementById("syncText").innerText = "Live (" + TUM_KELIMELER.length + ")";
+          });
+      }
     }
 
     // Initial immediate render from fallback words, then live sync from Google Sheet
