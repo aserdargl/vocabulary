@@ -234,23 +234,32 @@
       position: absolute;
       left: 6px;
       top: calc(100% + 22px);
-      z-index: 25;
-      background: #1e293b;
-      color: #f8fafc;
-      font-weight: 400;
-      font-size: calc(var(--fs) - 0.5px);
-      padding: 6px 10px;
-      border-radius: 5px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+      z-index: 50;
+      background: #fffef7;
+      color: #0f172a;
+      border: 2px solid #135c37;
+      border-left: 5px solid #135c37;
+      font-weight: 600;
+      font-size: calc(var(--fs) + 3.5px);
+      padding: 10px 14px;
+      border-radius: 8px;
+      box-shadow: 0 10px 26px rgba(15, 23, 42, 0.24);
       white-space: normal;
-      min-width: 240px;
-      max-width: 360px;
-      line-height: 1.35;
+      min-width: 280px;
+      max-width: 440px;
+      line-height: 1.45;
       pointer-events: none;
       text-decoration: none !important;
     }
     .col-word:hover .word-hover-ex {
       display: block;
+    }
+    .ex-tr {
+      display: block;
+      margin-top: 4px;
+      color: #135c37;
+      font-weight: 600;
+      font-size: 0.92em;
     }
 
     .col-phonetic {
@@ -398,7 +407,7 @@
     .fc-scene {
       perspective: 1000px;
       width: 100%;
-      height: 270px;
+      height: 300px;
       cursor: pointer;
     }
     .fc-card {
@@ -480,20 +489,24 @@
       color: #135c37;
     }
     .fc-hover-example {
-      font-size: calc(var(--fs) * 1.05);
-      color: #334155;
-      background: #f8fafc;
-      border: 1px solid #cbd5e1;
-      border-radius: 6px;
-      padding: 7px 12px;
-      line-height: 1.4;
-      max-width: 460px;
+      font-size: calc(var(--fs) + 3.5px);
+      font-weight: 600;
+      color: #0f172a;
+      background: #fffef7;
+      border: 2px solid #135c37;
+      border-left: 5px solid #135c37;
+      border-radius: 8px;
+      padding: 10px 14px;
+      box-shadow: 0 8px 20px rgba(15, 23, 42, 0.14);
+      line-height: 1.45;
+      max-width: 480px;
       margin: 24px auto 0;
       pointer-events: none;
       opacity: 0;
       visibility: hidden;
       transform: translateY(-4px);
       transition: opacity 0.18s ease, transform 0.18s ease, visibility 0.18s;
+      text-align: left;
     }
     .fc-word-box:hover .fc-hover-example {
       opacity: 1;
@@ -1118,7 +1131,7 @@
               '<div class="fc-center">' +
                 '<div class="fc-word-box">' +
                   '<div class="fc-word">' + escHtml(card.kelime) + '</div>' +
-                  (card.ornek ? '<div class="fc-hover-example">' + escHtml(card.ornek) + '</div>' : '') +
+                  (card.ornek ? '<div class="fc-hover-example">' + ornekBicimlendir(card.ornek) + '</div>' : '') +
                 '</div>' +
               '</div>' +
               '<div class="fc-hint">Hover over word for example sentence • Click card or Space to flip ↻</div>' +
@@ -1134,7 +1147,7 @@
               '</div>' +
               '<div class="fc-center">' +
                 '<div class="fc-meaning">' + escHtml(card.anlam) + '</div>' +
-                (card.ornek ? '<div class="fc-example">' + escHtml(card.ornek) + '</div>' : '') +
+                (card.ornek ? '<div class="fc-example">' + ornekBicimlendir(card.ornek) + '</div>' : '') +
               '</div>' +
               '<div class="fc-hint">Click card to flip back ↻</div>' +
             '</div>' +
@@ -1146,6 +1159,11 @@
           '<button class="fc-btn fc-btn-known" onclick="fcBiliyorumIsaretle(' + card.row + ')">✅ Known (Remove from Pool)</button>' +
           '<button class="fc-btn" onclick="fcDegistir(1)">Next ▶</button>' +
         '</div>';
+    }
+
+    function ornekBicimlendir(s) {
+      var temiz = escHtml(s || "");
+      return temiz.replace(/\(([^)]+)\)\s*$/, '<span class="ex-tr">($1)</span>');
     }
 
     function fcCevir() {
@@ -1232,7 +1250,7 @@
             '<td class="col-type">' + escHtml(turTemizle(x.tur)) + '</td>' +
             '<td class="col-word" onclick="kelimeOku(\'' + escJs(x.kelime) + '\', this)">' +
               escHtml(x.kelime) +
-              (x.ornek ? '<div class="word-hover-ex">' + escHtml(x.ornek) + '</div>' : '') +
+              (x.ornek ? '<div class="word-hover-ex">' + ornekBicimlendir(x.ornek) + '</div>' : '') +
             '</td>' +
             '<td class="col-meaning">' + escHtml(x.anlam) + '</td>' +
             '<td class="col-example">' + escHtml(x.ornek) + '</td>' +
@@ -1270,7 +1288,7 @@
             '<td class="col-type">' + escHtml(turTemizle(p.tur)) + '</td>' +
             '<td class="col-word" onclick="kelimeOku(\'' + escJs(p.kelime) + '\', this)">' +
               escHtml(p.kelime) +
-              (p.ornek ? '<div class="word-hover-ex">' + escHtml(p.ornek) + '</div>' : '') +
+              (p.ornek ? '<div class="word-hover-ex">' + ornekBicimlendir(p.ornek) + '</div>' : '') +
             '</td>' +
             '<td class="col-meaning">' + escHtml(p.anlam) + '</td>' +
             '<td class="col-example">' + escHtml(p.ornek) + '</td>' +
