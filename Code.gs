@@ -56,6 +56,13 @@ function doGet(e) {
       .createTextOutput(JSON.stringify(res))
       .setMimeType(ContentService.MimeType.JSON);
   }
+  if (e && e.parameter && e.parameter.action === 'recordAttempt' && e.parameter.word) {
+    var isCorr = e.parameter.isCorrect === 'true' || e.parameter.isCorrect === '1';
+    var resStat = istatistikKaydet(e.parameter.word, isCorr, e.parameter.mode || 'Study');
+    return ContentService
+      .createTextOutput(JSON.stringify(resStat))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
   return HtmlService.createHtmlOutput(uygulamaHtmlGetir())
     .setTitle('Vocabulary')
     .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL)
@@ -73,6 +80,16 @@ function doPost(e) {
     if (body.action === 'setStatus' && body.row) {
       return ContentService
         .createTextOutput(JSON.stringify(durumGuncelle(body.row, body.status)))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+    if (body.action === 'recordAttempt' && body.word) {
+      return ContentService
+        .createTextOutput(JSON.stringify(istatistikKaydet(body.word, !!body.isCorrect, body.mode || 'Study', body.entry)))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+    if (body.action === 'syncStats' && body.stats) {
+      return ContentService
+        .createTextOutput(JSON.stringify(istatistikTopluSenkronizeEt(body.stats)))
         .setMimeType(ContentService.MimeType.JSON);
     }
     return ContentService
@@ -206,12 +223,235 @@ function verileriGetir() {
     });
   }
 
+  var statsMap = {};
+  try {
+    statsMap = istatistikleriOku_(ss, words);
+  } catch (e) {}
+
   return {
     ok: true,
     words: words,
+    stats: statsMap,
     sheetUrl: ss.getUrl(),
     webAppUrl: getWebAppUrl_()
   };
+}
+
+var STATS_SHEET_NAME = 'Mistake Stats';
+
+function istatistikSayfasiniHazirla_(ss) {
+  var sh = ss.getSheetByName(STATS_SHEET_NAME);
+  var yeniMi = false;
+  if (!sh) {
+    sh = ss.insertSheet(STATS_SHEET_NAME);
+    yeniMi = true;
+  }
+  var firstCell = sh.getRange(1, 1).getDisplayValue();
+  if (yeniMi || firstCell !== '#') {
+    var headers = [[
+      '#',
+      'Level',
+      'Word',
+      'Meaning',
+      'Mistakes (Hata)',
+      'Correct (Doğru)',
+      'Total Attempts',
+      'Error Rate (%)',
+      'Mistake Bar (En Çok Hata Yapılanlar)',
+      'Last Practice'
+    ]];
+    sh.getRange(1, 1, 1, 10).setValues(headers)
+      .setBackground('#135c37')
+      .setFontColor('#ffffff')
+      .setFontWeight('bold');
+    sh.setFrozenRows(1);
+    try {
+      sh.setColumnWidth(1, 38);
+      sh.setColumnWidth(2, 56);
+      sh.setColumnWidth(3, 130);
+      sh.setColumnWidth(4, 210);
+      sh.setColumnWidth(5, 115);
+      sh.setColumnWidth(6, 115);
+      sh.setColumnWidth(7, 110);
+      sh.setColumnWidth(8, 105);
+      sh.setColumnWidth(9, 240);
+      sh.setColumnWidth(10, 160);
+    } catch (e) {}
+  }
+  return sh;
+}
+
+function istatistikleriOku_(ss, wordsList) {
+  var sh = istatistikSayfasiniHazirla_(ss);
+  var lastR = sh.getLastRow();
+  var map = {};
+  if (lastR >= 2) {
+    var vals = sh.getRange(2, 1, lastR - 1, 10).getValues();
+    for (var i = 0; i < vals.length; i++) {
+      var r = vals[i];
+      var w = (r[2] || '').toString().trim();
+      if (!w) continue;
+      var k = w.toLowerCase();
+      map[k] = {
+        word: w,
+        level: (r[1] || 'B2').toString().trim(),
+        meaning: (r[3] || '').toString().trim(),
+        mistakes: parseInt(r[4], 10) || 0,
+        correct: parseInt(r[5], 10) || 0,
+        lastPractice: (r[9] || '').toString().trim()
+      };
+    }
+  }
+  if (lastR < 2 && wordsList && wordsList.length > 0) {
+    istatistikTablosunuYaz_(ss, map, wordsList);
+  }
+  return map;
+}
+
+function istatistikTablosunuYaz_(ss, statsMap, wordsList) {
+  var sh = istatistikSayfasiniHazirla_(ss);
+  var kelimeSozluk = {};
+  if (wordsList && wordsList.length) {
+    for (var i = 0; i < wordsList.length; i++) {
+      var wObj = wordsList[i];
+      var wk = (wObj.kelime || '').toString().trim().toLowerCase();
+      if (wk) kelimeSozluk[wk] = wObj;
+    }
+  } else {
+    var s1 = ss.getSheetByName('Sheet1');
+    if (s1) {
+      var layout = getSheetLayout_(s1);
+      var lr = s1.getLastRow();
+      if (lr >= layout.startRow) {
+        var dVals = s1.getRange(layout.startRow, 1, lr - layout.startRow + 1, Math.max(s1.getLastColumn(), 12)).getDisplayValues();
+        for (var j = 0; j < dVals.length; j++) {
+          var dr = dVals[j];
+          var kw = (dr[layout.word - 1] || '').toString().trim();
+          if (kw) {
+            kelimeSozluk[kw.toLowerCase()] = {
+              kelime: kw,
+              seviye: (dr[layout.level - 1] || 'B2').toString().trim(),
+              anlam: (dr[layout.meaning - 1] || '').toString().trim()
+            };
+          }
+        }
+      }
+    }
+  }
+
+  var birlesikAnahtarlar = {};
+  for (var k1 in kelimeSozluk) birlesikAnahtarlar[k1] = true;
+  for (var k2 in statsMap) birlesikAnahtarlar[k2] = true;
+
+  var satirlar = [];
+  for (var key in birlesikAnahtarlar) {
+    var st = statsMap[key] || { mistakes: 0, correct: 0, lastPractice: '' };
+    var meta = kelimeSozluk[key] || {};
+    var mCount = parseInt(st.mistakes, 10) || 0;
+    var cCount = parseInt(st.correct, 10) || 0;
+    var tot = mCount + cCount;
+    var errPct = tot > 0 ? Math.round((mCount / tot) * 100) : 0;
+    satirlar.push({
+      word: meta.kelime || st.word || key,
+      level: meta.seviye || st.level || 'B2',
+      meaning: meta.anlam || st.meaning || '',
+      mistakes: mCount,
+      correct: cCount,
+      total: tot,
+      errPct: errPct,
+      lastPractice: st.lastPractice || '-'
+    });
+  }
+
+  satirlar.sort(function(a, b) {
+    if (b.mistakes !== a.mistakes) return b.mistakes - a.mistakes;
+    if (b.errPct !== a.errPct) return b.errPct - a.errPct;
+    if (b.total !== a.total) return b.total - a.total;
+    return a.word.localeCompare(b.word);
+  });
+
+  var mevcutSonSatir = sh.getLastRow();
+  if (mevcutSonSatir >= 2) {
+    sh.getRange(2, 1, mevcutSonSatir - 1, 10).clearContent();
+  }
+
+  if (satirlar.length === 0) return;
+
+  var outVals = [];
+  var barFormulas = [];
+  var maxRowNum = satirlar.length + 1;
+
+  for (var idx = 0; idx < satirlar.length; idx++) {
+    var it = satirlar[idx];
+    var rNum = idx + 2;
+    outVals.push([
+      idx + 1,
+      it.level,
+      it.word,
+      it.meaning,
+      it.mistakes,
+      it.correct,
+      it.total,
+      it.errPct + '%',
+      '',
+      it.lastPractice
+    ]);
+    barFormulas.push([
+      '=IF(E' + rNum + '>0, SPARKLINE(E' + rNum + ', {"charttype","bar";"max",MAX(1,MAX($E$2:$E$' + maxRowNum + '));"color1","#dc2626"}), "")'
+    ]);
+  }
+
+  sh.getRange(2, 1, outVals.length, 10).setValues(outVals);
+  sh.getRange(2, 9, barFormulas.length, 1).setFormulas(barFormulas);
+}
+
+function istatistikKaydet(kelime, dogruMu, mod, clientEntry) {
+  var ss = getSpreadsheet_();
+  var temiz = (kelime || '').toString().trim();
+  if (!temiz) return { ok: false, error: 'Empty word' };
+  var key = temiz.toLowerCase();
+  var map = istatistikleriOku_(ss);
+  var mevcut = map[key] || { word: temiz, level: 'B2', meaning: '', mistakes: 0, correct: 0, lastPractice: '' };
+
+  if (dogruMu) {
+    mevcut.correct = (mevcut.correct || 0) + 1;
+  } else {
+    mevcut.mistakes = (mevcut.mistakes || 0) + 1;
+  }
+  if (clientEntry) {
+    if ((clientEntry.mistakes || 0) > mevcut.mistakes) mevcut.mistakes = clientEntry.mistakes;
+    if ((clientEntry.correct || 0) > mevcut.correct) mevcut.correct = clientEntry.correct;
+  }
+
+  var tz = 'GMT+3';
+  try { tz = Session.getScriptTimeZone() || 'GMT+3'; } catch (e) {}
+  var tarihStr = Utilities.formatDate(new Date(), tz, 'yyyy-MM-dd HH:mm');
+  mevcut.lastPractice = (mod || 'Study').toUpperCase() + ' • ' + (dogruMu ? '✅' : '❌') + ' (' + tarihStr + ')';
+  map[key] = mevcut;
+
+  istatistikTablosunuYaz_(ss, map);
+  return { ok: true, word: temiz, entry: mevcut, stats: map };
+}
+
+function istatistikTopluSenkronizeEt(incomingStats) {
+  var ss = getSpreadsheet_();
+  var map = istatistikleriOku_(ss);
+  if (incomingStats && typeof incomingStats === 'object') {
+    for (var k in incomingStats) {
+      var inc = incomingStats[k];
+      if (!inc) continue;
+      var key = k.toLowerCase().trim();
+      var cur = map[key] || { word: inc.word || k, level: 'B2', meaning: '', mistakes: 0, correct: 0, lastPractice: '' };
+      cur.mistakes = Math.max(cur.mistakes || 0, parseInt(inc.mistakes, 10) || 0);
+      cur.correct = Math.max(cur.correct || 0, parseInt(inc.correct, 10) || 0);
+      if (inc.lastPractice && (!cur.lastPractice || cur.lastPractice === '-')) {
+        cur.lastPractice = inc.lastPractice;
+      }
+      map[key] = cur;
+    }
+  }
+  istatistikTablosunuYaz_(ss, map);
+  return { ok: true, stats: map };
 }
 
 function getWebAppUrl_() {
@@ -529,6 +769,17 @@ function uygulamaHtmlGetir() {
     '  .match-item:hover { border-color: #135c37; background: #f8fafc; }',
     '  .match-item.selected { border-color: #135c37; background: #dcfce7; color: #0f172a; box-shadow: 0 0 0 2px rgba(19, 92, 55, 0.2); }',
     '  .match-item.matched { opacity: 0.38; pointer-events: none; background: #f1f5f9; border-color: #cbd5e1; text-decoration: line-through; }',
+    '  .stats-kpi-bar { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 8px; padding: 6px 10px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 6px; flex-wrap: nowrap; white-space: nowrap; overflow-x: auto; }',
+    '  .stats-kpis { display: flex; align-items: center; gap: 8px; flex-wrap: nowrap; white-space: nowrap; }',
+    '  .stats-kpi { padding: 3px 9px; border-radius: 5px; font-size: 11.5px; font-weight: 700; background: #ffffff; border: 1px solid #cbd5e1; color: #1e293b; }',
+    '  .stats-kpi.err { background: #fef2f2; border-color: #fecaca; color: #991b1b; }',
+    '  .stats-kpi.ok { background: #f0fdf4; border-color: #bbf7d0; color: #166534; }',
+    '  .err-bar-wrap { display: flex; align-items: center; gap: 8px; min-width: 190px; }',
+    '  .err-bar-track { flex: 1; height: 12px; background: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 99px; overflow: hidden; }',
+    '  .err-bar-fill { height: 100%; background: linear-gradient(90deg, #ef4444, #b91c1c); border-radius: 99px; transition: width 0.25s ease; }',
+    '  .err-bar-pct { font-size: 11px; font-weight: 700; color: #991b1b; min-width: 58px; text-align: right; }',
+    '  .err-count-pill { display: inline-block; padding: 2px 8px; border-radius: 99px; font-weight: 800; font-size: 11px; background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }',
+    '  .corr-count-pill { display: inline-block; padding: 2px 8px; border-radius: 99px; font-weight: 700; font-size: 11px; background: #dcfce7; color: #166534; border: 1px solid #86efac; }',
     '  @media (max-width: 900px) { .pool-layout { grid-template-columns: 1fr; } }',
     '</style>',
     '</head>',
@@ -563,6 +814,7 @@ function uygulamaHtmlGetir() {
     '      <button class="btn" onclick="calismaModuAc(\'quiz\')" title="Active Recall (Turkish -> English Quiz & Typing)">🎯 Quiz</button>',
     '      <button class="btn" onclick="calismaModuAc(\'listen\')" title="Listen to audio & find/type the word">🎧 Listen</button>',
     '      <button class="btn" onclick="calismaModuAc(\'match\')" title="Match 5 English words with Turkish meanings">🧩 Match</button>',
+    '      <button class="btn" id="topBtn-stats" onclick="sekmeDegistir(\'stats\')" title="Most Missed Words & Mistake Bar Chart">📊 Stats</button>',
     '      <button class="btn btn-green" onclick="ekleBarAcKapat()">+ Add Word</button>',
     '      <button class="btn" onclick="verileriYukle()" title="Refresh">🔄</button>',
     '      <a id="openWebAppBtn" href="#" target="_blank" class="btn" style="display:none;">🌐 Open in New Tab</a>',
@@ -638,6 +890,34 @@ function uygulamaHtmlGetir() {
     '    </div>',
     '  </div>',
     '',
+    '  <div class="table-wrap" id="statsView" style="display:none;">',
+    '    <div class="stats-kpi-bar">',
+    '      <div class="stats-kpis">',
+    '        <span class="stats-kpi" id="kpiTotalAttempts">Total Exercises: 0</span>',
+    '        <span class="stats-kpi err" id="kpiTotalMistakes">❌ Total Mistakes: 0</span>',
+    '        <span class="stats-kpi ok" id="kpiTotalCorrect">✅ Total Correct: 0</span>',
+    '        <span class="stats-kpi" id="kpiAccuracy">🎯 Accuracy: -</span>',
+    '      </div>',
+    '    </div>',
+    '    <table class="sheet-table">',
+    '      <thead>',
+    '        <tr>',
+    '          <th class="col-row">#</th>',
+    '          <th class="center">Level</th>',
+    '          <th>Word</th>',
+    '          <th>Meaning</th>',
+    '          <th class="center">Mistakes (Hata)</th>',
+    '          <th class="center">Correct (Doğru)</th>',
+    '          <th class="center">Total</th>',
+    '          <th class="center">Error Rate</th>',
+    '          <th style="min-width:220px;">Mistake Bar (En Çok Hata Yapılanlar)</th>',
+    '          <th>Last Exercise</th>',
+    '        </tr>',
+    '      </thead>',
+    '      <tbody id="statsBody"></tbody>',
+    '    </table>',
+    '  </div>',
+    '',
     '  <div id="flashcardView" style="display:none;">',
     '    <div class="fc-wrap" id="fcContainer"></div>',
     '  </div>',
@@ -645,6 +925,7 @@ function uygulamaHtmlGetir() {
     '  <div class="bottom-bar">',
     '    <button class="sheet-tab active" id="tabBtn-sheet1" onclick="sekmeDegistir(\'sheet1\')">Sheet1</button>',
     '    <button class="sheet-tab" id="tabBtn-pool" onclick="sekmeDegistir(\'pool\')">Unknown Words Pool</button>',
+    '    <button class="sheet-tab" id="tabBtn-stats" onclick="sekmeDegistir(\'stats\')">📊 Mistake Stats</button>',
     '    <button class="sheet-tab" id="tabBtn-flashcards" onclick="calismaModuAc(\'flashcards\')">🃏 Flashcards</button>',
     '    <button class="sheet-tab" id="tabBtn-cloze" onclick="calismaModuAc(\'cloze\')">📝 Cloze</button>',
     '    <button class="sheet-tab" id="tabBtn-quiz" onclick="calismaModuAc(\'quiz\')">🎯 Quiz</button>',
@@ -745,6 +1026,7 @@ function uygulamaHtmlGetir() {
     '    google.script.run.withSuccessHandler(function(res) {',
     '      if (!res || !res.ok) return;',
     '      TUM_KELIMELER = res.words || [];',
+    '      if (res.stats) { try { localStorage.setItem("kelime_istatistik_v1", JSON.stringify(res.stats)); } catch (e) {} }',
     '      if (res.webAppUrl && window.self !== window.top) {',
     '        var wb = document.getElementById("openWebAppBtn");',
     '        wb.href = res.webAppUrl;',
@@ -752,6 +1034,45 @@ function uygulamaHtmlGetir() {
     '      }',
     '      tabloyuCiz();',
     '    }).verileriGetir();',
+    '  }',
+    '',
+    '  function istatistikMapAl() { try { return JSON.parse(localStorage.getItem("kelime_istatistik_v1") || "{}"); } catch (e) { return {}; } }',
+    '  function alistirmaSonucuKaydet(kelime, dogruMu, mod) {',
+    '    var temiz = (kelime || "").toString().trim(); if (!temiz) return;',
+    '    var key = temiz.toLowerCase();',
+    '    var hedef = TUM_KELIMELER.filter(function(w){ return (w.kelime || "").toLowerCase() === key; })[0];',
+    '    var map = istatistikMapAl();',
+    '    var kayit = map[key] || { kelime: hedef ? hedef.kelime : temiz, seviye: hedef ? hedef.seviye : "", anlam: hedef ? hedef.anlam : "", mistakes: 0, correct: 0, lastPractice: "" };',
+    '    if (dogruMu) kayit.correct = (Number(kayit.correct) || 0) + 1; else kayit.mistakes = (Number(kayit.mistakes) || 0) + 1;',
+    '    map[key] = kayit;',
+    '    try { localStorage.setItem("kelime_istatistik_v1", JSON.stringify(map)); } catch (e) {}',
+    '    istatistikTablosuCiz();',
+    '    google.script.run.withSuccessHandler(function(res){',
+    '      if (res && res.ok && res.stats) { try { localStorage.setItem("kelime_istatistik_v1", JSON.stringify(res.stats)); } catch (e) {} istatistikTablosuCiz(); }',
+    '    }).istatistikKaydet(kayit.kelime, !!dogruMu, mod || AKTIF_MOD, kayit.seviye, kayit.anlam);',
+    '  }',
+    '  function istatistikTablosuCiz() {',
+    '    var map = istatistikMapAl(), keys = Object.keys(map), liste = [], topHata = 0, topDogru = 0, hataliKelime = 0, maxMistakes = 1;',
+    '    for (var k = 0; k < keys.length; k++) {',
+    '      var st = map[keys[k]]; if (!st) continue;',
+    '      var m = Number(st.mistakes) || 0, c = Number(st.correct) || 0; if (m + c <= 0) continue;',
+    '      topHata += m; topDogru += c; if (m > 0) hataliKelime++; if (m > maxMistakes) maxMistakes = m;',
+    '      var tot = m + c, errRate = Math.round((m / tot) * 100);',
+    '      liste.push({ kelime: st.kelime || keys[k], seviye: st.seviye || "-", anlam: st.anlam || "", mistakes: m, correct: c, total: tot, errRate: errRate, lastPractice: st.lastPractice || "-" });',
+    '    }',
+    '    liste.sort(function(a, b) { if (b.mistakes !== a.mistakes) return b.mistakes - a.mistakes; if (b.errRate !== a.errRate) return b.errRate - a.errRate; return b.total - a.total; });',
+    '    var topDeneme = topHata + topDogru, acc = topDeneme > 0 ? Math.round((topDogru / topDeneme) * 100) + "%" : "—";',
+    '    var elA = document.getElementById("kpiTotalAttempts"), elE = document.getElementById("kpiTotalMistakes"), elC = document.getElementById("kpiTotalCorrect"), elAc = document.getElementById("kpiAccuracy");',
+    '    if (elA) elA.innerText = "Total Exercises: " + topDeneme; if (elE) elE.innerText = "❌ Total Mistakes: " + topHata; if (elC) elC.innerText = "✅ Total Correct: " + topDogru; if (elAc) elAc.innerText = "🎯 Accuracy: " + acc;',
+    '    var tabStats = document.getElementById("tabBtn-stats"); if (tabStats) tabStats.innerText = topHata > 0 ? "📊 Mistake Stats (" + topHata + ")" : "📊 Mistake Stats";',
+    '    var tbody = document.getElementById("statsBody"); if (!tbody) return;',
+    '    if (!liste.length) { tbody.innerHTML = \'<tr><td colspan="10" class="center" style="padding:20px;color:#64748b;">No exercise attempts recorded yet.</td></tr>\'; return; }',
+    '    var rows = [];',
+    '    for (var r = 0; r < liste.length; r++) {',
+    '      var it = liste[r], barPct = it.mistakes > 0 ? Math.max(6, Math.round((it.mistakes / maxMistakes) * 100)) : 0;',
+    '      rows.push(\'<tr><td class="col-row">\' + (r + 1) + \'</td><td class="col-lvl">\' + escHtml(it.seviye) + \'</td><td class="col-word" onclick="kelimeOku(\\\'\' + escJs(it.kelime) + \'\\\', this)">\' + escHtml(it.kelime) + \'</td><td class="col-meaning">\' + escHtml(it.anlam) + \'</td><td class="center"><span class="err-count-pill">❌ \' + it.mistakes + \'</span></td><td class="center"><span class="corr-count-pill">✅ \' + it.correct + \'</span></td><td class="center" style="font-weight:700;">\' + it.total + \'</td><td class="center" style="font-weight:700;">\' + it.errRate + \'%</td><td><div class="err-bar-wrap"><div class="err-bar-track"><div class="err-bar-fill" style="width:\' + barPct + \'%;"></div></div><span class="err-bar-pct">\' + it.mistakes + \' err</span></div></td><td class="col-date">\' + escHtml(it.lastPractice) + \'</td></tr>\');',
+    '    }',
+    '    tbody.innerHTML = rows.join("");',
     '  }',
     '',
     '  var FC_INDEX = 0;',
@@ -821,6 +1142,7 @@ function uygulamaHtmlGetir() {
     '      document.getElementById("sheet1View").style.display = AKTIF_SEKME === "sheet1" ? "block" : "none";',
     '      document.getElementById("poolView").style.display = AKTIF_SEKME === "pool" ? "block" : "none";',
     '      document.getElementById("flashcardView").style.display = AKTIF_SEKME === "flashcards" ? "block" : "none";',
+    '      var stV = document.getElementById("statsView"); if (stV) stV.style.display = AKTIF_SEKME === "stats" ? "block" : "none";',
     '      sekmeButonlariniGuncelle();',
     '    } catch (e) {}',
     '  }',
@@ -829,6 +1151,7 @@ function uygulamaHtmlGetir() {
     '    var s = AKTIF_SEKME, m = AKTIF_MOD;',
     '    document.getElementById("tabBtn-sheet1").classList.toggle("active", s === "sheet1");',
     '    document.getElementById("tabBtn-pool").classList.toggle("active", s === "pool");',
+    '    var ts = document.getElementById("tabBtn-stats"); if (ts) ts.classList.toggle("active", s === "stats");',
     '    var studyTabs = ["flashcards", "cloze", "quiz", "listen", "match"];',
     '    for (var i = 0; i < studyTabs.length; i++) {',
     '      var el = document.getElementById("tabBtn-" + studyTabs[i]);',
@@ -842,6 +1165,7 @@ function uygulamaHtmlGetir() {
     '    document.getElementById("sheet1View").style.display = s === "sheet1" ? "block" : "none";',
     '    document.getElementById("poolView").style.display = s === "pool" ? "block" : "none";',
     '    document.getElementById("flashcardView").style.display = s === "flashcards" ? "block" : "none";',
+    '    var stV = document.getElementById("statsView"); if (stV) stV.style.display = s === "stats" ? "block" : "none";',
     '    FC_FLIPPED = false;',
     '    tercihleriKaydet();',
     '    tabloyuCiz();',
@@ -857,6 +1181,7 @@ function uygulamaHtmlGetir() {
     '    document.getElementById("sheet1View").style.display = "none";',
     '    document.getElementById("poolView").style.display = "none";',
     '    document.getElementById("flashcardView").style.display = "block";',
+    '    var stV = document.getElementById("statsView"); if (stV) stV.style.display = "none";',
     '    tercihleriKaydet();',
     '    tabloyuCiz();',
     '  }',
@@ -987,9 +1312,9 @@ function uygulamaHtmlGetir() {
     '    if (secilen.toLowerCase() === dogru.toLowerCase()) {',
     '      btnEl.classList.add("correct");',
     '      var blankEl = document.getElementById("clozeBlankEl"); if (blankEl) { blankEl.innerText = dogru; blankEl.classList.add("filled"); }',
-    '      kelimeOku(dogru); var mezun = card ? srsArtir(card) : false;',
+    '      kelimeOku(dogru); alistirmaSonucuKaydet(dogru, true, AKTIF_MOD); var mezun = card ? srsArtir(card) : false;',
     '      setTimeout(function() { SECENEKLER_CACHE = { key: "", list: [] }; if (!mezun) FC_INDEX++; tabloyuCiz(); }, 850);',
-    '    } else { btnEl.classList.add("wrong"); bildirimGoster("❌ Try again!"); }',
+    '    } else { btnEl.classList.add("wrong"); alistirmaSonucuKaydet(dogru, false, AKTIF_MOD); bildirimGoster("❌ Try again! (Mistake recorded)"); }',
     '  }',
     '  function quizModuCiz(box, deck) {',
     '    var card = deck[FC_INDEX], pct = Math.round(((FC_INDEX + 1) / deck.length) * 100), srsSayi = srsGetir(card.kelime), secenekler = secenekleriUret(card);',
@@ -1032,10 +1357,17 @@ function uygulamaHtmlGetir() {
     '  function matchTrSec(kTr) { if (MATCH_DURUM.eslesenler[kTr]) return; MATCH_DURUM.seciliTr = kTr; matchKontrolEt(); }',
     '  function matchKontrolEt() {',
     '    if (MATCH_DURUM.seciliEn && MATCH_DURUM.seciliTr) {',
+    '      var en = MATCH_DURUM.seciliEn;',
+    '      var card = TUM_KELIMELER.filter(function(w){ return w.kelime.toLowerCase() === en; })[0];',
     '      if (MATCH_DURUM.seciliEn === MATCH_DURUM.seciliTr) {',
-    '        var en = MATCH_DURUM.seciliEn; MATCH_DURUM.eslesenler[en] = true; MATCH_DURUM.seciliEn = null; MATCH_DURUM.seciliTr = null;',
-    '        var card = TUM_KELIMELER.filter(function(w){ return w.kelime.toLowerCase() === en; })[0]; if (card) srsArtir(card);',
-    '      } else { MATCH_DURUM.seciliEn = null; MATCH_DURUM.seciliTr = null; bildirimGoster("❌ Try again!"); }',
+    '        MATCH_DURUM.eslesenler[en] = true; MATCH_DURUM.seciliEn = null; MATCH_DURUM.seciliTr = null;',
+    '        alistirmaSonucuKaydet(card ? card.kelime : en, true, "Match");',
+    '        if (card) srsArtir(card);',
+    '      } else {',
+    '        MATCH_DURUM.seciliEn = null; MATCH_DURUM.seciliTr = null;',
+    '        alistirmaSonucuKaydet(card ? card.kelime : en, false, "Match");',
+    '        bildirimGoster("❌ Try again! (Mistake recorded)");',
+    '      }',
     '    }',
     '    tabloyuCiz();',
     '  }',
@@ -1180,6 +1512,7 @@ function uygulamaHtmlGetir() {
     '    document.getElementById("poolBody").innerHTML = pRows.join("") || \'<tr><td colspan="7" class="center" style="padding:14px;">No words in pool.</td></tr>\';',
     '',
     '    fcCiz(poolList);',
+    '    istatistikTablosuCiz();',
     '  }',
     '',
     '  function kutucukDegisti(row, tip, isChecked) {',

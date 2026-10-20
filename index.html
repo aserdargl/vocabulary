@@ -746,6 +746,85 @@
     .match-item.wrong { background: #fee2e2; border-color: #f87171; }
     .btn.active-mode { background: #135c37; color: #ffffff; border-color: #0e4629; }
     .btn.active-mode:hover { background: #0e4629; }
+    .stats-kpi-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 8px;
+      padding: 8px 12px;
+      background: #f8fafc;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      flex-wrap: nowrap;
+      white-space: nowrap;
+      overflow-x: auto;
+    }
+    .stats-kpis {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: nowrap;
+      white-space: nowrap;
+    }
+    .stats-kpi {
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      border: 1px solid #e2e8f0;
+      background: #ffffff;
+      color: #1e293b;
+    }
+    .stats-kpi.err { background: #fef2f2; border-color: #fecaca; color: #b91c1c; }
+    .stats-kpi.ok { background: #f0fdf4; border-color: #bbf7d0; color: #15803d; }
+    .err-bar-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 190px;
+    }
+    .err-bar-track {
+      flex: 1;
+      height: 12px;
+      background: #f1f5f9;
+      border-radius: 99px;
+      overflow: hidden;
+      border: 1px solid #e2e8f0;
+    }
+    .err-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #ef4444, #dc2626);
+      border-radius: 99px;
+      transition: width 0.25s ease;
+    }
+    .err-count-pill {
+      display: inline-block;
+      min-width: 30px;
+      padding: 1px 7px;
+      border-radius: 99px;
+      font-weight: 800;
+      font-size: calc(var(--fs) - 1px);
+      background: #fee2e2;
+      color: #b91c1c;
+      text-align: center;
+    }
+    .err-count-pill.zero {
+      background: #f1f5f9;
+      color: #64748b;
+      font-weight: 600;
+    }
+    .corr-count-pill {
+      display: inline-block;
+      min-width: 30px;
+      padding: 1px 7px;
+      border-radius: 99px;
+      font-weight: 700;
+      font-size: calc(var(--fs) - 1px);
+      background: #dcfce7;
+      color: #15803d;
+      text-align: center;
+    }
 
     @media (max-width: 900px) {
       .pool-layout { grid-template-columns: 1fr; }
@@ -788,6 +867,7 @@
       <button class="btn" id="topBtn-quiz" onclick="calismaModuAc('quiz')" title="Active Recall (Turkish -> English Quiz & Typing)">🎯 Quiz</button>
       <button class="btn" id="topBtn-listen" onclick="calismaModuAc('listen')" title="Listen to audio & find/type the word">🎧 Listen</button>
       <button class="btn" id="topBtn-match" onclick="calismaModuAc('match')" title="Match 5 English words with Turkish meanings">🧩 Match</button>
+      <button class="btn" id="topBtn-stats" onclick="sekmeDegistir('stats')" title="Mistake Statistics & Error Bars">📊 Stats</button>
       <button class="btn btn-green" id="addWordToggleBtn" onclick="ekleBarAcKapat()">+ Add Word</button>
       <button class="btn" onclick="verileriYukle(true)" title="Sync latest words from Google Sheet">🔄</button>
     </div>
@@ -862,6 +942,38 @@
     </div>
   </div>
 
+  <div class="table-wrap" id="statsView" style="display:none;">
+    <div class="stats-kpi-bar">
+      <div class="stats-kpis">
+        <span class="stats-kpi" id="kpiTotalAttempts">Total Exercises: 0</span>
+        <span class="stats-kpi err" id="kpiTotalMistakes">❌ Total Mistakes: 0</span>
+        <span class="stats-kpi ok" id="kpiTotalCorrect">✅ Total Correct: 0</span>
+        <span class="stats-kpi" id="kpiAccuracy">🎯 Accuracy: -</span>
+      </div>
+      <div style="display:flex;gap:6px;align-items:center;">
+        <button class="btn" onclick="istatistikleriSunucuyaSenkronizeEt(true)" title="Sync all historical stats to 'Mistake Stats' tab in Google Sheets">🔄 Sync Stats to Sheet</button>
+        <a href="https://docs.google.com/spreadsheets/d/1cUYfuFg7OSsWjCtLA7jiB77bGJITR6V0jF2ZUnyrXtc/edit" target="_blank" class="btn btn-green" title="View 'Mistake Stats' sheet tab in Google Sheets">📊 Open in Google Sheets</a>
+      </div>
+    </div>
+    <table class="sheet-table">
+      <thead>
+        <tr>
+          <th class="col-row">#</th>
+          <th class="center">Level</th>
+          <th>Word</th>
+          <th>Meaning</th>
+          <th class="center">Mistakes (Hata)</th>
+          <th class="center">Correct (Doğru)</th>
+          <th class="center">Total</th>
+          <th class="center">Error Rate</th>
+          <th style="min-width:220px;">Mistake Bar (En Çok Hata Yapılanlar)</th>
+          <th>Last Exercise</th>
+        </tr>
+      </thead>
+      <tbody id="statsBody"></tbody>
+    </table>
+  </div>
+
   <div id="flashcardView" style="display:none;">
     <div class="fc-wrap" id="fcContainer"></div>
   </div>
@@ -870,6 +982,7 @@
     <div class="bottom-tabs">
       <button class="sheet-tab active" id="tabBtn-sheet1" onclick="sekmeDegistir('sheet1')">Sheet1</button>
       <button class="sheet-tab" id="tabBtn-pool" onclick="sekmeDegistir('pool')">Unknown Words Pool</button>
+      <button class="sheet-tab" id="tabBtn-stats" onclick="sekmeDegistir('stats')">📊 Mistake Stats</button>
       <button class="sheet-tab" id="tabBtn-flashcards" onclick="calismaModuAc('flashcards')">🃏 Flashcards</button>
       <button class="sheet-tab" id="tabBtn-cloze" onclick="calismaModuAc('cloze')">📝 Cloze</button>
       <button class="sheet-tab" id="tabBtn-quiz" onclick="calismaModuAc('quiz')">🎯 Quiz</button>
@@ -1234,14 +1347,312 @@
       fetch(APPS_SCRIPT_URL + "?action=json&_=" + Date.now())
         .then(function(r) { return r.json(); })
         .then(function(res) {
-          if (res && res.ok && res.words && res.words.length > 0) {
-            SHEET_KELIMELER = res.words;
-            listeyiBirlestirVeHazirla(SHEET_KELIMELER, true);
-            document.getElementById("syncDot").className = "sync-dot";
-            document.getElementById("syncText").innerText = "Live (" + res.words.length + ")";
+          if (res && res.ok) {
+            if (res.stats) {
+              sunucuIstatistikleriniBirlestir(res.stats);
+            }
+            if (res.words && res.words.length > 0) {
+              SHEET_KELIMELER = res.words;
+              listeyiBirlestirVeHazirla(SHEET_KELIMELER, true);
+              document.getElementById("syncDot").className = "sync-dot";
+              document.getElementById("syncText").innerText = "Live (" + res.words.length + ")";
+            }
           }
         })
         .catch(function() {});
+    }
+
+    function istatistikMapAl() {
+      try {
+        return JSON.parse(localStorage.getItem("kelime_istatistik_v1") || "{}");
+      } catch (e) {
+        return {};
+      }
+    }
+
+    function istatistikMapKaydet(map) {
+      try {
+        localStorage.setItem("kelime_istatistik_v1", JSON.stringify(map || {}));
+      } catch (e) {}
+    }
+
+    function sunucuIstatistikleriniBirlestir(serverStats) {
+      if (!serverStats || typeof serverStats !== "object") return;
+      var localMap = istatistikMapAl();
+      var degisti = false;
+      var yerelDahaIleri = false;
+
+      var sKeys = Object.keys(serverStats);
+      for (var i = 0; i < sKeys.length; i++) {
+        var k = sKeys[i].toLowerCase().trim();
+        var sv = serverStats[sKeys[i]];
+        if (!sv) continue;
+        var lc = localMap[k];
+        if (!lc) {
+          localMap[k] = {
+            kelime: sv.kelime || k,
+            seviye: sv.seviye || "",
+            anlam: sv.anlam || "",
+            mistakes: Number(sv.mistakes) || 0,
+            correct: Number(sv.correct) || 0,
+            lastPractice: sv.lastPractice || ""
+          };
+          degisti = true;
+        } else {
+          var sM = Number(sv.mistakes) || 0;
+          var sC = Number(sv.correct) || 0;
+          var lM = Number(lc.mistakes) || 0;
+          var lC = Number(lc.correct) || 0;
+          if (sM > lM || sC > lC) {
+            lc.mistakes = Math.max(lM, sM);
+            lc.correct = Math.max(lC, sC);
+            if (sv.lastPractice && (!lc.lastPractice || sv.lastPractice > lc.lastPractice)) {
+              lc.lastPractice = sv.lastPractice;
+            }
+            degisti = true;
+          } else if (lM > sM || lC > sC) {
+            yerelDahaIleri = true;
+          }
+        }
+      }
+
+      var lKeys = Object.keys(localMap);
+      for (var j = 0; j < lKeys.length; j++) {
+        if (!serverStats[lKeys[j]]) {
+          yerelDahaIleri = true;
+        }
+      }
+
+      if (degisti) {
+        istatistikMapKaydet(localMap);
+        istatistikTablosuCiz();
+      }
+      if (yerelDahaIleri) {
+        istatistikleriSunucuyaSenkronizeEt(false);
+      }
+    }
+
+    function istatistikleriSunucuyaSenkronizeEt(bildirimli) {
+      if (!APPS_SCRIPT_URL) return;
+      var localMap = istatistikMapAl();
+      for (var i = 0; i < TUM_KELIMELER.length; i++) {
+        var w = TUM_KELIMELER[i];
+        var k = (w.kelime || "").toLowerCase().trim();
+        if (localMap[k]) {
+          localMap[k].kelime = w.kelime;
+          localMap[k].seviye = w.seviye || localMap[k].seviye || "";
+          localMap[k].anlam = w.anlam || localMap[k].anlam || "";
+        }
+      }
+      if (bildirimli) {
+        bildirimGoster("📊 Syncing Mistake Stats to Google Sheets...");
+      }
+      fetch(APPS_SCRIPT_URL, {
+        method: "POST",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify({ action: "syncStats", stats: localMap })
+      })
+        .then(function(r) { return r.json(); })
+        .then(function(res) {
+          if (res && res.ok && res.stats) {
+            istatistikMapKaydet(res.stats);
+            istatistikTablosuCiz();
+            if (bildirimli) {
+              bildirimGoster("✅ 'Mistake Stats' tab updated in Google Sheets!");
+            }
+          }
+        })
+        .catch(function() {});
+    }
+
+    function alistirmaSonucuKaydet(kelime, dogruMu, mod) {
+      var temiz = (kelime || "").toString().trim();
+      if (!temiz) return;
+      var key = temiz.toLowerCase();
+      var hedef = null;
+      for (var i = 0; i < TUM_KELIMELER.length; i++) {
+        if ((TUM_KELIMELER[i].kelime || "").toLowerCase().trim() === key) {
+          hedef = TUM_KELIMELER[i];
+          break;
+        }
+      }
+      var map = istatistikMapAl();
+      var kayit = map[key] || {
+        kelime: hedef ? hedef.kelime : temiz,
+        seviye: hedef ? hedef.seviye : "",
+        anlam: hedef ? hedef.anlam : "",
+        mistakes: 0,
+        correct: 0,
+        lastPractice: ""
+      };
+      if (hedef) {
+        kayit.kelime = hedef.kelime;
+        kayit.seviye = hedef.seviye || kayit.seviye;
+        kayit.anlam = hedef.anlam || kayit.anlam;
+      }
+      if (dogruMu) {
+        kayit.correct = (Number(kayit.correct) || 0) + 1;
+      } else {
+        kayit.mistakes = (Number(kayit.mistakes) || 0) + 1;
+      }
+      var simdi = new Date();
+      var pad = function(n) { return n < 10 ? "0" + n : "" + n; };
+      kayit.lastPractice =
+        simdi.getFullYear() + "-" + pad(simdi.getMonth() + 1) + "-" + pad(simdi.getDate()) +
+        " " + pad(simdi.getHours()) + ":" + pad(simdi.getMinutes());
+      map[key] = kayit;
+      istatistikMapKaydet(map);
+      istatistikTablosuCiz();
+
+      if (APPS_SCRIPT_URL) {
+        fetch(APPS_SCRIPT_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({
+            action: "recordAttempt",
+            word: kayit.kelime,
+            isCorrect: !!dogruMu,
+            mode: mod || AKTIF_MOD,
+            level: kayit.seviye,
+            meaning: kayit.anlam
+          })
+        })
+          .then(function(r) { return r.json(); })
+          .then(function(res) {
+            if (res && res.ok && res.stats) {
+              sunucuIstatistikleriniBirlestir(res.stats);
+            }
+          })
+          .catch(function() {});
+      }
+    }
+
+    function istatistikTablosuCiz() {
+      var map = istatistikMapAl();
+      var kelimeMap = {};
+      for (var i = 0; i < TUM_KELIMELER.length; i++) {
+        var w = TUM_KELIMELER[i];
+        kelimeMap[(w.kelime || "").toLowerCase().trim()] = w;
+      }
+
+      var qEl = document.getElementById("searchInput");
+      var lvlEl = document.getElementById("levelFilter");
+      var q = qEl ? (qEl.value || "").toLowerCase().trim() : "";
+      var lvl = lvlEl ? lvlEl.value : "ALL";
+
+      var liste = [];
+      var topHata = 0;
+      var topDogru = 0;
+      var hataliKelimeSayisi = 0;
+      var maxMistakes = 1;
+
+      var keys = Object.keys(map);
+      for (var k = 0; k < keys.length; k++) {
+        var st = map[keys[k]];
+        if (!st) continue;
+        var m = Number(st.mistakes) || 0;
+        var c = Number(st.correct) || 0;
+        if (m + c <= 0) continue;
+
+        topHata += m;
+        topDogru += c;
+        if (m > 0) hataliKelimeSayisi++;
+        if (m > maxMistakes) maxMistakes = m;
+
+        var ref = kelimeMap[keys[k]];
+        var gosterKelime = ref ? ref.kelime : (st.kelime || keys[k]);
+        var gosterSeviye = ref ? ref.seviye : (st.seviye || "-");
+        var gosterAnlam = ref ? ref.anlam : (st.anlam || "");
+        var gosterOrnek = ref ? ref.ornek : "";
+
+        if (lvl !== "ALL" && gosterSeviye !== lvl) continue;
+        if (q && (gosterKelime + " " + gosterAnlam + " " + gosterOrnek).toLowerCase().indexOf(q) === -1) continue;
+
+        var total = m + c;
+        var errRate = total > 0 ? Math.round((m / total) * 100) : 0;
+
+        liste.push({
+          kelime: gosterKelime,
+          seviye: gosterSeviye,
+          anlam: gosterAnlam,
+          ornek: gosterOrnek,
+          mistakes: m,
+          correct: c,
+          total: total,
+          errRate: errRate,
+          lastPractice: st.lastPractice || "-"
+        });
+      }
+
+      liste.sort(function(a, b) {
+        if (b.mistakes !== a.mistakes) return b.mistakes - a.mistakes;
+        if (b.errRate !== a.errRate) return b.errRate - a.errRate;
+        if (b.total !== a.total) return b.total - a.total;
+        return a.kelime.localeCompare(b.kelime);
+      });
+
+      var topDeneme = topHata + topDogru;
+      var basariOrani = topDeneme > 0 ? Math.round((topDogru / topDeneme) * 100) + "%" : "—";
+
+      var elAttempts = document.getElementById("kpiTotalAttempts");
+      var elErr = document.getElementById("kpiTotalMistakes");
+      var elCorr = document.getElementById("kpiTotalCorrect");
+      var elAcc = document.getElementById("kpiAccuracy");
+      if (elAttempts) elAttempts.innerText = "Total Exercises: " + topDeneme + " (" + keys.length + " words)";
+      if (elErr) elErr.innerText = "❌ Total Mistakes: " + topHata + " (" + hataliKelimeSayisi + " words)";
+      if (elCorr) elCorr.innerText = "✅ Total Correct: " + topDogru;
+      if (elAcc) elAcc.innerText = "🎯 Accuracy: " + basariOrani;
+
+      var tabStatsBtn = document.getElementById("tabBtn-stats");
+      if (tabStatsBtn) {
+        tabStatsBtn.innerText = topHata > 0 ? "📊 Mistake Stats (" + topHata + ")" : "📊 Mistake Stats";
+      }
+
+      var tbody = document.getElementById("statsBody");
+      if (!tbody) return;
+
+      if (!liste.length) {
+        tbody.innerHTML =
+          '<tr><td colspan="10" class="center" style="padding:24px;color:#64748b;">' +
+            'Henüz Quiz, Match, Cloze veya Listen alıştırma kaydı yok. Alıştırma yaptıkça en çok hata yapılan kelimeler burada ve Google Sheets <b>Mistake Stats</b> sekmesinde bar grafiğiyle sıralanır.' +
+          '</td></tr>';
+        return;
+      }
+
+      var rowsHtml = [];
+      for (var r = 0; r < liste.length; r++) {
+        var it = liste[r];
+        var barPct = it.mistakes > 0 ? Math.max(6, Math.round((it.mistakes / maxMistakes) * 100)) : 0;
+        var barColor = it.mistakes === 0
+          ? "#22c55e"
+          : (it.errRate >= 60 ? "linear-gradient(90deg, #ef4444, #b91c1c)" : "linear-gradient(90deg, #f97316, #ea580c)");
+
+        rowsHtml.push(
+          '<tr>' +
+            '<td class="col-row">' + (r + 1) + '</td>' +
+            '<td class="col-lvl">' + escHtml(it.seviye) + '</td>' +
+            '<td class="col-word" onclick="kelimeOku(\'' + escJs(it.kelime) + '\', this)">' +
+              escHtml(it.kelime) +
+              (it.ornek ? '<div class="word-hover-ex">' + ornekBicimlendir(it.ornek) + '</div>' : '') +
+            '</td>' +
+            '<td class="col-meaning">' + escHtml(it.anlam) + '</td>' +
+            '<td class="center"><span class="err-count-pill">❌ ' + it.mistakes + '</span></td>' +
+            '<td class="center"><span class="corr-count-pill">✅ ' + it.correct + '</span></td>' +
+            '<td class="center" style="font-weight:700;color:#334155;">' + it.total + '</td>' +
+            '<td class="center" style="font-weight:700;color:' + (it.errRate >= 50 ? '#b91c1c' : '#334155') + ';">' + it.errRate + '%</td>' +
+            '<td>' +
+              '<div class="err-bar-wrap">' +
+                '<div class="err-bar-track">' +
+                  '<div class="err-bar-fill" style="width:' + barPct + '%;background:' + barColor + ';"></div>' +
+                '</div>' +
+                '<span class="err-bar-pct">' + it.mistakes + ' err (' + it.errRate + '%)</span>' +
+              '</div>' +
+            '</td>' +
+            '<td class="col-date">' + escHtml(it.lastPractice) + '</td>' +
+          '</tr>'
+        );
+      }
+      tbody.innerHTML = rowsHtml.join("");
     }
 
     var FC_INDEX = 0;
@@ -1349,6 +1760,8 @@
         document.getElementById("sheet1View").style.display = AKTIF_SEKME === "sheet1" ? "block" : "none";
         document.getElementById("poolView").style.display = AKTIF_SEKME === "pool" ? "block" : "none";
         document.getElementById("flashcardView").style.display = AKTIF_SEKME === "flashcards" ? "block" : "none";
+        var stView = document.getElementById("statsView");
+        if (stView) stView.style.display = AKTIF_SEKME === "stats" ? "block" : "none";
         sekmeButonlariniGuncelle();
       } catch (e) {}
     }
@@ -1358,6 +1771,10 @@
       var m = AKTIF_MOD;
       document.getElementById("tabBtn-sheet1").classList.toggle("active", s === "sheet1");
       document.getElementById("tabBtn-pool").classList.toggle("active", s === "pool");
+      var tabSt = document.getElementById("tabBtn-stats");
+      if (tabSt) tabSt.classList.toggle("active", s === "stats");
+      var topSt = document.getElementById("topBtn-stats");
+      if (topSt) topSt.classList.toggle("active-mode", s === "stats");
       var studyTabs = ["flashcards", "cloze", "quiz", "listen", "match"];
       for (var i = 0; i < studyTabs.length; i++) {
         var tName = studyTabs[i];
@@ -1374,6 +1791,8 @@
       document.getElementById("sheet1View").style.display = s === "sheet1" ? "block" : "none";
       document.getElementById("poolView").style.display = s === "pool" ? "block" : "none";
       document.getElementById("flashcardView").style.display = s === "flashcards" ? "block" : "none";
+      var stView = document.getElementById("statsView");
+      if (stView) stView.style.display = s === "stats" ? "block" : "none";
       FC_FLIPPED = false;
       tercihleriKaydet();
       tabloyuCiz();
@@ -1391,6 +1810,8 @@
       document.getElementById("sheet1View").style.display = "none";
       document.getElementById("poolView").style.display = "none";
       document.getElementById("flashcardView").style.display = "block";
+      var stView = document.getElementById("statsView");
+      if (stView) stView.style.display = "none";
       tercihleriKaydet();
       tabloyuCiz();
       if (mod === "listen") {
@@ -1455,6 +1876,11 @@
           '</button>'
         );
       }
+      html.push(
+        '<button class="mode-btn" onclick="sekmeDegistir(\'stats\')" title="View Mistake & Practice Statistics">' +
+          '📊 Mistake Stats' +
+        '</button>'
+      );
       html.push('</div>');
       return html.join("");
     }
@@ -1696,6 +2122,7 @@
           blankEl.classList.add("filled");
         }
         kelimeOku(dogru);
+        alistirmaSonucuKaydet(dogru, true, "Cloze");
         var mezun = card ? srsArtir(card) : false;
         setTimeout(function() {
           SECENEKLER_CACHE = { key: "", list: [] };
@@ -1704,7 +2131,8 @@
         }, 850);
       } else {
         btnEl.classList.add("wrong");
-        bildirimGoster("❌ Try again!");
+        alistirmaSonucuKaydet(dogru, false, "Cloze");
+        bildirimGoster("❌ Try again! (Mistake recorded for " + dogru + ")");
       }
     }
 
@@ -1722,6 +2150,7 @@
           blankEl.classList.add("filled");
         }
         kelimeOku(dogru);
+        alistirmaSonucuKaydet(dogru, true, "Cloze");
         var mezun = card ? srsArtir(card) : false;
         setTimeout(function() {
           SECENEKLER_CACHE = { key: "", list: [] };
@@ -1730,6 +2159,7 @@
         }, 850);
       } else {
         inp.style.borderColor = "#ef4444";
+        alistirmaSonucuKaydet(dogru, false, "Cloze");
         bildirimGoster("❌ Check spelling! Hint: starts with '" + dogru.slice(0, 2) + "...'");
       }
     }
@@ -1791,6 +2221,7 @@
       if (secilen.toLowerCase() === dogru.toLowerCase()) {
         btnEl.classList.add("correct");
         kelimeOku(dogru);
+        alistirmaSonucuKaydet(dogru, true, "Quiz");
         var fb = document.getElementById("quizFeedbackBox");
         if (fb && card && card.ornek) {
           fb.style.display = "block";
@@ -1804,7 +2235,8 @@
         }, 950);
       } else {
         btnEl.classList.add("wrong");
-        bildirimGoster("❌ Not quite, try again!");
+        alistirmaSonucuKaydet(dogru, false, "Quiz");
+        bildirimGoster("❌ Not quite, try again! (Mistake recorded)");
       }
     }
 
@@ -1817,6 +2249,7 @@
         inp.style.borderColor = "#16a34a";
         inp.style.background = "#dcfce7";
         kelimeOku(dogru);
+        alistirmaSonucuKaydet(dogru, true, "Quiz");
         var mezun = card ? srsArtir(card) : false;
         setTimeout(function() {
           SECENEKLER_CACHE = { key: "", list: [] };
@@ -1825,6 +2258,7 @@
         }, 850);
       } else {
         inp.style.borderColor = "#ef4444";
+        alistirmaSonucuKaydet(dogru, false, "Quiz");
         bildirimGoster("❌ Hint: starts with '" + dogru.slice(0, 2) + "...' (" + dogru.length + " letters)");
       }
     }
@@ -1889,6 +2323,7 @@
           rev.innerHTML = "✅ <strong style='color:#0f172a;font-size:16px;'>" + escHtml(card.kelime) + "</strong> — " + escHtml(card.anlam);
         }
         kelimeOku(dogruKelime);
+        alistirmaSonucuKaydet(dogruKelime, true, "Listen");
         var mezun = card ? srsArtir(card) : false;
         setTimeout(function() {
           SECENEKLER_CACHE = { key: "", list: [] };
@@ -1903,8 +2338,9 @@
         }, 950);
       } else {
         btnEl.classList.add("wrong");
+        alistirmaSonucuKaydet(dogruKelime, false, "Listen");
         kelimeOku(dogruKelime);
-        bildirimGoster("❌ Listen again!");
+        bildirimGoster("❌ Listen again! (Mistake recorded)");
       }
     }
 
@@ -1921,6 +2357,7 @@
           rev.innerHTML = "✅ <strong style='color:#0f172a;font-size:16px;'>" + escHtml(card.kelime) + "</strong> — " + escHtml(card.anlam);
         }
         kelimeOku(dogru);
+        alistirmaSonucuKaydet(dogru, true, "Listen");
         var mezun = card ? srsArtir(card) : false;
         setTimeout(function() {
           SECENEKLER_CACHE = { key: "", list: [] };
@@ -1935,6 +2372,7 @@
         }, 950);
       } else {
         inp.style.borderColor = "#ef4444";
+        alistirmaSonucuKaydet(dogru, false, "Listen");
         kelimeOku(dogru);
         bildirimGoster("❌ Hint: starts with '" + dogru.slice(0, 2) + "...'");
       }
@@ -2037,17 +2475,19 @@
       if (MATCH_DURUM.seciliEn && MATCH_DURUM.seciliTr) {
         var en = MATCH_DURUM.seciliEn;
         var tr = MATCH_DURUM.seciliTr;
+        var cardEn = TUM_KELIMELER.filter(function(w){ return w.kelime.toLowerCase() === en; })[0];
         if (en === tr) {
           MATCH_DURUM.eslesenler[en] = true;
           MATCH_DURUM.seciliEn = null;
           MATCH_DURUM.seciliTr = null;
-          var card = TUM_KELIMELER.filter(function(w){ return w.kelime.toLowerCase() === en; })[0];
-          if (card) srsArtir(card);
+          alistirmaSonucuKaydet(cardEn ? cardEn.kelime : en, true, "Match");
+          if (cardEn) srsArtir(cardEn);
           tabloyuCiz();
         } else {
           MATCH_DURUM.seciliEn = null;
           MATCH_DURUM.seciliTr = null;
-          bildirimGoster("❌ Not a match, try again!");
+          alistirmaSonucuKaydet(cardEn ? cardEn.kelime : en, false, "Match");
+          bildirimGoster("❌ Not a match! (Mistake recorded for " + (cardEn ? cardEn.kelime : en) + ")");
           tabloyuCiz();
         }
       } else {
@@ -2220,6 +2660,7 @@
       document.getElementById("poolBody").innerHTML = pRows.join("") || '<tr><td colspan="7" class="center" style="padding:14px;">No words in pool.</td></tr>';
 
       fcCiz(poolList);
+      istatistikTablosuCiz();
     }
 
     function kutucukDegisti(row, tip, isChecked) {
