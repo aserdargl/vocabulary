@@ -710,6 +710,8 @@
     .match-item.selected { border: 2px solid #135c37; background: #f0fdf4; color: #135c37; }
     .match-item.matched { background: #dcfce7; border-color: #86efac; color: #15803d; opacity: 0.55; pointer-events: none; text-decoration: line-through; }
     .match-item.wrong { background: #fee2e2; border-color: #f87171; }
+    .btn.active-mode { background: #135c37; color: #ffffff; border-color: #0e4629; }
+    .btn.active-mode:hover { background: #0e4629; }
 
     @media (max-width: 900px) {
       .pool-layout { grid-template-columns: 1fr; }
@@ -737,8 +739,8 @@
         <span class="font-val" id="fontValLabel">13px</span>
         <button class="font-btn" onclick="yaziBoyutuDegistir(1)">A+</button>
       </div>
-      <input type="text" id="searchInput" class="inp" placeholder="Search (word / meaning)..." style="width:160px;" oninput="tabloyuCiz()">
-      <select id="levelFilter" class="inp" onchange="tabloyuCiz()">
+      <input type="text" id="searchInput" class="inp" placeholder="Search (word / meaning)..." style="width:160px;" oninput="tercihleriKaydet(); tabloyuCiz();">
+      <select id="levelFilter" class="inp" onchange="tercihleriKaydet(); tabloyuCiz();">
         <option value="ALL">Level: All</option>
         <option value="A1">A1</option>
         <option value="A2">A2</option>
@@ -747,25 +749,25 @@
         <option value="C1">C1</option>
         <option value="C2">C2</option>
       </select>
-      <button class="btn" onclick="calismaModuAc('flashcards')" title="3D Flashcards + 3-Step Spaced Repetition">🃏 Flashcards</button>
-      <button class="btn" onclick="calismaModuAc('cloze')" title="Fill in the blank in Example Sentences">📝 Cloze</button>
-      <button class="btn" onclick="calismaModuAc('quiz')" title="Active Recall (Turkish -> English Quiz & Typing)">🎯 Quiz</button>
-      <button class="btn" onclick="calismaModuAc('listen')" title="Listen to audio & find/type the word">🎧 Listen</button>
-      <button class="btn" onclick="calismaModuAc('match')" title="Match 5 English words with Turkish meanings">🧩 Match</button>
-      <button class="btn btn-green" onclick="ekleBarAcKapat()">+ Add Word</button>
+      <button class="btn" id="topBtn-flashcards" onclick="calismaModuAc('flashcards')" title="3D Flashcards + 3-Step Spaced Repetition">🃏 Flashcards</button>
+      <button class="btn" id="topBtn-cloze" onclick="calismaModuAc('cloze')" title="Fill in the blank in Example Sentences">📝 Cloze</button>
+      <button class="btn" id="topBtn-quiz" onclick="calismaModuAc('quiz')" title="Active Recall (Turkish -> English Quiz & Typing)">🎯 Quiz</button>
+      <button class="btn" id="topBtn-listen" onclick="calismaModuAc('listen')" title="Listen to audio & find/type the word">🎧 Listen</button>
+      <button class="btn" id="topBtn-match" onclick="calismaModuAc('match')" title="Match 5 English words with Turkish meanings">🧩 Match</button>
+      <button class="btn btn-green" id="addWordToggleBtn" onclick="ekleBarAcKapat()">+ Add Word</button>
       <button class="btn" onclick="verileriYukle(true)" title="Sync latest words from Google Sheet">🔄</button>
     </div>
   </div>
 
   <div class="add-bar" id="addBar">
-    <select id="inSeviye" class="inp">
+    <select id="inSeviye" class="inp" onchange="tercihleriKaydet()">
       <option value="A2">A2</option>
       <option value="B1">B1</option>
       <option value="B2" selected>B2</option>
       <option value="C1">C1</option>
       <option value="C2">C2</option>
     </select>
-    <select id="inTur" class="inp">
+    <select id="inTur" class="inp" onchange="tercihleriKaydet()">
       <option value="Adjective">Adjective</option>
       <option value="Verb">Verb</option>
       <option value="Noun">Noun</option>
@@ -920,6 +922,7 @@
       YAZI_BOYUTU = Math.max(9, Math.min(20, +(YAZI_BOYUTU + delta * 0.5).toFixed(1)));
       yaziBoyutuUygula();
       try { localStorage.setItem("kelime_tablo_fs", YAZI_BOYUTU); } catch (e) {}
+      if (typeof tercihleriKaydet === "function") tercihleriKaydet();
     }
 
     function sesDurumuUygula() {
@@ -943,6 +946,7 @@
       SES_ACIK = !SES_ACIK;
       sesDurumuUygula();
       try { localStorage.setItem("kelime_tablo_ses", SES_ACIK ? "1" : "0"); } catch (e) {}
+      if (typeof tercihleriKaydet === "function") tercihleriKaydet();
       bildirimGoster(SES_ACIK ? "🔊 Audio On" : "🔇 Audio Off");
     }
 
@@ -1246,6 +1250,75 @@
       }
     }
 
+    function tercihleriKaydet() {
+      try {
+        var addBarEl = document.getElementById("addBar");
+        var lvlEl = document.getElementById("levelFilter");
+        var qEl = document.getElementById("searchInput");
+        var inSevEl = document.getElementById("inSeviye");
+        var inTurEl = document.getElementById("inTur");
+        var prefs = {
+          aktifSekme: AKTIF_SEKME,
+          aktifMod: AKTIF_MOD,
+          fcIndex: FC_INDEX,
+          fcShuffledKeys: FC_SHUFFLED_KEYS,
+          fcAltKartAcik: !!window.FC_ALT_KART_ACIK,
+          yaziBoyutu: YAZI_BOYUTU,
+          sesAcik: SES_ACIK,
+          levelFilter: lvlEl ? lvlEl.value : "ALL",
+          searchQuery: qEl ? qEl.value : "",
+          addBarOpen: addBarEl ? addBarEl.classList.contains("open") : false,
+          inSeviye: inSevEl ? inSevEl.value : "B2",
+          inTur: inTurEl ? inTurEl.value : "Adjective"
+        };
+        localStorage.setItem("kelime_ui_tercihler_v1", JSON.stringify(prefs));
+      } catch (e) {}
+    }
+
+    function tercihleriYukleVeUygula() {
+      try {
+        var raw = localStorage.getItem("kelime_ui_tercihler_v1");
+        if (!raw) return;
+        var p = JSON.parse(raw);
+        if (!p) return;
+        if (typeof p.yaziBoyutu === "number" && p.yaziBoyutu >= 9 && p.yaziBoyutu <= 20) {
+          YAZI_BOYUTU = p.yaziBoyutu;
+          yaziBoyutuUygula();
+        }
+        if (typeof p.sesAcik === "boolean") {
+          SES_ACIK = p.sesAcik;
+          sesDurumuUygula();
+        }
+        if (typeof p.fcAltKartAcik === "boolean") {
+          window.FC_ALT_KART_ACIK = p.fcAltKartAcik;
+        }
+        if (typeof p.fcIndex === "number" && p.fcIndex >= 0) {
+          FC_INDEX = p.fcIndex;
+        }
+        if (Array.isArray(p.fcShuffledKeys) && p.fcShuffledKeys.length > 0) {
+          FC_SHUFFLED_KEYS = p.fcShuffledKeys;
+        }
+        var lvlEl = document.getElementById("levelFilter");
+        if (lvlEl && p.levelFilter) lvlEl.value = p.levelFilter;
+        var qEl = document.getElementById("searchInput");
+        if (qEl && typeof p.searchQuery === "string") qEl.value = p.searchQuery;
+        var inSevEl = document.getElementById("inSeviye");
+        if (inSevEl && p.inSeviye) inSevEl.value = p.inSeviye;
+        var inTurEl = document.getElementById("inTur");
+        if (inTurEl && p.inTur) inTurEl.value = p.inTur;
+        var addBarEl = document.getElementById("addBar");
+        if (addBarEl && p.addBarOpen) addBarEl.classList.add("open");
+
+        if (p.aktifMod) AKTIF_MOD = p.aktifMod;
+        if (p.aktifSekme) AKTIF_SEKME = p.aktifSekme;
+
+        document.getElementById("sheet1View").style.display = AKTIF_SEKME === "sheet1" ? "block" : "none";
+        document.getElementById("poolView").style.display = AKTIF_SEKME === "pool" ? "block" : "none";
+        document.getElementById("flashcardView").style.display = AKTIF_SEKME === "flashcards" ? "block" : "none";
+        sekmeButonlariniGuncelle();
+      } catch (e) {}
+    }
+
     function sekmeButonlariniGuncelle() {
       var s = AKTIF_SEKME;
       var m = AKTIF_MOD;
@@ -1256,6 +1329,8 @@
         var tName = studyTabs[i];
         var el = document.getElementById("tabBtn-" + tName);
         if (el) el.classList.toggle("active", s === "flashcards" && m === tName);
+        var topEl = document.getElementById("topBtn-" + tName);
+        if (topEl) topEl.classList.toggle("active-mode", s === "flashcards" && m === tName);
       }
     }
 
@@ -1266,6 +1341,7 @@
       document.getElementById("poolView").style.display = s === "pool" ? "block" : "none";
       document.getElementById("flashcardView").style.display = s === "flashcards" ? "block" : "none";
       FC_FLIPPED = false;
+      tercihleriKaydet();
       tabloyuCiz();
     }
 
@@ -1281,6 +1357,7 @@
       document.getElementById("sheet1View").style.display = "none";
       document.getElementById("poolView").style.display = "none";
       document.getElementById("flashcardView").style.display = "block";
+      tercihleriKaydet();
       tabloyuCiz();
       if (mod === "listen") {
         setTimeout(function() {
@@ -1516,6 +1593,7 @@
     function fcAltKartAcKapat() {
       window.FC_ALT_KART_ACIK = !window.FC_ALT_KART_ACIK;
       try { localStorage.setItem("kelime_fc_alt_kart", window.FC_ALT_KART_ACIK ? "1" : "0"); } catch (e) {}
+      tercihleriKaydet();
       tabloyuCiz();
       bildirimGoster(window.FC_ALT_KART_ACIK ? "📖 Alt açıklama kartı açıldı" : "📖 Alt açıklama kartı kapatıldı");
     }
@@ -1946,6 +2024,7 @@
     function matchYeniSet() {
       FC_INDEX += 5;
       MATCH_DURUM = { seciliEn: null, seciliTr: null, eslesenler: {}, trSira: [], keySet: "" };
+      tercihleriKaydet();
       tabloyuCiz();
     }
 
@@ -1955,6 +2034,7 @@
       FC_FLIPPED = false;
       var mezun = srsArtir(card);
       if (!mezun) FC_INDEX++;
+      tercihleriKaydet();
       tabloyuCiz();
     }
 
@@ -1973,6 +2053,7 @@
       FC_INDEX += delta;
       FC_FLIPPED = false;
       SECENEKLER_CACHE = { key: "", list: [] };
+      tercihleriKaydet();
       tabloyuCiz();
       if (AKTIF_MOD === "flashcards" || AKTIF_MOD === "listen") {
         var poolList = aktifHavuzuGetir();
@@ -1997,6 +2078,7 @@
       FC_FLIPPED = false;
       SECENEKLER_CACHE = { key: "", list: [] };
       MATCH_DURUM = { seciliEn: null, seciliTr: null, eslesenler: {}, trSira: [], keySet: "" };
+      tercihleriKaydet();
       tabloyuCiz();
       bildirimGoster("🔀 Shuffled");
     }
@@ -2154,6 +2236,7 @@
 
     function ekleBarAcKapat() {
       document.getElementById("addBar").classList.toggle("open");
+      tercihleriKaydet();
     }
 
     function yeniKelimeKaydet() {
@@ -2215,7 +2298,8 @@
       }
     }
 
-    // Initial immediate render from fallback words, then live sync from Google Sheet
+    // Restore all saved button/tab/filter preferences, then render and live sync from Google Sheet
+    tercihleriYukleVeUygula();
     listeyiBirlestirVeHazirla(FALLBACK_WORDS);
     verileriYukle(false);
   </script>
