@@ -570,9 +570,125 @@
       color: #64748b;
       background: #f8fafc;
     }
+    .study-modes-bar {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+    }
+    .mode-btn {
+      border: 1px solid #cbd5e1;
+      background: #f8fafc;
+      color: #334155;
+      border-radius: 6px;
+      padding: 0 11px;
+      height: 30px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.15s;
+    }
+    .mode-btn:hover { background: #e2e8f0; }
+    .mode-btn.active {
+      background: #135c37;
+      color: #ffffff;
+      border-color: #135c37;
+    }
+    .srs-badge {
+      background: #fef9c3;
+      color: #854d0e;
+      border: 1px solid #fde047;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 4px;
+    }
+    .study-box {
+      border: 1px solid #cbd5e1;
+      border-radius: 10px;
+      background: #ffffff;
+      box-shadow: 0 4px 14px rgba(15, 23, 42, 0.06);
+      padding: 18px 20px;
+    }
+    .cloze-sentence {
+      font-size: calc(var(--fs) * 1.35);
+      font-weight: 700;
+      color: #0f172a;
+      line-height: 1.5;
+      margin: 14px 0 8px;
+      text-align: center;
+    }
+    .cloze-blank {
+      display: inline-block;
+      min-width: 90px;
+      border-bottom: 3px solid #135c37;
+      color: #135c37;
+      padding: 0 6px;
+      margin: 0 3px;
+    }
+    .choice-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 14px;
+    }
+    .choice-btn {
+      border: 1px solid #cbd5e1;
+      background: #f8fafc;
+      color: #1e293b;
+      border-radius: 7px;
+      padding: 10px 12px;
+      font-size: calc(var(--fs) * 1.05);
+      font-weight: 600;
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.12s;
+    }
+    .choice-btn:hover { background: #f1f5f9; border-color: #94a3b8; }
+    .choice-btn.correct { background: #dcfce7 !important; border-color: #16a34a !important; color: #14532d !important; }
+    .choice-btn.wrong { background: #fee2e2 !important; border-color: #ef4444 !important; color: #7f1d1d !important; }
+    .type-row {
+      display: flex;
+      gap: 6px;
+      margin-top: 12px;
+      justify-content: center;
+    }
+    .match-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .match-col {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+    .match-item {
+      border: 1px solid #cbd5e1;
+      background: #ffffff;
+      color: #1e293b;
+      border-radius: 7px;
+      padding: 10px 12px;
+      font-size: calc(var(--fs) * 1.02);
+      font-weight: 600;
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.12s;
+    }
+    .match-item:hover { background: #f8fafc; }
+    .match-item.selected { border: 2px solid #135c37; background: #f0fdf4; color: #135c37; }
+    .match-item.matched { background: #dcfce7; border-color: #86efac; color: #15803d; opacity: 0.55; pointer-events: none; text-decoration: line-through; }
+    .match-item.wrong { background: #fee2e2; border-color: #f87171; }
 
     @media (max-width: 900px) {
       .pool-layout { grid-template-columns: 1fr; }
+      .choice-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -606,7 +722,11 @@
         <option value="C1">C1</option>
         <option value="C2">C2</option>
       </select>
-      <button class="btn" onclick="sekmeDegistir('flashcards')" title="Study Unknown Words Pool with Flashcards">🃏 Flashcards</button>
+      <button class="btn" onclick="calismaModuAc('flashcards')" title="3D Flashcards + 3-Step Spaced Repetition">🃏 Flashcards</button>
+      <button class="btn" onclick="calismaModuAc('cloze')" title="Fill in the blank in Example Sentences">📝 Cloze</button>
+      <button class="btn" onclick="calismaModuAc('quiz')" title="Active Recall (Turkish -> English Quiz & Typing)">🎯 Quiz</button>
+      <button class="btn" onclick="calismaModuAc('listen')" title="Listen to audio & find/type the word">🎧 Listen</button>
+      <button class="btn" onclick="calismaModuAc('match')" title="Match 5 English words with Turkish meanings">🧩 Match</button>
       <button class="btn btn-green" onclick="ekleBarAcKapat()">+ Add Word</button>
       <button class="btn" onclick="verileriYukle(true)" title="Sync latest words from Google Sheet">🔄</button>
     </div>
@@ -689,7 +809,11 @@
     <div class="bottom-tabs">
       <button class="sheet-tab active" id="tabBtn-sheet1" onclick="sekmeDegistir('sheet1')">Sheet1</button>
       <button class="sheet-tab" id="tabBtn-pool" onclick="sekmeDegistir('pool')">Unknown Words Pool</button>
-      <button class="sheet-tab" id="tabBtn-flashcards" onclick="sekmeDegistir('flashcards')">🃏 Flashcards</button>
+      <button class="sheet-tab" id="tabBtn-flashcards" onclick="calismaModuAc('flashcards')">🃏 Flashcards</button>
+      <button class="sheet-tab" id="tabBtn-cloze" onclick="calismaModuAc('cloze')">📝 Cloze</button>
+      <button class="sheet-tab" id="tabBtn-quiz" onclick="calismaModuAc('quiz')">🎯 Quiz</button>
+      <button class="sheet-tab" id="tabBtn-listen" onclick="calismaModuAc('listen')">🎧 Listen</button>
+      <button class="sheet-tab" id="tabBtn-match" onclick="calismaModuAc('match')">🧩 Match</button>
     </div>
     <div class="bottom-info">
       Personal progress is saved in your browser
@@ -1055,18 +1179,100 @@
     var FC_INDEX = 0;
     var FC_FLIPPED = false;
     var FC_SHUFFLED_KEYS = null;
+    var AKTIF_MOD = "flashcards";
+    var SECENEKLER_CACHE = { key: "", list: [] };
+    var MATCH_DURUM = { seciliEn: null, seciliTr: null, eslesenler: {}, trSira: [], keySet: "" };
+
+    function srsMapAl() {
+      try {
+        return JSON.parse(localStorage.getItem("kelime_srs_sayac_v1") || "{}");
+      } catch (e) {
+        return {};
+      }
+    }
+
+    function srsGetir(kelime) {
+      var map = srsMapAl();
+      var k = (kelime || "").toString().trim().toLowerCase();
+      return map[k] || 0;
+    }
+
+    function srsArtir(card) {
+      if (!card || !card.kelime) return false;
+      var map = srsMapAl();
+      var k = card.kelime.toString().trim().toLowerCase();
+      var yeni = (map[k] || 0) + 1;
+      if (yeni >= 3) {
+        map[k] = 0;
+        try { localStorage.setItem("kelime_srs_sayac_v1", JSON.stringify(map)); } catch (e) {}
+        kutucukDegisti(card.row, "biliyorum", true);
+        bildirimGoster("🎉 Mastered (3/3): " + card.kelime + " → Known!");
+        return true;
+      } else {
+        map[k] = yeni;
+        try { localStorage.setItem("kelime_srs_sayac_v1", JSON.stringify(map)); } catch (e) {}
+        bildirimGoster("⭐ Progress (" + yeni + "/3): " + card.kelime);
+        return false;
+      }
+    }
+
+    function sekmeButonlariniGuncelle() {
+      var s = AKTIF_SEKME;
+      var m = AKTIF_MOD;
+      document.getElementById("tabBtn-sheet1").classList.toggle("active", s === "sheet1");
+      document.getElementById("tabBtn-pool").classList.toggle("active", s === "pool");
+      var studyTabs = ["flashcards", "cloze", "quiz", "listen", "match"];
+      for (var i = 0; i < studyTabs.length; i++) {
+        var tName = studyTabs[i];
+        var el = document.getElementById("tabBtn-" + tName);
+        if (el) el.classList.toggle("active", s === "flashcards" && m === tName);
+      }
+    }
 
     function sekmeDegistir(s) {
       AKTIF_SEKME = s;
-      document.getElementById("tabBtn-sheet1").classList.toggle("active", s === "sheet1");
-      document.getElementById("tabBtn-pool").classList.toggle("active", s === "pool");
-      var fcTab = document.getElementById("tabBtn-flashcards");
-      if (fcTab) fcTab.classList.toggle("active", s === "flashcards");
+      sekmeButonlariniGuncelle();
       document.getElementById("sheet1View").style.display = s === "sheet1" ? "block" : "none";
       document.getElementById("poolView").style.display = s === "pool" ? "block" : "none";
       document.getElementById("flashcardView").style.display = s === "flashcards" ? "block" : "none";
       FC_FLIPPED = false;
       tabloyuCiz();
+    }
+
+    function calismaModuAc(mod) {
+      AKTIF_MOD = mod || "flashcards";
+      AKTIF_SEKME = "flashcards";
+      FC_FLIPPED = false;
+      SECENEKLER_CACHE = { key: "", list: [] };
+      if (mod === "match") {
+        MATCH_DURUM = { seciliEn: null, seciliTr: null, eslesenler: {}, trSira: [], keySet: "" };
+      }
+      sekmeButonlariniGuncelle();
+      document.getElementById("sheet1View").style.display = "none";
+      document.getElementById("poolView").style.display = "none";
+      document.getElementById("flashcardView").style.display = "block";
+      tabloyuCiz();
+      if (mod === "listen") {
+        setTimeout(function() {
+          var poolList = aktifHavuzuGetir();
+          var deck = fcDestesiniGetir(poolList);
+          if (deck.length) {
+            var card = deck[FC_INDEX % deck.length];
+            if (card) kelimeOku(card.kelime);
+          }
+        }, 120);
+      }
+    }
+
+    function aktifHavuzuGetir() {
+      var q = (document.getElementById("searchInput").value || "").toLowerCase().trim();
+      var lvl = document.getElementById("levelFilter").value;
+      return TUM_KELIMELER.filter(function(w){
+        if (w.durum !== "bilmiyorum") return false;
+        if (lvl !== "ALL" && w.seviye !== lvl) return false;
+        if (q && (w.kelime + " " + w.anlam + " " + w.ornek).toLowerCase().indexOf(q) === -1) return false;
+        return true;
+      }).sort(function(a, b){ return (a.seviye || "").localeCompare(b.seviye || ""); });
     }
 
     function fcDestesiniGetir(poolList) {
@@ -1091,16 +1297,88 @@
       return result;
     }
 
+    function modCubuguHtml() {
+      var modes = [
+        { id: "flashcards", label: "🃏 Flashcards" },
+        { id: "cloze", label: "📝 Cloze (Boşluk Doldur)" },
+        { id: "quiz", label: "🎯 Quiz (TR → EN)" },
+        { id: "listen", label: "🎧 Listen (Dinle & Bul)" },
+        { id: "match", label: "🧩 Match (5'li Eşleştir)" }
+      ];
+      var html = ['<div class="study-modes-bar">'];
+      for (var i = 0; i < modes.length; i++) {
+        var m = modes[i];
+        html.push(
+          '<button class="mode-btn' + (AKTIF_MOD === m.id ? ' active' : '') + '" onclick="calismaModuAc(\'' + m.id + '\')">' +
+            m.label +
+          '</button>'
+        );
+      }
+      html.push('</div>');
+      return html.join("");
+    }
+
+    function secenekleriUret(dogruCard, tumHavuz) {
+      var cacheKey = AKTIF_MOD + ":" + dogruCard.kelime.toLowerCase();
+      if (SECENEKLER_CACHE.key === cacheKey && SECENEKLER_CACHE.list.length === 4) {
+        return SECENEKLER_CACHE.list;
+      }
+      var adaylar = TUM_KELIMELER.filter(function(w) {
+        return w.kelime.toLowerCase() !== dogruCard.kelime.toLowerCase();
+      });
+      for (var i = adaylar.length - 1; i > 0; i--) {
+        var r = Math.floor(Math.random() * (i + 1));
+        var tmp = adaylar[i];
+        adaylar[i] = adaylar[r];
+        adaylar[r] = tmp;
+      }
+      var secenekler = [dogruCard];
+      for (var j = 0; j < Math.min(3, adaylar.length); j++) {
+        secenekler.push(adaylar[j]);
+      }
+      for (var k = secenekler.length - 1; k > 0; k--) {
+        var rk = Math.floor(Math.random() * (k + 1));
+        var tk = secenekler[k];
+        secenekler[k] = secenekler[rk];
+        secenekler[rk] = tk;
+      }
+      SECENEKLER_CACHE = { key: cacheKey, list: secenekler };
+      return secenekler;
+    }
+
+    function ornekCumleyiAyir(ornek) {
+      var s = (ornek || "").toString().trim();
+      var m = s.match(/^(.*?)\s*\(([^)]+)\)\s*$/);
+      if (m) {
+        return { en: m[1].trim(), tr: m[2].trim() };
+      }
+      return { en: s, tr: "" };
+    }
+
+    function cumledeKelimeyiGizle(enCumle, kelime) {
+      if (!enCumle) return '<span class="cloze-blank" id="clozeBlankEl">_______</span>';
+      var temizKelime = (kelime || "").trim();
+      var kok = temizKelime.length > 4 ? temizKelime.slice(0, -1) : temizKelime;
+      var escKok = kok.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      var rgx = new RegExp("\\b" + escKok + "[a-zA-Z]*\\b", "i");
+      var guvenli = escHtml(enCumle);
+      if (rgx.test(guvenli)) {
+        return guvenli.replace(rgx, '<span class="cloze-blank" id="clozeBlankEl">_______</span>');
+      }
+      return guvenli + ' (<span class="cloze-blank" id="clozeBlankEl">_______</span>)';
+    }
+
     function fcCiz(poolList) {
       var box = document.getElementById("fcContainer");
       if (!box) return;
       var deck = fcDestesiniGetir(poolList);
       if (!deck.length) {
         box.innerHTML =
+          modCubuguHtml() +
           '<div class="fc-empty">' +
             '<div style="font-size:28px;margin-bottom:8px;">🎉</div>' +
             '<div style="font-weight:700;color:#1e293b;margin-bottom:6px;">No Unknown Words in Pool</div>' +
-            '<div style="font-size:12px;margin-bottom:14px;">Mark words as <b>Unknown</b> in Sheet1 to study them with flashcards.</div>' +
+            '<div style="font-size:12px;margin-bottom:14px;">Mark words as <b>Unknown</b> in Sheet1 to study them with Flashcards, Cloze, Quiz, Listen & Match.</div>' +
             '<button class="fc-btn" onclick="sekmeDegistir(\'sheet1\')">Go to Sheet1</button>' +
           '</div>';
         return;
@@ -1109,13 +1387,35 @@
       if (FC_INDEX >= deck.length) FC_INDEX = 0;
       if (FC_INDEX < 0) FC_INDEX = deck.length - 1;
 
+      if (AKTIF_MOD === "cloze") {
+        clozeModuCiz(box, deck);
+        return;
+      }
+      if (AKTIF_MOD === "quiz") {
+        quizModuCiz(box, deck);
+        return;
+      }
+      if (AKTIF_MOD === "listen") {
+        listenModuCiz(box, deck);
+        return;
+      }
+      if (AKTIF_MOD === "match") {
+        matchModuCiz(box, deck);
+        return;
+      }
+
       var card = deck[FC_INDEX];
       var pct = Math.round(((FC_INDEX + 1) / deck.length) * 100);
+      var srsSayi = srsGetir(card.kelime);
 
       box.innerHTML =
+        modCubuguHtml() +
         '<div class="fc-top">' +
           '<span>Unknown Pool Flashcards — <b>' + (FC_INDEX + 1) + ' / ' + deck.length + '</b></span>' +
-          '<button class="btn" onclick="fcKaristir()" title="Shuffle cards">🔀 Shuffle</button>' +
+          '<div style="display:flex;gap:6px;align-items:center;">' +
+            '<span class="srs-badge" title="3-Step Spaced Repetition: Reach 3/3 to automatically move to Known!">⭐ ' + srsSayi + ' / 3</span>' +
+            '<button class="btn" onclick="fcKaristir()" title="Shuffle cards">🔀 Shuffle</button>' +
+          '</div>' +
         '</div>' +
         '<div class="fc-progress-track"><div class="fc-progress-bar" style="width:' + pct + '%;"></div></div>' +
         '<div class="fc-scene" onclick="fcCevir()">' +
@@ -1125,6 +1425,7 @@
                 '<div class="fc-badge-group">' +
                   '<span class="fc-lvl-badge">' + escHtml(card.seviye) + '</span>' +
                   '<span class="fc-type-badge">' + escHtml(turTemizle(card.tur)) + '</span>' +
+                  '<span class="srs-badge">⭐ ' + srsSayi + '/3</span>' +
                 '</div>' +
                 '<button class="btn" onclick="event.stopPropagation(); kelimeOku(\'' + escJs(card.kelime) + '\')" title="Listen pronunciation">🔊 Listen</button>' +
               '</div>' +
@@ -1156,9 +1457,448 @@
         '<div class="fc-controls">' +
           '<button class="fc-btn" onclick="fcDegistir(-1)">◀ Prev</button>' +
           '<button class="fc-btn" onclick="fcCevir()">↻ Flip</button>' +
-          '<button class="fc-btn fc-btn-known" onclick="fcBiliyorumIsaretle(' + card.row + ')">✅ Known (Remove from Pool)</button>' +
+          '<button class="fc-btn" style="background:#fffbeb;border-color:#fde68a;color:#b45309;" onclick="fcSrsArtir(' + card.row + ')" title="3-Box Method: +1 Star (at 3/3 moves to Known)">⭐ +1 Step (' + srsSayi + '/3)</button>' +
+          '<button class="fc-btn fc-btn-known" onclick="fcBiliyorumIsaretle(' + card.row + ')">✅ Known (Instant)</button>' +
           '<button class="fc-btn" onclick="fcDegistir(1)">Next ▶</button>' +
         '</div>';
+    }
+
+    function clozeModuCiz(box, deck) {
+      var card = deck[FC_INDEX];
+      var pct = Math.round(((FC_INDEX + 1) / deck.length) * 100);
+      var srsSayi = srsGetir(card.kelime);
+      var ayrilmis = ornekCumleyiAyir(card.ornek);
+      var gizliCumle = cumledeKelimeyiGizle(ayrilmis.en, card.kelime);
+      var secenekler = secenekleriUret(card, deck);
+
+      var btnHtml = [];
+      for (var i = 0; i < secenekler.length; i++) {
+        var sc = secenekler[i];
+        btnHtml.push(
+          '<button class="choice-btn" onclick="clozeSecenekSec(this, \'' + escJs(sc.kelime) + '\', \'' + escJs(card.kelime) + '\', ' + card.row + ')">' +
+            (i + 1) + '. ' + escHtml(sc.kelime) +
+          '</button>'
+        );
+      }
+
+      box.innerHTML =
+        modCubuguHtml() +
+        '<div class="fc-top">' +
+          '<span>📝 Cloze (Fill in the Blank) — <b>' + (FC_INDEX + 1) + ' / ' + deck.length + '</b></span>' +
+          '<div style="display:flex;gap:6px;align-items:center;">' +
+            '<span class="srs-badge">⭐ ' + srsSayi + ' / 3</span>' +
+            '<button class="btn" onclick="fcKaristir()">🔀 Shuffle</button>' +
+          '</div>' +
+        '</div>' +
+        '<div class="fc-progress-track"><div class="fc-progress-bar" style="width:' + pct + '%;"></div></div>' +
+        '<div class="study-box">' +
+          '<div class="fc-badges">' +
+            '<div class="fc-badge-group">' +
+              '<span class="fc-lvl-badge">' + escHtml(card.seviye) + '</span>' +
+              '<span class="fc-type-badge">' + escHtml(turTemizle(card.tur)) + '</span>' +
+              '<span class="srs-badge">⭐ ' + srsSayi + '/3</span>' +
+            '</div>' +
+            '<button class="btn" onclick="kelimeOku(\'' + escJs(card.kelime) + '\')" title="Audio Hint">🔊 Audio Hint</button>' +
+          '</div>' +
+          '<div class="cloze-sentence">' + gizliCumle + '</div>' +
+          '<div class="cloze-hint">' +
+            '<div>💡 <b>Meaning:</b> ' + escHtml(card.anlam) + '</div>' +
+            (ayrilmis.tr ? '<div style="margin-top:3px;color:#135c37;">🇹🇷 <i>(' + escHtml(ayrilmis.tr) + ')</i></div>' : '') +
+          '</div>' +
+          '<div class="choice-grid">' + btnHtml.join("") + '</div>' +
+          '<div class="type-row">' +
+            '<input type="text" id="clozeTypeInput" class="type-inp" placeholder="Or type the missing word here and press Enter..." onkeydown="if(event.key===\'Enter\') clozeYazKontrol(\'' + escJs(card.kelime) + '\', ' + card.row + ')">' +
+            '<button class="fc-btn fc-btn-known" onclick="clozeYazKontrol(\'' + escJs(card.kelime) + '\', ' + card.row + ')">Check ↵</button>' +
+          '</div>' +
+        '</div>' +
+        '<div class="fc-controls">' +
+          '<button class="fc-btn" onclick="fcDegistir(-1)">◀ Prev</button>' +
+          '<button class="fc-btn" onclick="fcDegistir(1)">Skip / Next ▶</button>' +
+        '</div>';
+    }
+
+    function clozeSecenekSec(btnEl, secilen, dogru, row) {
+      var card = TUM_KELIMELER.filter(function(w){ return w.row === row; })[0];
+      if (secilen.toLowerCase() === dogru.toLowerCase()) {
+        btnEl.classList.add("correct");
+        var blankEl = document.getElementById("clozeBlankEl");
+        if (blankEl) {
+          blankEl.innerText = dogru;
+          blankEl.classList.add("filled");
+        }
+        kelimeOku(dogru);
+        var mezun = card ? srsArtir(card) : false;
+        setTimeout(function() {
+          SECENEKLER_CACHE = { key: "", list: [] };
+          if (!mezun) FC_INDEX++;
+          tabloyuCiz();
+        }, 850);
+      } else {
+        btnEl.classList.add("wrong");
+        bildirimGoster("❌ Try again!");
+      }
+    }
+
+    function clozeYazKontrol(dogru, row) {
+      var inp = document.getElementById("clozeTypeInput");
+      if (!inp) return;
+      var yazilan = inp.value.trim();
+      var card = TUM_KELIMELER.filter(function(w){ return w.row === row; })[0];
+      if (yazilan.toLowerCase() === dogru.toLowerCase()) {
+        inp.style.borderColor = "#16a34a";
+        inp.style.background = "#dcfce7";
+        var blankEl = document.getElementById("clozeBlankEl");
+        if (blankEl) {
+          blankEl.innerText = dogru;
+          blankEl.classList.add("filled");
+        }
+        kelimeOku(dogru);
+        var mezun = card ? srsArtir(card) : false;
+        setTimeout(function() {
+          SECENEKLER_CACHE = { key: "", list: [] };
+          if (!mezun) FC_INDEX++;
+          tabloyuCiz();
+        }, 850);
+      } else {
+        inp.style.borderColor = "#ef4444";
+        bildirimGoster("❌ Check spelling! Hint: starts with '" + dogru.slice(0, 2) + "...'");
+      }
+    }
+
+    function quizModuCiz(box, deck) {
+      var card = deck[FC_INDEX];
+      var pct = Math.round(((FC_INDEX + 1) / deck.length) * 100);
+      var srsSayi = srsGetir(card.kelime);
+      var secenekler = secenekleriUret(card, deck);
+
+      var btnHtml = [];
+      for (var i = 0; i < secenekler.length; i++) {
+        var sc = secenekler[i];
+        btnHtml.push(
+          '<button class="choice-btn" onclick="quizSecenekSec(this, \'' + escJs(sc.kelime) + '\', \'' + escJs(card.kelime) + '\', ' + card.row + ')">' +
+            (i + 1) + '. ' + escHtml(sc.kelime) +
+          '</button>'
+        );
+      }
+
+      box.innerHTML =
+        modCubuguHtml() +
+        '<div class="fc-top">' +
+          '<span>🎯 Active Recall (Turkish → English) — <b>' + (FC_INDEX + 1) + ' / ' + deck.length + '</b></span>' +
+          '<div style="display:flex;gap:6px;align-items:center;">' +
+            '<span class="srs-badge">⭐ ' + srsSayi + ' / 3</span>' +
+            '<button class="btn" onclick="fcKaristir()">🔀 Shuffle</button>' +
+          '</div>' +
+        '</div>' +
+        '<div class="fc-progress-track"><div class="fc-progress-bar" style="width:' + pct + '%;"></div></div>' +
+        '<div class="study-box">' +
+          '<div class="fc-badges">' +
+            '<div class="fc-badge-group">' +
+              '<span class="fc-lvl-badge">' + escHtml(card.seviye) + '</span>' +
+              '<span class="fc-type-badge">' + escHtml(turTemizle(card.tur)) + '</span>' +
+              '<span class="srs-badge">⭐ ' + srsSayi + '/3</span>' +
+            '</div>' +
+            '<span style="font-size:11px;color:#64748b;font-weight:600;">Find or type the English word</span>' +
+          '</div>' +
+          '<div style="text-align:center;padding:12px 6px;">' +
+            '<div style="font-size:11px;text-transform:uppercase;letter-spacing:0.6px;color:#64748b;margin-bottom:6px;font-weight:700;">Turkish Meaning</div>' +
+            '<div style="font-size:calc(var(--fs) + 11px);font-weight:800;color:#135c37;">' + escHtml(card.anlam) + '</div>' +
+          '</div>' +
+          '<div class="choice-grid">' + btnHtml.join("") + '</div>' +
+          '<div class="type-row">' +
+            '<input type="text" id="quizTypeInput" class="type-inp" placeholder="Or type the English word from memory..." onkeydown="if(event.key===\'Enter\') quizYazKontrol(\'' + escJs(card.kelime) + '\', ' + card.row + ')">' +
+            '<button class="fc-btn fc-btn-known" onclick="quizYazKontrol(\'' + escJs(card.kelime) + '\', ' + card.row + ')">Check ↵</button>' +
+          '</div>' +
+          '<div id="quizFeedbackBox" style="display:none;" class="fc-example"></div>' +
+        '</div>' +
+        '<div class="fc-controls">' +
+          '<button class="fc-btn" onclick="fcDegistir(-1)">◀ Prev</button>' +
+          '<button class="fc-btn" onclick="fcDegistir(1)">Skip / Next ▶</button>' +
+        '</div>';
+    }
+
+    function quizSecenekSec(btnEl, secilen, dogru, row) {
+      var card = TUM_KELIMELER.filter(function(w){ return w.row === row; })[0];
+      if (secilen.toLowerCase() === dogru.toLowerCase()) {
+        btnEl.classList.add("correct");
+        kelimeOku(dogru);
+        var fb = document.getElementById("quizFeedbackBox");
+        if (fb && card && card.ornek) {
+          fb.style.display = "block";
+          fb.innerHTML = "✅ <b>" + escHtml(dogru) + ":</b> " + ornekBicimlendir(card.ornek);
+        }
+        var mezun = card ? srsArtir(card) : false;
+        setTimeout(function() {
+          SECENEKLER_CACHE = { key: "", list: [] };
+          if (!mezun) FC_INDEX++;
+          tabloyuCiz();
+        }, 950);
+      } else {
+        btnEl.classList.add("wrong");
+        bildirimGoster("❌ Not quite, try again!");
+      }
+    }
+
+    function quizYazKontrol(dogru, row) {
+      var inp = document.getElementById("quizTypeInput");
+      if (!inp) return;
+      var yazilan = inp.value.trim();
+      var card = TUM_KELIMELER.filter(function(w){ return w.row === row; })[0];
+      if (yazilan.toLowerCase() === dogru.toLowerCase()) {
+        inp.style.borderColor = "#16a34a";
+        inp.style.background = "#dcfce7";
+        kelimeOku(dogru);
+        var mezun = card ? srsArtir(card) : false;
+        setTimeout(function() {
+          SECENEKLER_CACHE = { key: "", list: [] };
+          if (!mezun) FC_INDEX++;
+          tabloyuCiz();
+        }, 850);
+      } else {
+        inp.style.borderColor = "#ef4444";
+        bildirimGoster("❌ Hint: starts with '" + dogru.slice(0, 2) + "...' (" + dogru.length + " letters)");
+      }
+    }
+
+    function listenModuCiz(box, deck) {
+      var card = deck[FC_INDEX];
+      var pct = Math.round(((FC_INDEX + 1) / deck.length) * 100);
+      var srsSayi = srsGetir(card.kelime);
+      var secenekler = secenekleriUret(card, deck);
+
+      var btnHtml = [];
+      for (var i = 0; i < secenekler.length; i++) {
+        var sc = secenekler[i];
+        btnHtml.push(
+          '<button class="choice-btn" onclick="listenSecenekSec(this, \'' + escJs(sc.kelime) + '\', \'' + escJs(card.kelime) + '\', ' + card.row + ')">' +
+            (i + 1) + '. ' + escHtml(sc.anlam) +
+          '</button>'
+        );
+      }
+
+      box.innerHTML =
+        modCubuguHtml() +
+        '<div class="fc-top">' +
+          '<span>🎧 Listen & Find / Spell — <b>' + (FC_INDEX + 1) + ' / ' + deck.length + '</b></span>' +
+          '<div style="display:flex;gap:6px;align-items:center;">' +
+            '<span class="srs-badge">⭐ ' + srsSayi + ' / 3</span>' +
+            '<button class="btn" onclick="fcKaristir()">🔀 Shuffle</button>' +
+          '</div>' +
+        '</div>' +
+        '<div class="fc-progress-track"><div class="fc-progress-bar" style="width:' + pct + '%;"></div></div>' +
+        '<div class="study-box">' +
+          '<div class="fc-badges">' +
+            '<div class="fc-badge-group">' +
+              '<span class="fc-lvl-badge">' + escHtml(card.seviye) + '</span>' +
+              '<span class="fc-type-badge">' + escHtml(turTemizle(card.tur)) + '</span>' +
+              '<span class="srs-badge">⭐ ' + srsSayi + '/3</span>' +
+            '</div>' +
+            '<span style="font-size:11px;color:#64748b;font-weight:600;">Audio-First Ear Training</span>' +
+          '</div>' +
+          '<div style="text-align:center;padding:12px 0;">' +
+            '<button class="fc-btn fc-btn-known" style="font-size:16px;padding:12px 26px;border-radius:999px;" onclick="kelimeOku(\'' + escJs(card.kelime) + '\')">🔊 Click to Listen Again</button>' +
+            '<div id="listenRevealWord" style="margin-top:8px;font-size:13px;color:#64748b;font-weight:600;">Listen to the pronunciation and select its meaning or spell it below:</div>' +
+          '</div>' +
+          '<div class="choice-grid">' + btnHtml.join("") + '</div>' +
+          '<div class="type-row">' +
+            '<input type="text" id="listenTypeInput" class="type-inp" placeholder="Spell the English word you heard..." onkeydown="if(event.key===\'Enter\') listenYazKontrol(\'' + escJs(card.kelime) + '\', ' + card.row + ')">' +
+            '<button class="fc-btn fc-btn-known" onclick="listenYazKontrol(\'' + escJs(card.kelime) + '\', ' + card.row + ')">Spell Check ↵</button>' +
+          '</div>' +
+        '</div>' +
+        '<div class="fc-controls">' +
+          '<button class="fc-btn" onclick="fcDegistir(-1)">◀ Prev</button>' +
+          '<button class="fc-btn" onclick="fcDegistir(1)">Skip / Next ▶</button>' +
+        '</div>';
+    }
+
+    function listenSecenekSec(btnEl, secilenKelime, dogruKelime, row) {
+      var card = TUM_KELIMELER.filter(function(w){ return w.row === row; })[0];
+      if (secilenKelime.toLowerCase() === dogruKelime.toLowerCase()) {
+        btnEl.classList.add("correct");
+        var rev = document.getElementById("listenRevealWord");
+        if (rev && card) {
+          rev.innerHTML = "✅ <strong style='color:#0f172a;font-size:16px;'>" + escHtml(card.kelime) + "</strong> — " + escHtml(card.anlam);
+        }
+        kelimeOku(dogruKelime);
+        var mezun = card ? srsArtir(card) : false;
+        setTimeout(function() {
+          SECENEKLER_CACHE = { key: "", list: [] };
+          if (!mezun) FC_INDEX++;
+          tabloyuCiz();
+          var yeniPool = aktifHavuzuGetir();
+          var yeniDeck = fcDestesiniGetir(yeniPool);
+          if (yeniDeck.length) {
+            var nextCard = yeniDeck[FC_INDEX % yeniDeck.length];
+            if (nextCard) kelimeOku(nextCard.kelime);
+          }
+        }, 950);
+      } else {
+        btnEl.classList.add("wrong");
+        kelimeOku(dogruKelime);
+        bildirimGoster("❌ Listen again!");
+      }
+    }
+
+    function listenYazKontrol(dogru, row) {
+      var inp = document.getElementById("listenTypeInput");
+      if (!inp) return;
+      var yazilan = inp.value.trim();
+      var card = TUM_KELIMELER.filter(function(w){ return w.row === row; })[0];
+      if (yazilan.toLowerCase() === dogru.toLowerCase()) {
+        inp.style.borderColor = "#16a34a";
+        inp.style.background = "#dcfce7";
+        var rev = document.getElementById("listenRevealWord");
+        if (rev && card) {
+          rev.innerHTML = "✅ <strong style='color:#0f172a;font-size:16px;'>" + escHtml(card.kelime) + "</strong> — " + escHtml(card.anlam);
+        }
+        kelimeOku(dogru);
+        var mezun = card ? srsArtir(card) : false;
+        setTimeout(function() {
+          SECENEKLER_CACHE = { key: "", list: [] };
+          if (!mezun) FC_INDEX++;
+          tabloyuCiz();
+          var yeniPool = aktifHavuzuGetir();
+          var yeniDeck = fcDestesiniGetir(yeniPool);
+          if (yeniDeck.length) {
+            var nextCard = yeniDeck[FC_INDEX % yeniDeck.length];
+            if (nextCard) kelimeOku(nextCard.kelime);
+          }
+        }, 950);
+      } else {
+        inp.style.borderColor = "#ef4444";
+        kelimeOku(dogru);
+        bildirimGoster("❌ Hint: starts with '" + dogru.slice(0, 2) + "...'");
+      }
+    }
+
+    function matchModuCiz(box, deck) {
+      var grupBoyutu = Math.min(5, deck.length);
+      var baslangic = Math.floor(FC_INDEX / 5) * 5;
+      if (baslangic >= deck.length) baslangic = 0;
+      var altListe = deck.slice(baslangic, baslangic + grupBoyutu);
+      var grupKey = altListe.map(function(w){ return w.kelime.toLowerCase(); }).join("|");
+
+      if (MATCH_DURUM.keySet !== grupKey) {
+        var trIndisler = [];
+        for (var i = 0; i < altListe.length; i++) trIndisler.push(i);
+        for (var j = trIndisler.length - 1; j > 0; j--) {
+          var r = Math.floor(Math.random() * (j + 1));
+          var tmp = trIndisler[j];
+          trIndisler[j] = trIndisler[r];
+          trIndisler[r] = tmp;
+        }
+        MATCH_DURUM = {
+          seciliEn: null,
+          seciliTr: null,
+          eslesenler: {},
+          trSira: trIndisler,
+          keySet: grupKey
+        };
+      }
+
+      var enHtml = [];
+      var trHtml = [];
+      var eslesenSayisi = 0;
+
+      for (var m = 0; m < altListe.length; m++) {
+        var wEn = altListe[m];
+        var kEn = wEn.kelime.toLowerCase();
+        var isMatchedEn = !!MATCH_DURUM.eslesenler[kEn];
+        if (isMatchedEn) eslesenSayisi++;
+        var isSelEn = MATCH_DURUM.seciliEn === kEn;
+        enHtml.push(
+          '<div class="match-item' + (isMatchedEn ? ' matched' : '') + (isSelEn ? ' selected' : '') + '" onclick="matchEnSec(\'' + escJs(kEn) + '\', \'' + escJs(wEn.kelime) + '\')">' +
+            '<span>' + escHtml(wEn.kelime) + '</span>' +
+            '<span class="srs-badge">⭐ ' + srsGetir(wEn.kelime) + '/3</span>' +
+          '</div>'
+        );
+      }
+
+      for (var n = 0; n < MATCH_DURUM.trSira.length; n++) {
+        var idx = MATCH_DURUM.trSira[n];
+        var wTr = altListe[idx];
+        if (!wTr) continue;
+        var kTr = wTr.kelime.toLowerCase();
+        var isMatchedTr = !!MATCH_DURUM.eslesenler[kTr];
+        var isSelTr = MATCH_DURUM.seciliTr === kTr;
+        trHtml.push(
+          '<div class="match-item' + (isMatchedTr ? ' matched' : '') + (isSelTr ? ' selected' : '') + '" id="matchTr-' + idx + '" onclick="matchTrSec(\'' + escJs(kTr) + '\', ' + idx + ')">' +
+            escHtml(wTr.anlam) +
+          '</div>'
+        );
+      }
+
+      var hepsiBitti = eslesenSayisi === altListe.length;
+
+      box.innerHTML =
+        modCubuguHtml() +
+        '<div class="fc-top">' +
+          '<span>🧩 5-Word Quick Match — <b>Matched: ' + eslesenSayisi + ' / ' + altListe.length + '</b></span>' +
+          '<button class="btn" onclick="matchYeniSet()">🔄 Next Set</button>' +
+        '</div>' +
+        '<div class="study-box">' +
+          '<div style="font-size:12px;color:#475569;font-weight:600;">Click an English word on the left (it will also read it aloud) and match it with its Turkish meaning on the right:</div>' +
+          '<div class="match-grid">' +
+            '<div class="match-col">' + enHtml.join("") + '</div>' +
+            '<div class="match-col">' + trHtml.join("") + '</div>' +
+          '</div>' +
+          (hepsiBitti
+            ? '<div style="text-align:center;padding:10px;background:#dcfce7;border:1px solid #86efac;border-radius:8px;color:#166534;font-weight:700;">' +
+                '🎉 Great job! All ' + altListe.length + ' words matched! ' +
+                '<button class="fc-btn fc-btn-known" style="margin-left:10px;" onclick="matchYeniSet()">Next 5 Words ▶</button>' +
+              '</div>'
+            : '') +
+        '</div>';
+    }
+
+    function matchEnSec(kEn, orijinalKelime) {
+      if (MATCH_DURUM.eslesenler[kEn]) return;
+      kelimeOku(orijinalKelime);
+      MATCH_DURUM.seciliEn = kEn;
+      matchKontrolEt();
+    }
+
+    function matchTrSec(kTr, idx) {
+      if (MATCH_DURUM.eslesenler[kTr]) return;
+      MATCH_DURUM.seciliTr = kTr;
+      matchKontrolEt(idx);
+    }
+
+    function matchKontrolEt(sonTrIdx) {
+      if (MATCH_DURUM.seciliEn && MATCH_DURUM.seciliTr) {
+        var en = MATCH_DURUM.seciliEn;
+        var tr = MATCH_DURUM.seciliTr;
+        if (en === tr) {
+          MATCH_DURUM.eslesenler[en] = true;
+          MATCH_DURUM.seciliEn = null;
+          MATCH_DURUM.seciliTr = null;
+          var card = TUM_KELIMELER.filter(function(w){ return w.kelime.toLowerCase() === en; })[0];
+          if (card) srsArtir(card);
+          tabloyuCiz();
+        } else {
+          MATCH_DURUM.seciliEn = null;
+          MATCH_DURUM.seciliTr = null;
+          bildirimGoster("❌ Not a match, try again!");
+          tabloyuCiz();
+        }
+      } else {
+        tabloyuCiz();
+      }
+    }
+
+    function matchYeniSet() {
+      FC_INDEX += 5;
+      MATCH_DURUM = { seciliEn: null, seciliTr: null, eslesenler: {}, trSira: [], keySet: "" };
+      tabloyuCiz();
+    }
+
+    function fcSrsArtir(row) {
+      var card = TUM_KELIMELER.filter(function(w){ return w.row === row; })[0];
+      if (!card) return;
+      FC_FLIPPED = false;
+      var mezun = srsArtir(card);
+      if (!mezun) FC_INDEX++;
+      tabloyuCiz();
     }
 
     function ornekBicimlendir(s) {
@@ -1175,10 +1915,15 @@
     function fcDegistir(delta) {
       FC_INDEX += delta;
       FC_FLIPPED = false;
+      SECENEKLER_CACHE = { key: "", list: [] };
       tabloyuCiz();
-      var deck = document.querySelector("#fcContainer .fc-word");
-      if (deck && SES_ACIK) {
-        kelimeOku(deck.textContent);
+      if (AKTIF_MOD === "flashcards" || AKTIF_MOD === "listen") {
+        var poolList = aktifHavuzuGetir();
+        var deck = fcDestesiniGetir(poolList);
+        if (deck.length && SES_ACIK) {
+          var c = deck[FC_INDEX % deck.length];
+          if (c) kelimeOku(c.kelime);
+        }
       }
     }
 
@@ -1193,6 +1938,8 @@
       FC_SHUFFLED_KEYS = unk;
       FC_INDEX = 0;
       FC_FLIPPED = false;
+      SECENEKLER_CACHE = { key: "", list: [] };
+      MATCH_DURUM = { seciliEn: null, seciliTr: null, eslesenler: {}, trSira: [], keySet: "" };
       tabloyuCiz();
       bildirimGoster("🔀 Shuffled");
     }
@@ -1203,7 +1950,7 @@
     }
 
     document.addEventListener("keydown", function(e) {
-      if (AKTIF_SEKME !== "flashcards") return;
+      if (AKTIF_SEKME !== "flashcards" || AKTIF_MOD !== "flashcards") return;
       var tag = (e.target && e.target.tagName) ? e.target.tagName.toUpperCase() : "";
       if (tag === "INPUT" || tag === "SELECT" || tag === "TEXTAREA") return;
       if (e.code === "Space") {
