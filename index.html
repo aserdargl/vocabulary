@@ -283,7 +283,15 @@
       white-space: nowrap;
     }
     .col-meaning { min-width: 130px; }
-    .col-example { min-width: 200px; }
+    .col-example {
+      min-width: 200px;
+      cursor: pointer;
+      transition: color 0.1s, background-color 0.15s;
+    }
+    .col-example:hover { color: #135c37; text-decoration: underline; }
+    .col-example.speaking { background-color: #dcfce7 !important; color: #135c37; }
+    body.audio-muted .col-example { cursor: default; }
+    body.audio-muted .col-example:hover { color: #202124; text-decoration: none; }
     .col-status { width: 122px; text-align: center; white-space: nowrap; }
     .status-pill {
       display: inline-block;
@@ -611,11 +619,12 @@
       line-height: 1.45;
       max-width: 480px;
       margin: 24px auto 0;
-      pointer-events: none;
+      pointer-events: auto;
+      cursor: pointer;
       opacity: 0;
       visibility: hidden;
       transform: translateY(-4px);
-      transition: opacity 0.18s ease, transform 0.18s ease, visibility 0.18s;
+      transition: opacity 0.18s ease, transform 0.18s ease, visibility 0.18s, background-color 0.15s;
       text-align: left;
     }
     .fc-word-box:hover .fc-hover-example {
@@ -637,7 +646,12 @@
       border-radius: 6px;
       padding: 8px 12px;
       line-height: 1.4;
+      cursor: pointer;
+      transition: color 0.1s, background-color 0.15s, border-color 0.15s;
     }
+    .fc-example:hover { border-color: #135c37; color: #135c37; }
+    .fc-example.speaking, .fc-hover-example.speaking { background-color: #dcfce7 !important; color: #135c37; border-color: #135c37; }
+    body.audio-muted .fc-example, body.audio-muted .fc-hover-example { cursor: default; }
     .fc-hint {
       text-align: center;
       font-size: 11px;
@@ -965,7 +979,6 @@
         <span class="mini-stat unk" id="stUnk" style="cursor:pointer;" onclick="sekmeDegistir('pool')" title="Click to open Unknown Words Pool Table">In Pool: -</span>
         <span class="mini-stat knw" id="stKnw" style="cursor:pointer;" onclick="sekmeDegistir('knownPool')" title="Click to open Known Words Pool Table">Known: -</span>
       </div>
-      <button class="btn toggle-known-btn show-mode" id="toggleKnownBtn" onclick="bilinenleriGosterAcKapat()" title="Bildiğim kelimeleri tabloda göster / gizle">👁️ Bildiklerimi Gizle</button>
       <span class="sync-badge" id="syncBadge" title="Two-way live sync with Google Sheets (Words)">
         <span class="sync-dot" id="syncDot"></span>
         <span id="syncText">Live</span>
@@ -988,20 +1001,15 @@
         <option value="C1">C1</option>
         <option value="C2">C2</option>
       </select>
-      <select id="streakWeeksSelect" class="inp" onchange="hedefHaftaDegistir(this.value)" title="Kaç hafta üst üste hatasız bilinen kelimeler otomatik Biliyorum sayılsın? (1-12 Hafta)">
-        <option value="1">Streak: 1W</option>
-        <option value="2">Streak: 2W</option>
-        <option value="3">Streak: 3W</option>
-        <option value="4" selected>Streak: 4W</option>
-        <option value="5">Streak: 5W</option>
-        <option value="6">Streak: 6W</option>
-        <option value="7">Streak: 7W</option>
-        <option value="8">Streak: 8W</option>
-        <option value="9">Streak: 9W</option>
-        <option value="10">Streak: 10W</option>
-        <option value="11">Streak: 11W</option>
-        <option value="12">Streak: 12W</option>
-      </select>
+      <div class="font-ctrl" style="padding:0 5px;gap:3px;background:#f0fdf4;border-color:#86efac;" title="Bir kelimenin öğrenilmiş (Known) sayılması için en az kaç farklı gün veya hafta doğru cevaplanması gerektiğini belirleyin">
+        <span style="font-size:11px;font-weight:700;color:#166534;">🎯 En az:</span>
+        <input type="number" id="topMasteryCount" min="1" max="365" value="5" style="width:40px;height:20px;border:1px solid #86efac;border-radius:3px;text-align:center;font-size:11px;font-weight:700;color:#14532d;outline:none;background:#fff;" onchange="ogrenmeHedefiDegistir(this.value, null)">
+        <select id="topMasteryUnit" style="height:20px;border:none;background:transparent;font-size:11px;font-weight:700;color:#14532d;outline:none;cursor:pointer;" onchange="ogrenmeHedefiDegistir(null, this.value)">
+          <option value="gun" selected>Gün</option>
+          <option value="hafta">Hafta</option>
+        </select>
+      </div>
+      <button class="btn" style="background:#fff7ed;border-color:#fdba74;color:#9a3412;" onclick="tumKelimeleriBilinmeyenYap(true)" title="Tüm kelimeleri Bilinmeyenler Havuzuna (Unknown) geri alır ve ilerlemeyi sıfırlar">↩️ Tümünü Havuza Al</button>
       <button class="btn" id="topBtn-sheet1" onclick="sekmeDegistir('sheet1')" title="Ana Kelime Tablosu (Words)">📋 Words</button>
       <button class="btn" id="topBtn-pool" onclick="sekmeDegistir('pool')" title="Bilmediğim Kelimeler Havuzu Tablosu (Unknown Words Pool)">📕 Havuz</button>
       <button class="btn" id="topBtn-knownPool" onclick="sekmeDegistir('knownPool')" title="Bildiğim Kelimeler Havuzu Tablosu (Known Words Pool)">📗 Known</button>
@@ -1121,21 +1129,13 @@
         <span class="stats-kpi" id="kpiAccuracy">🎯 Accuracy: -</span>
       </div>
       <div style="display:flex;gap:6px;align-items:center;">
-        <label for="statsStreakSelect" style="font-size:11px;font-weight:700;color:#334155;white-space:nowrap;">🏆 Auto-Known Streak:</label>
-        <select id="statsStreakSelect" class="inp" style="font-weight:700;color:#135c37;border-color:#86efac;background:#f0fdf4;" onchange="hedefHaftaDegistir(this.value)" title="Select consecutive zero-mistake weeks (1-12) before a word is automatically marked Known">
-          <option value="1">1 Week</option>
-          <option value="2">2 Weeks</option>
-          <option value="3">3 Weeks</option>
-          <option value="4" selected>4 Weeks</option>
-          <option value="5">5 Weeks</option>
-          <option value="6">6 Weeks</option>
-          <option value="7">7 Weeks</option>
-          <option value="8">8 Weeks</option>
-          <option value="9">9 Weeks</option>
-          <option value="10">10 Weeks</option>
-          <option value="11">11 Weeks</option>
-          <option value="12">12 Weeks</option>
+        <label for="statsMasteryCount" style="font-size:11px;font-weight:700;color:#334155;white-space:nowrap;">🎯 Öğrenme Süresi:</label>
+        <input type="number" id="statsMasteryCount" class="inp" min="1" max="365" value="5" style="width:52px;font-weight:700;color:#135c37;border-color:#86efac;background:#f0fdf4;text-align:center;" onchange="ogrenmeHedefiDegistir(this.value, null)" title="Kelimenin öğrenilmiş sayılması için gereken en az doğru cevap gün/hafta sayısı">
+        <select id="statsMasteryUnit" class="inp" style="font-weight:700;color:#135c37;border-color:#86efac;background:#f0fdf4;" onchange="ogrenmeHedefiDegistir(null, this.value)" title="Gün veya Hafta bazında takip">
+          <option value="gun" selected>Gün</option>
+          <option value="hafta">Hafta</option>
         </select>
+        <button class="btn" style="background:#fffbeb;border-color:#fcd34d;color:#92400e;" onclick="erkenBilinenleriHavuzaGeriAl()" title="Hedef gün/hafta süresini henüz doldurmamış olan kelimeleri tekrar Bilmediğim Havuzuna geri alır">↩️ Erken Bilinenleri Havuza Geri Al</button>
         <button class="btn" onclick="istatistikleriSunucuyaSenkronizeEt(true)" title="Sync all historical stats to 'Mistake Stats' tab in Google Sheets">🔄 Sync Stats to Sheet</button>
         <a href="https://docs.google.com/spreadsheets/d/1cUYfuFg7OSsWjCtLA7jiB77bGJITR6V0jF2ZUnyrXtc/edit" target="_blank" class="btn btn-green" title="View 'Mistake Stats' sheet tab in Google Sheets">📊 Open in Google Sheets</a>
       </div>
@@ -1200,14 +1200,14 @@
       { row: 11, tarih: "2026-10-19", seviye: "C2", tur: "Adjective", kelime: "Ephemeral", okunus: "i-fem-ı-rıl (/ɪˈfem.ər.əl/)", anlam: "Kısa ömürlü, geçici, fani", ornek: "Fame in the digital age is often ephemeral. (Dijital çağda şöhret çoğu zaman kısa ömürlüdür.)", durum: "bilmiyorum" },
       { row: 12, tarih: "2026-10-20", seviye: "B2", tur: "Adjective", kelime: "Diligent", okunus: "dil-i-cınt (/ˈdɪl.ɪ.dʒənt/)", anlam: "Çalışkan, gayretli, özenli", ornek: "She is a diligent worker who always meets deadlines. (Her zaman teslim tarihlerine uyan çalışkan bir çalışandır.)", durum: "bilmiyorum" },
       { row: 13, tarih: "2026-10-20", seviye: "B2", tur: "Verb", kelime: "Foster", okunus: "fos-tır (/ˈfɒs.tər/)", anlam: "Teşvik etmek, geliştirmek, beslemek", ornek: "The team fosters open communication. (Ekip açık iletişimi teşvik eder.)", durum: "bilmiyorum" },
-      { row: 14, tarih: "2026-10-20", seviye: "B2", tur: "Verb", kelime: "Endure", okunus: "in-dyur (/ɪnˈdjʊər/)", anlam: "Katlanmak, dayanmak, sürmek", ornek: "They had to endure extreme heat. (Aşırı sıcağa katlanmak zorunda kaldılar.)", durum: "beklemede" },
-      { row: 15, tarih: "2026-10-20", seviye: "B2", tur: "Verb", kelime: "Hinder", okunus: "hin-dır (/ˈhɪn.dər/)", anlam: "Engellemek, aksatmak", ornek: "Bad weather could hinder our progress. (Kötü hava ilerlememizi aksatabilir.)", durum: "beklemede" },
-      { row: 16, tarih: "2026-10-20", seviye: "B2", tur: "Adjective", kelime: "Vague", okunus: "veyg (/veɪɡ/)", anlam: "Belirsiz, net olmayan", ornek: "His answers were vague and unhelpful. (Cevapları belirsiz ve yararsızdı.)", durum: "beklemede" },
-      { row: 17, tarih: "2026-10-20", seviye: "B2", tur: "Adjective", kelime: "Substantial", okunus: "sıb-sten-şıl (/səbˈstæn.ʃəl/)", anlam: "Kayda değer, önemli miktarda", ornek: "There has been a substantial increase in sales. (Satışlarda kayda değer bir artış oldu.)", durum: "beklemede" },
-      { row: 18, tarih: "2026-10-20", seviye: "B2", tur: "Adjective", kelime: "Plausible", okunus: "plo-zı-bıl (/ˈplɔː.zə.bəl/)", anlam: "Akla yatkın, makul, inandırıcı", ornek: "He gave a plausible explanation for the delay. (Gecikme için akla yatkın bir açıklama yaptı.)", durum: "beklemede" },
-      { row: 19, tarih: "2026-10-20", seviye: "C1", tur: "Adjective", kelime: "Pragmatic", okunus: "preg-met-ik (/præɡˈmæt.ɪk/)", anlam: "Faydacı, pratik, gerçekçi", ornek: "We need a pragmatic approach to the problem. (Soruna gerçekçi bir yaklaşıma ihtiyacımız var.)", durum: "biliyorum" },
-      { row: 20, tarih: "2026-10-20", seviye: "C1", tur: "Adjective", kelime: "Coherent", okunus: "ko-hi-rınt (/kəʊˈhɪə.rənt/)", anlam: "Tutarlı, mantıklı, anlaşılır", ornek: "She presented a coherent argument. (Tutarlı bir argüman sundu.)", durum: "beklemede" },
-      { row: 21, tarih: "2026-10-20", seviye: "C1", tur: "Verb", kelime: "Alleviate", okunus: "ı-lii-vi-eyt (/əˈliː.vi.eɪt/)", anlam: "Hafifletmek, dindirmek", ornek: "The medicine will alleviate your pain. (İlaç ağrını hafifletecektir.)", durum: "beklemede" }
+      { row: 14, tarih: "2026-10-20", seviye: "B2", tur: "Verb", kelime: "Endure", okunus: "in-dyur (/ɪnˈdjʊər/)", anlam: "Katlanmak, dayanmak, sürmek", ornek: "They had to endure extreme heat. (Aşırı sıcağa katlanmak zorunda kaldılar.)", durum: "bilmiyorum" },
+      { row: 15, tarih: "2026-10-20", seviye: "B2", tur: "Verb", kelime: "Hinder", okunus: "hin-dır (/ˈhɪn.dər/)", anlam: "Engellemek, aksatmak", ornek: "Bad weather could hinder our progress. (Kötü hava ilerlememizi aksatabilir.)", durum: "bilmiyorum" },
+      { row: 16, tarih: "2026-10-20", seviye: "B2", tur: "Adjective", kelime: "Vague", okunus: "veyg (/veɪɡ/)", anlam: "Belirsiz, net olmayan", ornek: "His answers were vague and unhelpful. (Cevapları belirsiz ve yararsızdı.)", durum: "bilmiyorum" },
+      { row: 17, tarih: "2026-10-20", seviye: "B2", tur: "Adjective", kelime: "Substantial", okunus: "sıb-sten-şıl (/səbˈstæn.ʃəl/)", anlam: "Kayda değer, önemli miktarda", ornek: "There has been a substantial increase in sales. (Satışlarda kayda değer bir artış oldu.)", durum: "bilmiyorum" },
+      { row: 18, tarih: "2026-10-20", seviye: "B2", tur: "Adjective", kelime: "Plausible", okunus: "plo-zı-bıl (/ˈplɔː.zə.bəl/)", anlam: "Akla yatkın, makul, inandırıcı", ornek: "He gave a plausible explanation for the delay. (Gecikme için akla yatkın bir açıklama yaptı.)", durum: "bilmiyorum" },
+      { row: 19, tarih: "2026-10-20", seviye: "C1", tur: "Adjective", kelime: "Pragmatic", okunus: "preg-met-ik (/præɡˈmæt.ɪk/)", anlam: "Faydacı, pratik, gerçekçi", ornek: "We need a pragmatic approach to the problem. (Soruna gerçekçi bir yaklaşıma ihtiyacımız var.)", durum: "bilmiyorum" },
+      { row: 20, tarih: "2026-10-20", seviye: "C1", tur: "Adjective", kelime: "Coherent", okunus: "ko-hi-rınt (/kəʊˈhɪə.rənt/)", anlam: "Tutarlı, mantıklı, anlaşılır", ornek: "She presented a coherent argument. (Tutarlı bir argüman sundu.)", durum: "bilmiyorum" },
+      { row: 21, tarih: "2026-10-20", seviye: "C1", tur: "Verb", kelime: "Alleviate", okunus: "ı-lii-vi-eyt (/əˈliː.vi.eɪt/)", anlam: "Hafifletmek, dindirmek", ornek: "The medicine will alleviate your pain. (İlaç ağrını hafifletecektir.)", durum: "bilmiyorum" }
     ];
 
     var SHEET_KELIMELER = [];
@@ -1216,61 +1216,102 @@
     var YAZI_BOYUTU = 13;
     var SES_ACIK = true;
     var BILINENLERI_GOSTER = true;
-    var HEDEF_HAFTA = 4;
+    var HEDEF_SAYI = 5;
+    var HEDEF_BIRIM = "gun"; // "gun" veya "hafta"
 
-    function hedefHaftaAl() {
-      var n = parseInt(HEDEF_HAFTA, 10);
-      if (isNaN(n) || n < 1) return 4;
-      if (n > 12) return 12;
+    function hedefSayiAl() {
+      var n = parseInt(HEDEF_SAYI, 10);
+      if (isNaN(n) || n < 1) return 5;
+      if (n > 365) return 365;
       return n;
     }
 
+    function hedefBirimAl() {
+      return HEDEF_BIRIM === "hafta" ? "hafta" : "gun";
+    }
+
+    function hedefBirimEtiketAl() {
+      return hedefBirimAl() === "hafta" ? "Hafta" : "Gün";
+    }
+
+    function hedefHaftaAl() {
+      return hedefSayiAl();
+    }
+
     function hedefHaftaSecicileriGuncelle() {
-      var h = hedefHaftaAl();
-      var s1 = document.getElementById("streakWeeksSelect");
-      if (s1 && String(s1.value) !== String(h)) s1.value = String(h);
-      var s2 = document.getElementById("statsStreakSelect");
-      if (s2 && String(s2.value) !== String(h)) s2.value = String(h);
+      var sayi = hedefSayiAl();
+      var birim = hedefBirimAl();
+      var birimEtiket = hedefBirimEtiketAl();
+      var cIds = ["topMasteryCount", "statsMasteryCount", "studyMasteryCount"];
+      for (var i = 0; i < cIds.length; i++) {
+        var elC = document.getElementById(cIds[i]);
+        if (elC && String(elC.value) !== String(sayi)) elC.value = String(sayi);
+      }
+      var uIds = ["topMasteryUnit", "statsMasteryUnit", "studyMasteryUnit"];
+      for (var j = 0; j < uIds.length; j++) {
+        var elU = document.getElementById(uIds[j]);
+        if (elU && elU.value !== birim) elU.value = birim;
+      }
       var th = document.getElementById("thStreakCol");
       if (th) {
-        th.innerText = h + "W Streak";
-        th.title = h + " Consecutive Zero-Mistake Weeks = Auto Known";
+        th.innerText = sayi + " " + birimEtiket;
+        th.title = "En az " + sayi + " farklı " + birimEtiket.toLowerCase() + " hatasız doğru cevap = Otomatik Biliyorum";
       }
     }
 
-    function hedefHaftaDegistir(val) {
-      var n = parseInt(val, 10);
-      if (isNaN(n) || n < 1) n = 1;
-      if (n > 12) n = 12;
-      HEDEF_HAFTA = n;
-      try { localStorage.setItem("kelime_hedef_hafta", String(HEDEF_HAFTA)); } catch (e) {}
+    function ogrenmeHedefiDegistir(yeniSayi, yeniBirim) {
+      if (yeniSayi !== null && yeniSayi !== undefined) {
+        var n = parseInt(yeniSayi, 10);
+        if (isNaN(n) || n < 1) n = 1;
+        if (n > 365) n = 365;
+        HEDEF_SAYI = n;
+      }
+      if (yeniBirim === "gun" || yeniBirim === "hafta") {
+        HEDEF_BIRIM = yeniBirim;
+      }
+      try {
+        localStorage.setItem("kelime_hedef_sayi", String(HEDEF_SAYI));
+        localStorage.setItem("kelime_hedef_birim", HEDEF_BIRIM);
+      } catch (e) {}
       hedefHaftaSecicileriGuncelle();
       if (typeof tercihleriKaydet === "function") tercihleriKaydet();
       tabloyuCiz();
-      bildirimGoster("🏆 Auto-Known Streak: " + HEDEF_HAFTA + (HEDEF_HAFTA === 1 ? " Week" : " Weeks"));
+      bildirimGoster("🎯 Öğrenme Hedefi: En az " + HEDEF_SAYI + " farklı " + hedefBirimEtiketAl() + " doğru cevap");
+    }
+
+    function hedefHaftaDegistir(val) {
+      ogrenmeHedefiDegistir(val, null);
     }
 
     function bilinenleriGosterDurumuUygula() {
-      var btn = document.getElementById("toggleKnownBtn");
-      if (!btn) return;
-      if (BILINENLERI_GOSTER) {
-        btn.className = "btn toggle-known-btn show-mode";
-        btn.innerText = "👁️ Bildiklerimi Gizle";
-        btn.title = "Şu an bildiğin kelimeler tabloda gösteriliyor. Gizlemek için tıkla.";
-      } else {
-        btn.className = "btn toggle-known-btn hide-mode";
-        btn.innerText = "🙈 Bildiklerimi Göster";
-        btn.title = "Şu an bildiğin kelimeler tabloda gizli. Göstermek için tıkla.";
-      }
+      BILINENLERI_GOSTER = true;
     }
 
     function bilinenleriGosterAcKapat() {
-      BILINENLERI_GOSTER = !BILINENLERI_GOSTER;
-      bilinenleriGosterDurumuUygula();
-      try { localStorage.setItem("kelime_tablo_bilinen_goster", BILINENLERI_GOSTER ? "1" : "0"); } catch (e) {}
-      if (typeof tercihleriKaydet === "function") tercihleriKaydet();
+      BILINENLERI_GOSTER = true;
       tabloyuCiz();
-      bildirimGoster(BILINENLERI_GOSTER ? "👁️ Bildiğim kelimeler gösteriliyor" : "🙈 Bildiğim kelimeler gizlendi");
+    }
+
+    function kisiselKnownSiraAl() {
+      try {
+        return JSON.parse(localStorage.getItem("kelime_kisisel_known_order_v1") || "{}");
+      } catch (e) {
+        return {};
+      }
+    }
+
+    function kisiselKnownSiraGuncelle(kelime, durum) {
+      try {
+        var map = kisiselKnownSiraAl();
+        var k = (kelime || "").toString().trim().toLowerCase();
+        if (!k) return;
+        if (durum === "biliyorum") {
+          map[k] = Date.now();
+        } else {
+          delete map[k];
+        }
+        localStorage.setItem("kelime_kisisel_known_order_v1", JSON.stringify(map));
+      } catch (e) {}
     }
 
     function kisiselDurumlariAl() {
@@ -1346,10 +1387,17 @@
       if (!isNaN(kayitliFs) && kayitliFs >= 9 && kayitliFs <= 20) { YAZI_BOYUTU = kayitliFs; }
       var kayitliSes = localStorage.getItem("kelime_tablo_ses");
       if (kayitliSes === "0") { SES_ACIK = false; }
-      var kayitliBilinen = localStorage.getItem("kelime_tablo_bilinen_goster");
-      if (kayitliBilinen === "0") { BILINENLERI_GOSTER = false; }
-      var kayitliHafta = parseInt(localStorage.getItem("kelime_hedef_hafta"), 10);
-      if (!isNaN(kayitliHafta) && kayitliHafta >= 1 && kayitliHafta <= 12) { HEDEF_HAFTA = kayitliHafta; }
+      BILINENLERI_GOSTER = true;
+      var kayitliSayi = parseInt(localStorage.getItem("kelime_hedef_sayi"), 10);
+      if (!isNaN(kayitliSayi) && kayitliSayi >= 1 && kayitliSayi <= 365) { HEDEF_SAYI = kayitliSayi; }
+      var kayitliBirim = localStorage.getItem("kelime_hedef_birim");
+      if (kayitliBirim === "gun" || kayitliBirim === "hafta") { HEDEF_BIRIM = kayitliBirim; }
+      if (localStorage.getItem("kelime_tumunu_bilinmeyen_reset_20261021_v1") !== "1") {
+        localStorage.removeItem("kelime_kisisel_durum_v1");
+        localStorage.removeItem("kelime_srs_sayac_v1");
+        localStorage.removeItem("kelime_istatistik_v1");
+        localStorage.setItem("kelime_tumunu_bilinmeyen_reset_20261021_v1", "1");
+      }
     } catch (e) {}
     yaziBoyutuUygula();
     sesDurumuUygula();
@@ -1363,6 +1411,8 @@
       setTimeout(function(){ t.classList.remove("show"); }, 1400);
     }
 
+    var AKTIF_SES = null;
+
     function kelimeOku(kelime, cellEl) {
       if (!SES_ACIK || !kelime) return;
       var temiz = kelime.toString().trim();
@@ -1370,8 +1420,30 @@
         cellEl.classList.add("speaking");
         setTimeout(function(){ cellEl.classList.remove("speaking"); }, 550);
       }
+      if (AKTIF_SES) {
+        try { AKTIF_SES.pause(); AKTIF_SES.currentTime = 0; } catch (e) {}
+        AKTIF_SES = null;
+      }
+      if ("speechSynthesis" in window) window.speechSynthesis.cancel();
       var ses = new Audio("https://ssl.gstatic.com/dictionary/static/sounds/20200429/" + encodeURIComponent(temiz.toLowerCase()) + "--_us_1.mp3");
+      AKTIF_SES = ses;
       ses.play().catch(function(){ tarayiciIleOku(temiz); });
+    }
+
+    function ornekOku(ornek, cellEl) {
+      if (!SES_ACIK || !ornek) return;
+      var ayrilmis = ornekCumleyiAyir(ornek);
+      var okunacak = (ayrilmis.en || ornek || "").toString().trim();
+      if (!okunacak) return;
+      if (cellEl) {
+        cellEl.classList.add("speaking");
+        setTimeout(function(){ cellEl.classList.remove("speaking"); }, 900);
+      }
+      if (AKTIF_SES) {
+        try { AKTIF_SES.pause(); AKTIF_SES.currentTime = 0; } catch (e) {}
+        AKTIF_SES = null;
+      }
+      tarayiciIleOku(okunacak);
     }
 
     function tarayiciIleOku(metin) {
@@ -1646,57 +1718,70 @@
       return Math.floor((simdi.getTime() - d.getTime()) / 86400000);
     }
 
-    function kelimeHatasizHaftaSayisiAl(st, refWord) {
-      if (!st) st = {};
+    function istatistikKaydiNormalizeEt(st) {
+      if (!st) return { cleanDays: [], cleanWeeks: [] };
+      if (!Array.isArray(st.cleanDays)) st.cleanDays = [];
+      if (!Array.isArray(st.cleanWeeks)) st.cleanWeeks = [];
       var m = Number(st.mistakes) || 0;
       var c = Number(st.correct) || 0;
-      if (m > 0) return 0;
-      var cw = Array.isArray(st.cleanWeeks) ? st.cleanWeeks.length : 0;
-      var baslangicTarih = st.cleanSince || (refWord && refWord.durum === "biliyorum" ? refWord.tarih : "");
-      var gunFarki = haftalarArasiGunFarki(baslangicTarih);
-      var takvimHafta = (c > 0 || (refWord && refWord.durum === "biliyorum")) && baslangicTarih
-        ? Math.floor(gunFarki / 7) + 1
-        : 0;
-      return Math.min(12, Math.max(cw, takvimHafta));
+      if (st.cleanDays.length === 0 && m === 0 && c > 0) {
+        var lp = (st.lastPractice || "").toString();
+        var tarihMatch = lp.match(/(\d{4}-\d{2}-\d{2})/);
+        if (tarihMatch && tarihMatch[1]) {
+          var dtStr = tarihMatch[1];
+          if (st.lastMistakeDate !== dtStr) {
+            st.cleanDays.push(dtStr);
+            var parcalar = dtStr.split("-");
+            var dObj = new Date(Number(parcalar[0]), Number(parcalar[1]) - 1, Number(parcalar[2]));
+            var wKey = haftaAnahtariAl(dObj);
+            if (st.cleanWeeks.indexOf(wKey) === -1) st.cleanWeeks.push(wKey);
+          }
+        }
+      }
+      return st;
+    }
+
+    function kelimeIlerlemeSayisiAl(st) {
+      if (!st) return 0;
+      istatistikKaydiNormalizeEt(st);
+      if (hedefBirimAl() === "hafta") {
+        return Array.isArray(st.cleanWeeks) ? st.cleanWeeks.length : 0;
+      }
+      return Array.isArray(st.cleanDays) ? st.cleanDays.length : 0;
+    }
+
+    function kelimeHatasizHaftaSayisiAl(st, refWord) {
+      return kelimeIlerlemeSayisiAl(st);
     }
 
     function kelimeDortHaftaUstalaMi(w) {
       if (!w || !w.kelime) return false;
-      var hedefHafta = hedefHaftaAl();
+      var hedefSayi = hedefSayiAl();
       var map = istatistikMapAl();
       var k = w.kelime.toString().trim().toLowerCase();
       var st = map[k];
-      var haftaSayi = kelimeHatasizHaftaSayisiAl(st, w);
-      return haftaSayi >= hedefHafta && (!st || (Number(st.mistakes) || 0) === 0);
+      if (!st) return false;
+      var ilerleme = kelimeIlerlemeSayisiAl(st);
+      return ilerleme >= hedefSayi;
     }
 
     function dortHaftaHatasizKontrolEt() {
-      var hedefHafta = hedefHaftaAl();
+      var hedefSayi = hedefSayiAl();
       var map = istatistikMapAl();
+      var srsMap = srsMapAl();
       var mapDegisti = false;
+      var geriAlinanSayi = 0;
+
       for (var i = 0; i < TUM_KELIMELER.length; i++) {
         var w = TUM_KELIMELER[i];
         var k = (w.kelime || "").toString().trim().toLowerCase();
         if (!k) continue;
         var st = map[k];
-        var haftaSayi = kelimeHatasizHaftaSayisiAl(st, w);
-        if (haftaSayi >= hedefHafta && (!st || (Number(st.mistakes) || 0) === 0)) {
-          if (!st) {
-            st = {
-              kelime: w.kelime,
-              seviye: w.seviye || "",
-              anlam: w.anlam || "",
-              mistakes: 0,
-              correct: 1,
-              cleanSince: w.tarih || new Date().toISOString().slice(0, 10),
-              cleanWeeks: [haftaAnahtariAl(new Date())],
-              mastered4w: true,
-              autoMasteredByStreak: w.durum !== "biliyorum",
-              lastPractice: hedefHafta + "W Auto-Mastered"
-            };
-            map[k] = st;
-            mapDegisti = true;
-          } else if (!st.mastered4w) {
+        if (st) istatistikKaydiNormalizeEt(st);
+        var ilerleme = st ? kelimeIlerlemeSayisiAl(st) : 0;
+
+        if (ilerleme >= hedefSayi) {
+          if (st && !st.mastered4w) {
             st.mastered4w = true;
             if (w.durum !== "biliyorum") st.autoMasteredByStreak = true;
             mapDegisti = true;
@@ -1705,6 +1790,7 @@
             w.durum = "biliyorum";
             w.biliyorum = true;
             w.bilmiyorum = false;
+            SON_YEREL_DEGISIM[k] = Date.now();
             kisiselDurumKaydet(w.kelime, "biliyorum");
             if (APPS_SCRIPT_URL) {
               fetch(APPS_SCRIPT_URL, {
@@ -1714,28 +1800,66 @@
               }).catch(function() {});
             }
           }
-        } else if (st && st.mastered4w) {
-          st.mastered4w = false;
-          mapDegisti = true;
-          if (st.autoMasteredByStreak && w.durum === "biliyorum") {
-            st.autoMasteredByStreak = false;
-            w.durum = "bilmiyorum";
-            w.biliyorum = false;
-            w.bilmiyorum = true;
-            kisiselDurumKaydet(w.kelime, "bilmiyorum");
-            if (APPS_SCRIPT_URL) {
-              fetch(APPS_SCRIPT_URL, {
-                method: "POST",
-                headers: { "Content-Type": "text/plain;charset=utf-8" },
-                body: JSON.stringify({ action: "setStatus", row: w.row, status: "bilmiyorum" })
-              }).catch(function() {});
-            }
+        } else {
+          if (st && st.mastered4w) {
+            st.mastered4w = false;
+            mapDegisti = true;
           }
         }
       }
       if (mapDegisti) {
         istatistikMapKaydet(map);
       }
+    }
+
+    function tumKelimeleriBilinmeyenYap(manuelMi) {
+      var map = istatistikMapAl();
+      var geriSayi = 0;
+      try { localStorage.removeItem("kelime_srs_sayac_v1"); } catch (e) {}
+      for (var i = 0; i < TUM_KELIMELER.length; i++) {
+        var w = TUM_KELIMELER[i];
+        var k = (w.kelime || "").toString().trim().toLowerCase();
+        var st = map[k];
+        if (st) {
+          st.manualKnown = false;
+          st.mastered4w = false;
+          st.autoMasteredByStreak = false;
+          st.cleanDays = [];
+          st.cleanWeeks = [];
+        }
+        var degistiMi = w.durum !== "bilmiyorum";
+        w.durum = "bilmiyorum";
+        w.biliyorum = false;
+        w.bilmiyorum = true;
+        SON_YEREL_DEGISIM[k] = Date.now();
+        for (var s = 0; s < SHEET_KELIMELER.length; s++) {
+          if (SHEET_KELIMELER[s].row === w.row || (SHEET_KELIMELER[s].kelime || "").toLowerCase() === k) {
+            SHEET_KELIMELER[s].durum = "bilmiyorum";
+            SHEET_KELIMELER[s].biliyorum = false;
+            SHEET_KELIMELER[s].bilmiyorum = true;
+          }
+        }
+        kisiselDurumKaydet(w.kelime, "bilmiyorum");
+        if (degistiMi) {
+          geriSayi++;
+          if (APPS_SCRIPT_URL) {
+            fetch(APPS_SCRIPT_URL, {
+              method: "POST",
+              headers: { "Content-Type": "text/plain;charset=utf-8" },
+              body: JSON.stringify({ action: "setStatus", row: w.row, status: "bilmiyorum" })
+            }).catch(function() {});
+          }
+        }
+      }
+      istatistikMapKaydet(map);
+      tabloyuCiz();
+      if (manuelMi) {
+        bildirimGoster("↩️ Tüm kelimeler (" + TUM_KELIMELER.length + " kelime) Bilinmeyenler Havuzuna alındı!");
+      }
+    }
+
+    function erkenBilinenleriHavuzaGeriAl() {
+      tumKelimeleriBilinmeyenYap(true);
     }
 
     function sunucuIstatistikleriniBirlestir(serverStats) {
@@ -1874,18 +1998,28 @@
 
       if (dogruMu) {
         kayit.correct = (Number(kayit.correct) || 0) + 1;
-        if (!Array.isArray(kayit.cleanWeeks)) kayit.cleanWeeks = [];
-        if (kayit.cleanWeeks.indexOf(buHafta) === -1) {
-          kayit.cleanWeeks.push(buHafta);
+        istatistikKaydiNormalizeEt(kayit);
+        if (kayit.lastMistakeDate !== bugunIso) {
+          if (kayit.cleanDays.indexOf(bugunIso) === -1) {
+            kayit.cleanDays.push(bugunIso);
+          }
         }
-        if (!kayit.cleanSince) {
-          kayit.cleanSince = (hedef && hedef.durum === "biliyorum" && hedef.tarih) ? hedef.tarih : bugunIso;
+        if (kayit.lastMistakeWeek !== buHafta) {
+          if (kayit.cleanWeeks.indexOf(buHafta) === -1) {
+            kayit.cleanWeeks.push(buHafta);
+          }
+        }
+        if (!kayit.cleanSince && kayit.cleanDays.length > 0) {
+          kayit.cleanSince = kayit.cleanDays[0];
         }
       } else {
         kayit.mistakes = (Number(kayit.mistakes) || 0) + 1;
+        kayit.cleanDays = [];
         kayit.cleanWeeks = [];
         kayit.cleanSince = "";
         kayit.mastered4w = false;
+        kayit.lastMistakeDate = bugunIso;
+        kayit.lastMistakeWeek = buHafta;
       }
 
       var modAdi = (mod || AKTIF_MOD || "Study").toString().toUpperCase();
@@ -1893,15 +2027,18 @@
         modAdi + " • " + (dogruMu ? "✅" : "❌") + " (" +
         bugunIso + " " + pad(simdi.getHours()) + ":" + pad(simdi.getMinutes()) + ")";
 
-      var hedefHafta = hedefHaftaAl();
-      var haftaSayi = kelimeHatasizHaftaSayisiAl(kayit, hedef);
-      if (haftaSayi >= hedefHafta && (Number(kayit.mistakes) || 0) === 0) {
+      var hedefSayi = hedefSayiAl();
+      var birimEtiket = hedefBirimEtiketAl();
+      var ilerlemeSayisi = kelimeIlerlemeSayisiAl(kayit);
+      if (dogruMu && ilerlemeSayisi >= hedefSayi) {
         kayit.mastered4w = true;
         if (hedef && hedef.durum !== "biliyorum") {
           kayit.autoMasteredByStreak = true;
-          kutucukDegisti(hedef.row, "biliyorum", true);
-          bildirimGoster("🏆 " + hedefHafta + "-Week Zero-Mistake Mastery: " + kayit.kelime + " → Known!");
+          kutucukDegisti(hedef.row, "biliyorum", true, false);
+          bildirimGoster("🏆 Öğrenildi (" + ilerlemeSayisi + "/" + hedefSayi + " " + birimEtiket + "): " + kayit.kelime + " → Bildiğim Kelimeler!");
         }
+      } else {
+        kayit.mastered4w = false;
       }
 
       map[key] = kayit;
@@ -2077,9 +2214,10 @@
           ? "#22c55e"
           : (it.errRate >= 60 ? "linear-gradient(90deg, #ef4444, #b91c1c)" : "linear-gradient(90deg, #f97316, #ea580c)");
         var gosterilenSt = Math.min(hedefHafta, it.cleanWeeksCount);
+        var bEtiket = hedefBirimEtiketAl();
         var streakHtml = it.mastered4w
-          ? '<span class="streak-pill mastered" title="' + hedefHafta + ' Consecutive Zero-Mistake Weeks — Mastered!">🏆 ' + gosterilenSt + '/' + hedefHafta + ' Wk</span>'
-          : '<span class="streak-pill" title="Consecutive zero-mistake weeks (' + gosterilenSt + '/' + hedefHafta + ')">' + gosterilenSt + '/' + hedefHafta + ' Wk</span>';
+          ? '<span class="streak-pill mastered" title="En az ' + hedefHafta + ' farklı ' + bEtiket.toLowerCase() + ' doğru cevaplandı — Öğrenildi!">🏆 ' + gosterilenSt + '/' + hedefHafta + ' ' + bEtiket + '</span>'
+          : '<span class="streak-pill" title="Hatasız doğru cevaplanan farklı ' + bEtiket.toLowerCase() + ' sayısı (' + gosterilenSt + '/' + hedefHafta + ')">📅 ' + gosterilenSt + '/' + hedefHafta + ' ' + bEtiket + '</span>';
 
         rowsHtml.push(
           '<tr>' +
@@ -2126,28 +2264,22 @@
     }
 
     function srsGetir(kelime) {
-      var map = srsMapAl();
+      var map = istatistikMapAl();
       var k = (kelime || "").toString().trim().toLowerCase();
-      return map[k] || 0;
+      return kelimeIlerlemeSayisiAl(map[k]);
+    }
+
+    function srsEtiketGetir(kelime) {
+      return srsGetir(kelime) + " / " + hedefSayiAl() + " " + hedefBirimEtiketAl();
     }
 
     function srsArtir(card) {
       if (!card || !card.kelime) return false;
-      var map = srsMapAl();
-      var k = card.kelime.toString().trim().toLowerCase();
-      var yeni = (map[k] || 0) + 1;
-      if (yeni >= 3) {
-        map[k] = 0;
-        try { localStorage.setItem("kelime_srs_sayac_v1", JSON.stringify(map)); } catch (e) {}
-        kutucukDegisti(card.row, "biliyorum", true);
-        bildirimGoster("🎉 Mastered (3/3): " + card.kelime + " → Known!");
-        return true;
-      } else {
-        map[k] = yeni;
-        try { localStorage.setItem("kelime_srs_sayac_v1", JSON.stringify(map)); } catch (e) {}
-        bildirimGoster("⭐ Progress (" + yeni + "/3): " + card.kelime);
-        return false;
+      var mezun = kelimeDortHaftaUstalaMi(card);
+      if (!mezun) {
+        bildirimGoster("📅 İlerleme (" + srsEtiketGetir(card.kelime) + "): " + card.kelime);
       }
+      return mezun;
     }
 
     function tercihleriKaydet() {
@@ -2164,10 +2296,12 @@
           fcShuffledKeys: FC_SHUFFLED_KEYS,
           fcAltKartAcik: !!window.FC_ALT_KART_ACIK,
           fcHoverOrnekAcik: window.FC_HOVER_ORNEK_ACIK !== false,
+          quizYon: window.QUIZ_YON || "tr-en",
           yaziBoyutu: YAZI_BOYUTU,
           sesAcik: SES_ACIK,
           bilinenleriGoster: BILINENLERI_GOSTER,
-          hedefHafta: hedefHaftaAl(),
+          hedefSayi: hedefSayiAl(),
+          hedefBirim: hedefBirimAl(),
           levelFilter: lvlEl ? lvlEl.value : "ALL",
           searchQuery: qEl ? qEl.value : "",
           addBarOpen: addBarEl ? addBarEl.classList.contains("open") : false,
@@ -2192,12 +2326,12 @@
           SES_ACIK = p.sesAcik;
           sesDurumuUygula();
         }
-        if (typeof p.bilinenleriGoster === "boolean") {
-          BILINENLERI_GOSTER = p.bilinenleriGoster;
-          bilinenleriGosterDurumuUygula();
+        BILINENLERI_GOSTER = true;
+        if (typeof p.hedefSayi === "number" && p.hedefSayi >= 1 && p.hedefSayi <= 365) {
+          HEDEF_SAYI = p.hedefSayi;
         }
-        if (typeof p.hedefHafta === "number" && p.hedefHafta >= 1 && p.hedefHafta <= 12) {
-          HEDEF_HAFTA = p.hedefHafta;
+        if (p.hedefBirim === "gun" || p.hedefBirim === "hafta") {
+          HEDEF_BIRIM = p.hedefBirim;
         }
         hedefHaftaSecicileriGuncelle();
         if (typeof p.fcAltKartAcik === "boolean") {
@@ -2205,6 +2339,9 @@
         }
         if (typeof p.fcHoverOrnekAcik === "boolean") {
           window.FC_HOVER_ORNEK_ACIK = p.fcHoverOrnekAcik;
+        }
+        if (p.quizYon === "en-tr" || p.quizYon === "tr-en") {
+          window.QUIZ_YON = p.quizYon;
         }
         if (typeof p.fcIndex === "number" && p.fcIndex >= 0) {
           FC_INDEX = p.fcIndex;
@@ -2354,7 +2491,9 @@
         { id: "listen", label: "🎧 Listen" },
         { id: "match", label: "🧩 Match" }
       ];
-      var html = ['<div class="study-modes-bar">'];
+      var hs = hedefSayiAl();
+      var hb = hedefBirimAl();
+      var html = ['<div class="study-modes-bar" style="align-items:center;">'];
       html.push(
         '<button class="mode-btn" onclick="sekmeDegistir(\'sheet1\')" title="Ana Kelime Tablosuna Dön (Words)">' +
           '📋 Words' +
@@ -2381,6 +2520,21 @@
       html.push(
         '<button class="mode-btn" onclick="sekmeDegistir(\'stats\')" title="View Mistake & Practice Statistics">' +
           '📊 Stats' +
+        '</button>'
+      );
+      html.push(
+        '<div style="display:inline-flex;align-items:center;gap:4px;background:#fff;border:1px solid #cbd5e1;border-radius:6px;padding:2px 7px;font-size:11px;font-weight:700;color:#1e293b;margin-left:auto;" title="Bir kelimenin öğrenilmiş (Known) sayılması için en az kaç farklı gün veya hafta doğru cevaplanması gerektiğini belirleyin">' +
+          '<span>🎯 En az:</span>' +
+          '<input type="number" id="studyMasteryCount" min="1" max="365" value="' + hs + '" onchange="ogrenmeHedefiDegistir(this.value, null)" style="width:42px;height:20px;border:1px solid #cbd5e1;border-radius:4px;text-align:center;font-size:11px;font-weight:800;color:#0f172a;padding:0 2px;">' +
+          '<select id="studyMasteryUnit" onchange="ogrenmeHedefiDegistir(null, this.value)" style="height:20px;border:1px solid #cbd5e1;border-radius:4px;font-size:11px;font-weight:700;color:#0f172a;background:#f8fafc;padding:0 3px;cursor:pointer;">' +
+            '<option value="gun"' + (hb === "gun" ? " selected" : "") + '>Gün</option>' +
+            '<option value="hafta"' + (hb === "hafta" ? " selected" : "") + '>Hafta</option>' +
+          '</select>' +
+        '</div>'
+      );
+      html.push(
+        '<button class="mode-btn" style="background:#fff7ed;border-color:#fdba74;color:#9a3412;" onclick="erkenBilinenleriHavuzaGeriAl()" title="Seçtiğiniz gün/hafta hedefini henüz doldurmadan Known\'a geçmiş kelimeleri tekrar Bilinmeyenler Havuzuna geri alır">' +
+          '↩️ Erken Bilinenleri Geri Al' +
         '</button>'
       );
       html.push('</div>');
@@ -2515,7 +2669,7 @@
 
       var card = deck[FC_INDEX];
       var pct = Math.round(((FC_INDEX + 1) / deck.length) * 100);
-      var srsSayi = srsGetir(card.kelime);
+      var srsEtiket = srsEtiketGetir(card.kelime);
       var altAcik = !!window.FC_ALT_KART_ACIK;
       var hoverAcik = window.FC_HOVER_ORNEK_ACIK !== false;
 
@@ -2524,7 +2678,7 @@
         '<div class="fc-top">' +
           '<span>Unknown Pool Flashcards — <b>' + (FC_INDEX + 1) + ' / ' + deck.length + '</b></span>' +
           '<div style="display:flex;gap:6px;align-items:center;">' +
-            '<span class="srs-badge" title="3-Step Spaced Repetition: Reach 3/3 to automatically move to Known!">⭐ ' + srsSayi + ' / 3</span>' +
+            '<span class="srs-badge" title="Öğrenme İlerlemesi: Belirlediğiniz gün/hafta hedefine ulaşınca otomatik Known olur">📅 ' + srsEtiket + '</span>' +
             '<button class="fc-btn' + (hoverAcik ? ' fc-btn-toggle-on' : '') + '" style="height:26px;font-size:11px;padding:0 9px;" onclick="fcHoverOrnekAcKapat()" title="Flashcards\'da kelimenin üstüne gelince altta örnek cümle ve anlamını göster/gizle">' +
               (hoverAcik ? '💬 Üstüne Gelince Örnek: AÇIK' : '💬 Üstüne Gelince Örnek: KAPALI') +
             '</button>' +
@@ -2542,14 +2696,14 @@
                 '<div class="fc-badge-group">' +
                   '<span class="fc-lvl-badge">' + escHtml(card.seviye) + '</span>' +
                   '<span class="fc-type-badge">' + escHtml(turTemizle(card.tur)) + '</span>' +
-                  '<span class="srs-badge">⭐ ' + srsSayi + '/3</span>' +
+                  '<span class="srs-badge">📅 ' + srsEtiket + '</span>' +
                 '</div>' +
                 '<button class="btn" onclick="event.stopPropagation(); kelimeOku(\'' + escJs(card.kelime) + '\')" title="Listen pronunciation">🔊 Listen</button>' +
               '</div>' +
               '<div class="fc-center">' +
                 '<div class="fc-word-box' + (hoverAcik ? '' : ' no-hover-ex') + '">' +
                   '<div class="fc-word">' + escHtml(card.kelime) + '</div>' +
-                  (hoverAcik && card.ornek ? '<div class="fc-hover-example">' + ornekBicimlendir(card.ornek) + '</div>' : '') +
+                  (hoverAcik && card.ornek ? '<div class="fc-hover-example" onclick="event.stopPropagation(); ornekOku(\'' + escJs(card.ornek) + '\', this)" title="Click to listen to the example sentence">' + ornekBicimlendir(card.ornek) + '</div>' : '') +
                 '</div>' +
               '</div>' +
               '<div class="fc-hint">' + (hoverAcik ? 'Hover over word for example sentence • Click card or Space to flip ↻' : 'Click card or Space to flip ↻') + '</div>' +
@@ -2565,7 +2719,7 @@
               '</div>' +
               '<div class="fc-center">' +
                 '<div class="fc-meaning">' + escHtml(card.anlam) + '</div>' +
-                (card.ornek ? '<div class="fc-example">' + ornekBicimlendir(card.ornek) + '</div>' : '') +
+                (card.ornek ? '<div class="fc-example" onclick="event.stopPropagation(); ornekOku(\'' + escJs(card.ornek) + '\', this)" title="Click to listen to the example sentence">' + ornekBicimlendir(card.ornek) + '</div>' : '') +
               '</div>' +
               '<div class="fc-hint">Click card to flip back ↻</div>' +
             '</div>' +
@@ -2575,7 +2729,7 @@
           ? '<div class="fc-below-card">' +
               '<div class="fc-below-title">📖 Meaning & Example Sentence (' + escHtml(card.kelime) + ')</div>' +
               '<div class="fc-meaning">' + escHtml(card.anlam) + '</div>' +
-              (card.ornek ? '<div class="fc-example">' + ornekBicimlendir(card.ornek) + '</div>' : '') +
+              (card.ornek ? '<div class="fc-example" onclick="ornekOku(\'' + escJs(card.ornek) + '\', this)" title="Click to listen to the example sentence">' + ornekBicimlendir(card.ornek) + '</div>' : '') +
             '</div>'
           : '') +
         '<div class="fc-controls">' +
@@ -2588,7 +2742,7 @@
             (altAcik ? '📖 Alt Kart: AÇIK' : '📖 Alt Kart: KAPALI') +
           '</button>' +
           '<button class="fc-btn" style="background:#fef2f2;border-color:#fecaca;color:#b91c1c;" onclick="fcHataIsaretle(' + card.row + ')" title="Record a mistake for this word & advance">❌ Mistake</button>' +
-          '<button class="fc-btn" style="background:#fffbeb;border-color:#fde68a;color:#b45309;" onclick="fcSrsArtir(' + card.row + ')" title="3-Box Method: +1 Star (at 3/3 moves to Known)">⭐ +1 Step (' + srsSayi + '/3)</button>' +
+          '<button class="fc-btn" style="background:#fffbeb;border-color:#fde68a;color:#b45309;" onclick="fcSrsArtir(' + card.row + ')" title="Bugün/bu hafta için doğru cevap olarak kaydet (Hedef gün/haftaya ulaşınca Known olur)">📅 +1 Doğru (' + srsEtiket + ')</button>' +
           '<button class="fc-btn fc-btn-known" onclick="fcBiliyorumIsaretle(' + card.row + ')">✅ Known (Instant)</button>' +
           '<button class="fc-btn" onclick="fcDegistir(1)">Next ▶</button>' +
         '</div>';
@@ -2626,7 +2780,7 @@
     function clozeModuCiz(box, deck) {
       var card = deck[FC_INDEX];
       var pct = Math.round(((FC_INDEX + 1) / deck.length) * 100);
-      var srsSayi = srsGetir(card.kelime);
+      var srsEtiket = srsEtiketGetir(card.kelime);
       var ayrilmis = ornekCumleyiAyir(card.ornek);
       var gizliCumle = cumledeKelimeyiGizle(ayrilmis.en, card.kelime);
       var secenekler = secenekleriUret(card, deck);
@@ -2646,7 +2800,7 @@
         '<div class="fc-top">' +
           '<span>📝 Cloze (Fill in the Blank) — <b>' + (FC_INDEX + 1) + ' / ' + deck.length + '</b></span>' +
           '<div style="display:flex;gap:6px;align-items:center;">' +
-            '<span class="srs-badge">⭐ ' + srsSayi + ' / 3</span>' +
+            '<span class="srs-badge">📅 ' + srsEtiket + '</span>' +
             '<button class="btn" onclick="fcKaristir()">🔀 Shuffle</button>' +
           '</div>' +
         '</div>' +
@@ -2656,7 +2810,7 @@
             '<div class="fc-badge-group">' +
               '<span class="fc-lvl-badge">' + escHtml(card.seviye) + '</span>' +
               '<span class="fc-type-badge">' + escHtml(turTemizle(card.tur)) + '</span>' +
-              '<span class="srs-badge">⭐ ' + srsSayi + '/3</span>' +
+              '<span class="srs-badge">📅 ' + srsEtiket + '</span>' +
             '</div>' +
             '<button class="btn" onclick="kelimeOku(\'' + escJs(card.kelime) + '\')" title="Audio Hint">🔊 Audio Hint</button>' +
           '</div>' +
@@ -2729,18 +2883,41 @@
       }
     }
 
+    try {
+      var kayitliQuizYon = localStorage.getItem("kelime_quiz_yon");
+      window.QUIZ_YON = (kayitliQuizYon === "en-tr" || kayitliQuizYon === "tr-en") ? kayitliQuizYon : "tr-en";
+    } catch (e) {
+      window.QUIZ_YON = "tr-en";
+    }
+
+    function quizYonuDegistir(yeniYon) {
+      if (yeniYon === "en-tr" || yeniYon === "tr-en") {
+        window.QUIZ_YON = (window.QUIZ_YON === yeniYon) ? (yeniYon === "en-tr" ? "tr-en" : "en-tr") : yeniYon;
+      } else {
+        window.QUIZ_YON = window.QUIZ_YON === "en-tr" ? "tr-en" : "en-tr";
+      }
+      try { localStorage.setItem("kelime_quiz_yon", window.QUIZ_YON); } catch (e) {}
+      tercihleriKaydet();
+      tabloyuCiz();
+      bildirimGoster(window.QUIZ_YON === "en-tr"
+        ? "🇬🇧 Quiz Yönü: English → Turkish (İngilizce verilip Türkçe soruluyor)"
+        : "🇹🇷 Quiz Yönü: Turkish → English (Türkçe verilip İngilizce soruluyor)");
+    }
+
     function quizModuCiz(box, deck) {
       var card = deck[FC_INDEX];
       var pct = Math.round(((FC_INDEX + 1) / deck.length) * 100);
-      var srsSayi = srsGetir(card.kelime);
+      var srsEtiket = srsEtiketGetir(card.kelime);
       var secenekler = secenekleriUret(card, deck);
+      var enTr = window.QUIZ_YON === "en-tr";
 
       var btnHtml = [];
       for (var i = 0; i < secenekler.length; i++) {
         var sc = secenekler[i];
+        var secenekMetin = enTr ? sc.anlam : sc.kelime;
         btnHtml.push(
           '<button class="choice-btn" onclick="quizSecenekSec(this, \'' + escJs(sc.kelime) + '\', \'' + escJs(card.kelime) + '\', ' + card.row + ')">' +
-            (i + 1) + '. ' + escHtml(sc.kelime) +
+            (i + 1) + '. ' + escHtml(secenekMetin) +
           '</button>'
         );
       }
@@ -2748,9 +2925,11 @@
       box.innerHTML =
         modCubuguHtml() +
         '<div class="fc-top">' +
-          '<span>🎯 Active Recall (Turkish → English) — <b>' + (FC_INDEX + 1) + ' / ' + deck.length + '</b></span>' +
+          '<span>🎯 Active Recall (' + (enTr ? 'English → Turkish' : 'Turkish → English') + ') — <b>' + (FC_INDEX + 1) + ' / ' + deck.length + '</b></span>' +
           '<div style="display:flex;gap:6px;align-items:center;">' +
-            '<span class="srs-badge">⭐ ' + srsSayi + ' / 3</span>' +
+            '<button class="fc-btn' + (!enTr ? ' fc-btn-toggle-on' : '') + '" style="height:26px;font-size:11px;padding:0 9px;" onclick="quizYonuDegistir(\'tr-en\')" title="Türkçesini verip İngilizcesini sor (Turkish → English)">🇹🇷 Turkish → English</button>' +
+            '<button class="fc-btn' + (enTr ? ' fc-btn-toggle-on' : '') + '" style="height:26px;font-size:11px;padding:0 9px;" onclick="quizYonuDegistir(\'en-tr\')" title="İngilizcesini verip Türkçesini sor (English → Turkish)">🇬🇧 English → Turkish</button>' +
+            '<span class="srs-badge">📅 ' + srsEtiket + '</span>' +
             '<button class="btn" onclick="fcKaristir()">🔀 Shuffle</button>' +
           '</div>' +
         '</div>' +
@@ -2760,23 +2939,25 @@
             '<div class="fc-badge-group">' +
               '<span class="fc-lvl-badge">' + escHtml(card.seviye) + '</span>' +
               '<span class="fc-type-badge">' + escHtml(turTemizle(card.tur)) + '</span>' +
-              '<span class="srs-badge">⭐ ' + srsSayi + '/3</span>' +
+              '<span class="srs-badge">📅 ' + srsEtiket + '</span>' +
+              (enTr ? '<button class="btn" onclick="kelimeOku(\'' + escJs(card.kelime) + '\')" title="Listen pronunciation">🔊 Listen</button>' : '') +
             '</div>' +
-            '<span style="font-size:11px;color:#64748b;font-weight:600;">Find or type the English word</span>' +
+            '<span style="font-size:11px;color:#64748b;font-weight:600;">' + (enTr ? 'Select or type the Turkish meaning' : 'Find or type the English word') + '</span>' +
           '</div>' +
           '<div style="text-align:center;padding:12px 6px;">' +
-            '<div style="font-size:11px;text-transform:uppercase;letter-spacing:0.6px;color:#64748b;margin-bottom:6px;font-weight:700;">Turkish Meaning</div>' +
-            '<div style="font-size:calc(var(--fs) + 11px);font-weight:800;color:#135c37;">' + escHtml(card.anlam) + '</div>' +
+            '<div style="font-size:11px;text-transform:uppercase;letter-spacing:0.6px;color:#64748b;margin-bottom:6px;font-weight:700;">' + (enTr ? 'English Word' : 'Turkish Meaning') + '</div>' +
+            '<div style="font-size:calc(var(--fs) + 11px);font-weight:800;color:' + (enTr ? '#0f172a' : '#135c37') + ';">' + escHtml(enTr ? card.kelime : card.anlam) + '</div>' +
           '</div>' +
           '<div class="choice-grid">' + btnHtml.join("") + '</div>' +
           '<div class="type-row">' +
-            '<input type="text" id="quizTypeInput" class="type-inp" placeholder="Or type the English word from memory..." onkeydown="if(event.key===\'Enter\') quizYazKontrol(\'' + escJs(card.kelime) + '\', ' + card.row + ')">' +
+            '<input type="text" id="quizTypeInput" class="type-inp" placeholder="' + (enTr ? 'Or type the Turkish meaning from memory...' : 'Or type the English word from memory...') + '" onkeydown="if(event.key===\'Enter\') quizYazKontrol(\'' + escJs(card.kelime) + '\', ' + card.row + ')">' +
             '<button class="fc-btn fc-btn-known" onclick="quizYazKontrol(\'' + escJs(card.kelime) + '\', ' + card.row + ')">Check ↵</button>' +
           '</div>' +
-          '<div id="quizFeedbackBox" style="display:none;" class="fc-example"></div>' +
+          '<div id="quizFeedbackBox" style="display:none;" class="fc-example" onclick="ornekOku(\'' + escJs(card.ornek) + '\', this)" title="Click to listen to the example sentence"></div>' +
         '</div>' +
         '<div class="fc-controls">' +
           '<button class="fc-btn" onclick="fcDegistir(-1)">◀ Prev</button>' +
+          '<button class="fc-btn" onclick="quizYonuDegistir()" title="Quiz yönünü değiştir (TR ↔ EN)">🔄 ' + (enTr ? 'Switch to TR → EN' : 'Switch to EN → TR') + '</button>' +
           '<button class="fc-btn" onclick="fcDegistir(1)">Skip / Next ▶</button>' +
         '</div>';
     }
@@ -2790,7 +2971,7 @@
         var fb = document.getElementById("quizFeedbackBox");
         if (fb && card && card.ornek) {
           fb.style.display = "block";
-          fb.innerHTML = "✅ <b>" + escHtml(dogru) + ":</b> " + ornekBicimlendir(card.ornek);
+          fb.innerHTML = "✅ <b>" + escHtml(dogru) + " (" + escHtml(card.anlam) + "):</b> " + ornekBicimlendir(card.ornek);
         }
         var mezun = card ? srsArtir(card) : false;
         setTimeout(function() {
@@ -2809,8 +2990,19 @@
       var inp = document.getElementById("quizTypeInput");
       if (!inp) return;
       var yazilan = inp.value.trim();
+      if (!yazilan) return;
       var card = TUM_KELIMELER.filter(function(w){ return w.row === row; })[0];
-      if (yazilan.toLowerCase() === dogru.toLowerCase()) {
+      var enTr = window.QUIZ_YON === "en-tr";
+      var dogruMu = false;
+      if (enTr && card && card.anlam) {
+        var kucukYazilan = yazilan.toLocaleLowerCase("tr-TR");
+        var anlamTam = card.anlam.trim().toLocaleLowerCase("tr-TR");
+        var parcalar = anlamTam.split(/[,;/()]+/).map(function(s){ return s.trim(); }).filter(Boolean);
+        dogruMu = (kucukYazilan === anlamTam) || parcalar.indexOf(kucukYazilan) !== -1 || (yazilan.toLowerCase() === dogru.toLowerCase());
+      } else {
+        dogruMu = (yazilan.toLowerCase() === dogru.toLowerCase());
+      }
+      if (dogruMu) {
         inp.style.borderColor = "#16a34a";
         inp.style.background = "#dcfce7";
         kelimeOku(dogru);
@@ -2824,14 +3016,15 @@
       } else {
         inp.style.borderColor = "#ef4444";
         alistirmaSonucuKaydet(dogru, false, "Quiz");
-        bildirimGoster("❌ Hint: starts with '" + dogru.slice(0, 2) + "...' (" + dogru.length + " letters)");
+        var ipucuKelime = (enTr && card && card.anlam) ? card.anlam.trim() : dogru;
+        bildirimGoster("❌ Hint: starts with '" + ipucuKelime.slice(0, 2) + "...' (" + ipucuKelime.length + " chars)");
       }
     }
 
     function listenModuCiz(box, deck) {
       var card = deck[FC_INDEX];
       var pct = Math.round(((FC_INDEX + 1) / deck.length) * 100);
-      var srsSayi = srsGetir(card.kelime);
+      var srsEtiket = srsEtiketGetir(card.kelime);
       var secenekler = secenekleriUret(card, deck);
 
       var btnHtml = [];
@@ -2849,7 +3042,7 @@
         '<div class="fc-top">' +
           '<span>🎧 Listen & Find / Spell — <b>' + (FC_INDEX + 1) + ' / ' + deck.length + '</b></span>' +
           '<div style="display:flex;gap:6px;align-items:center;">' +
-            '<span class="srs-badge">⭐ ' + srsSayi + ' / 3</span>' +
+            '<span class="srs-badge">📅 ' + srsEtiket + '</span>' +
             '<button class="btn" onclick="fcKaristir()">🔀 Shuffle</button>' +
           '</div>' +
         '</div>' +
@@ -2859,7 +3052,7 @@
             '<div class="fc-badge-group">' +
               '<span class="fc-lvl-badge">' + escHtml(card.seviye) + '</span>' +
               '<span class="fc-type-badge">' + escHtml(turTemizle(card.tur)) + '</span>' +
-              '<span class="srs-badge">⭐ ' + srsSayi + '/3</span>' +
+              '<span class="srs-badge">📅 ' + srsEtiket + '</span>' +
             '</div>' +
             '<span style="font-size:11px;color:#64748b;font-weight:600;">Audio-First Ear Training</span>' +
           '</div>' +
@@ -2981,7 +3174,7 @@
         enHtml.push(
           '<div class="match-item' + (isMatchedEn ? ' matched' : '') + (isSelEn ? ' selected' : '') + '" onclick="matchEnSec(\'' + escJs(kEn) + '\', \'' + escJs(wEn.kelime) + '\')">' +
             '<span>' + escHtml(wEn.kelime) + '</span>' +
-            '<span class="srs-badge">⭐ ' + srsGetir(wEn.kelime) + '/3</span>' +
+            '<span class="srs-badge">📅 ' + srsEtiketGetir(wEn.kelime) + '</span>' +
           '</div>'
         );
       }
@@ -3183,15 +3376,34 @@
       var q = (document.getElementById("searchInput").value || "").toLowerCase().trim();
       var lvl = document.getElementById("levelFilter").value;
 
-      var s1Rows = [];
+      var knownOrderMap = kisiselKnownSiraAl();
+      var s1List = [];
       for (var j = 0; j < TUM_KELIMELER.length; j++) {
-        var x = TUM_KELIMELER[j];
-        if (!BILINENLERI_GOSTER && x.durum === "biliyorum") continue;
-        if (lvl !== "ALL" && x.seviye !== lvl) continue;
-        if (q && (x.kelime + " " + x.anlam + " " + x.ornek).toLowerCase().indexOf(q) === -1) continue;
+        var xItem = TUM_KELIMELER[j];
+        if (lvl !== "ALL" && xItem.seviye !== lvl) continue;
+        if (q && (xItem.kelime + " " + xItem.anlam + " " + xItem.ornek).toLowerCase().indexOf(q) === -1) continue;
+        s1List.push(xItem);
+      }
+      s1List.sort(function(a, b) {
+        var aKnown = a.durum === "biliyorum" ? 1 : 0;
+        var bKnown = b.durum === "biliyorum" ? 1 : 0;
+        if (aKnown !== bKnown) return aKnown - bKnown;
+        if (aKnown === 1) {
+          var ak = (a.kelime || "").toLowerCase().trim();
+          var bk = (b.kelime || "").toLowerCase().trim();
+          var ao = knownOrderMap[ak] || a.row || 0;
+          var bo = knownOrderMap[bk] || b.row || 0;
+          if (ao !== bo) return ao - bo;
+        }
+        return (a.row || 0) - (b.row || 0);
+      });
+
+      var s1Rows = [];
+      for (var sIdx = 0; sIdx < s1List.length; sIdx++) {
+        var x = s1List[sIdx];
         s1Rows.push(
           '<tr class="' + (x.durum === "biliyorum" ? "row-known" : "") + '">' +
-            '<td class="col-row">' + x.row + '</td>' +
+            '<td class="col-row">' + (sIdx + 1) + '</td>' +
             '<td class="col-date">' + escHtml(x.tarih) + '</td>' +
             '<td class="col-lvl">' + escHtml(x.seviye) + '</td>' +
             '<td class="col-type">' + escHtml(turTemizle(x.tur)) + '</td>' +
@@ -3201,7 +3413,7 @@
               (x.ornek ? '<div class="word-hover-ex">' + ornekBicimlendir(x.ornek) + '</div>' : '') +
             '</td>' +
             '<td class="col-meaning">' + escHtml(x.anlam) + '</td>' +
-            '<td class="col-example">' + escHtml(x.ornek) + '</td>' +
+            '<td class="col-example" onclick="ornekOku(\'' + escJs(x.ornek) + '\', this)" title="Click to listen to the example sentence">' + escHtml(x.ornek) + '</td>' +
             '<td class="col-status"><span class="status-pill ' + x.durum + '">' + durumMetniGetir(x.durum) + '</span></td>' +
           '</tr>'
         );
@@ -3245,7 +3457,7 @@
               (p.ornek ? '<div class="word-hover-ex">' + ornekBicimlendir(p.ornek) + '</div>' : '') +
             '</td>' +
             '<td class="col-meaning">' + escHtml(p.anlam) + '</td>' +
-            '<td class="col-example">' + escHtml(p.ornek) + '</td>' +
+            '<td class="col-example" onclick="ornekOku(\'' + escJs(p.ornek) + '\', this)" title="Click to listen to the example sentence">' + escHtml(p.ornek) + '</td>' +
             '<td class="col-date">' + escHtml(p.tarih) + '</td>' +
           '</tr>'
         );
@@ -3272,7 +3484,7 @@
               (kp.ornek ? '<div class="word-hover-ex">' + ornekBicimlendir(kp.ornek) + '</div>' : '') +
             '</td>' +
             '<td class="col-meaning">' + escHtml(kp.anlam) + '</td>' +
-            '<td class="col-example">' + escHtml(kp.ornek) + '</td>' +
+            '<td class="col-example" onclick="ornekOku(\'' + escJs(kp.ornek) + '\', this)" title="Click to listen to the example sentence">' + escHtml(kp.ornek) + '</td>' +
             '<td class="col-date">' + escHtml(kp.tarih) + '</td>' +
           '</tr>'
         );
@@ -3298,10 +3510,10 @@
         e.preventDefault();
         e.stopPropagation();
       }
-      kutucukDegisti(row, tip, true);
+      kutucukDegisti(row, tip, true, true);
     }
 
-    function kutucukDegisti(row, tip, isChecked) {
+    function kutucukDegisti(row, tip, isChecked, manuelMi) {
       var hedef = null;
       for (var i = 0; i < TUM_KELIMELER.length; i++) {
         if (TUM_KELIMELER[i].row === row) { hedef = TUM_KELIMELER[i]; break; }
@@ -3320,9 +3532,27 @@
           SHEET_KELIMELER[s].bilmiyorum = yeniDurum === "bilmiyorum";
         }
       }
+      if (key) {
+        var ist = istatistikMapAl();
+        if (manuelMi !== false && yeniDurum === "biliyorum") {
+          var stKayit = istatistikKaydiNormalizeEt(ist[key]);
+          stKayit.word = hedef.kelime;
+          stKayit.manualKnown = true;
+          stKayit.autoMasteredByStreak = false;
+          ist[key] = stKayit;
+          istatistikMapKaydet(ist);
+        } else if (yeniDurum === "bilmiyorum" && ist[key]) {
+          var stKayit2 = istatistikKaydiNormalizeEt(ist[key]);
+          stKayit2.manualKnown = false;
+          stKayit2.autoMasteredByStreak = false;
+          ist[key] = stKayit2;
+          istatistikMapKaydet(ist);
+        }
+      }
       kisiselDurumKaydet(hedef.kelime, yeniDurum);
+      kisiselKnownSiraGuncelle(hedef.kelime, yeniDurum);
       tabloyuCiz();
-      var durumEtiket = yeniDurum === "biliyorum" ? "✓ Biliyorum" : (yeniDurum === "bilmiyorum" ? "✕ Bilmiyorum" : "○ Beklemede");
+      var durumEtiket = yeniDurum === "biliyorum" ? "✓ Biliyorum (En alta taşındı)" : (yeniDurum === "bilmiyorum" ? "✕ Bilmiyorum" : "○ Beklemede");
       bildirimGoster(durumEtiket + ": " + hedef.kelime);
 
       if (APPS_SCRIPT_URL) {
