@@ -24,10 +24,9 @@
       padding: 5px 8px;
       background: #f8fafc;
       border-bottom: 1px solid #cbd5e1;
-      gap: 6px;
+      gap: 4px;
       flex-wrap: nowrap;
       white-space: nowrap;
-      overflow-x: auto;
       position: sticky;
       top: 0;
       z-index: 20;
@@ -81,7 +80,7 @@
     .toolbar-right {
       display: flex;
       align-items: center;
-      gap: 5px;
+      gap: 4px;
       flex-wrap: nowrap;
       white-space: nowrap;
       flex-shrink: 0;
@@ -89,8 +88,8 @@
     .inp {
       border: 1px solid #cbd5e1;
       border-radius: 4px;
-      padding: 3px 7px;
-      font-size: 11.5px;
+      padding: 3px 6px;
+      font-size: 11px;
       height: 26px;
       outline: none;
       background: #fff;
@@ -101,14 +100,14 @@
       background: #fff;
       color: #1f2937;
       border-radius: 4px;
-      padding: 0 8px;
+      padding: 0 7px;
       height: 26px;
-      font-size: 11.5px;
+      font-size: 11px;
       font-weight: 600;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
-      gap: 4px;
+      gap: 3px;
       text-decoration: none;
       user-select: none;
       white-space: nowrap;
@@ -395,12 +394,23 @@
     }
     .toast.show { opacity: 1; }
 
-    /* Flashcards View */
+    /* Flashcards & Study View */
     .fc-wrap {
-      max-width: 720px;
-      margin: 18px auto 32px;
-      padding: 0 12px;
+      width: 100%;
+      max-width: 100%;
+      margin: 10px auto 32px;
+      padding: 0 14px;
       user-select: none;
+    }
+    .fc-top,
+    .fc-progress-track,
+    .fc-scene,
+    .fc-below-card,
+    .study-box,
+    .fc-empty {
+      max-width: 960px;
+      margin-left: auto;
+      margin-right: auto;
     }
     .fc-top {
       display: flex;
@@ -561,24 +571,25 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 6px;
-      margin-top: 14px;
+      gap: 8px;
+      margin: 14px auto 0;
+      width: 100%;
       flex-wrap: nowrap;
       white-space: nowrap;
-      overflow-x: auto;
     }
     .fc-btn {
       border: 1px solid #cbd5e1;
       background: #fff;
       color: #1f2937;
       border-radius: 6px;
-      padding: 0 11px;
+      padding: 0 12px;
       height: 32px;
       font-size: 12px;
       font-weight: 600;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
+      justify-content: center;
       gap: 5px;
       white-space: nowrap;
       flex-shrink: 0;
@@ -628,19 +639,19 @@
       align-items: center;
       justify-content: center;
       gap: 6px;
-      margin-bottom: 14px;
+      margin: 0 auto 14px;
+      width: 100%;
       flex-wrap: nowrap;
       white-space: nowrap;
-      overflow-x: auto;
     }
     .mode-btn {
-      flex: 1;
+      flex: 1 1 auto;
       border: 1px solid #cbd5e1;
       background: #f8fafc;
       color: #334155;
       border-radius: 6px;
       padding: 0 10px;
-      height: 30px;
+      height: 32px;
       font-size: 12px;
       font-weight: 600;
       cursor: pointer;
@@ -650,7 +661,6 @@
       gap: 5px;
       transition: all 0.15s;
       white-space: nowrap;
-      flex-shrink: 0;
     }
     .mode-btn:hover { background: #e2e8f0; }
     .mode-btn.active {
@@ -836,9 +846,9 @@
   <div class="toolbar">
     <div class="toolbar-left">
       <div class="mini-stats">
-        <span class="mini-stat" id="stTotal">Total: -</span>
-        <span class="mini-stat unk" id="stUnk">In Pool: -</span>
-        <span class="mini-stat knw" id="stKnw">Known: -</span>
+        <span class="mini-stat" id="stTotal" style="cursor:pointer;" onclick="sekmeDegistir('sheet1')" title="Click to open Main Vocabulary Table (Sheet1)">Total: -</span>
+        <span class="mini-stat unk" id="stUnk" style="cursor:pointer;" onclick="sekmeDegistir('pool')" title="Click to open Unknown Words Pool Table">In Pool: -</span>
+        <span class="mini-stat knw" id="stKnw" style="cursor:pointer;" onclick="sekmeDegistir('sheet1')" title="Click to open Main Vocabulary Table (Sheet1)">Known: -</span>
       </div>
       <span class="sync-badge" id="syncBadge" title="Two-way live sync with Google Sheets (Sheet1)">
         <span class="sync-dot" id="syncDot"></span>
@@ -852,7 +862,7 @@
         <span class="font-val" id="fontValLabel">13px</span>
         <button class="font-btn" onclick="yaziBoyutuDegistir(1)">A+</button>
       </div>
-      <input type="text" id="searchInput" class="inp" placeholder="Search..." style="width:125px;" oninput="tercihleriKaydet(); tabloyuCiz();">
+      <input type="text" id="searchInput" class="inp" placeholder="Search..." style="width:110px;" oninput="tercihleriKaydet(); tabloyuCiz();">
       <select id="levelFilter" class="inp" onchange="tercihleriKaydet(); tabloyuCiz();">
         <option value="ALL">Level: All</option>
         <option value="A1">A1</option>
@@ -862,13 +872,15 @@
         <option value="C1">C1</option>
         <option value="C2">C2</option>
       </select>
+      <button class="btn" id="topBtn-sheet1" onclick="sekmeDegistir('sheet1')" title="Ana Kelime Tablosu (Sheet1)">📋 Tablo</button>
+      <button class="btn" id="topBtn-pool" onclick="sekmeDegistir('pool')" title="Bilmediğim Kelimeler Havuzu Tablosu">📕 Havuz</button>
       <button class="btn" id="topBtn-flashcards" onclick="calismaModuAc('flashcards')" title="3D Flashcards + 3-Step Spaced Repetition">🃏 Flashcards</button>
       <button class="btn" id="topBtn-cloze" onclick="calismaModuAc('cloze')" title="Fill in the blank in Example Sentences">📝 Cloze</button>
       <button class="btn" id="topBtn-quiz" onclick="calismaModuAc('quiz')" title="Active Recall (Turkish -> English Quiz & Typing)">🎯 Quiz</button>
       <button class="btn" id="topBtn-listen" onclick="calismaModuAc('listen')" title="Listen to audio & find/type the word">🎧 Listen</button>
       <button class="btn" id="topBtn-match" onclick="calismaModuAc('match')" title="Match 5 English words with Turkish meanings">🧩 Match</button>
       <button class="btn" id="topBtn-stats" onclick="sekmeDegistir('stats')" title="Mistake Statistics & Error Bars">📊 Stats</button>
-      <button class="btn btn-green" id="addWordToggleBtn" onclick="ekleBarAcKapat()">+ Add Word</button>
+      <button class="btn btn-green" id="addWordToggleBtn" onclick="ekleBarAcKapat()">+ Add</button>
       <button class="btn" onclick="verileriYukle(true)" title="Sync latest words from Google Sheet">🔄</button>
     </div>
   </div>
@@ -1771,6 +1783,10 @@
       var m = AKTIF_MOD;
       document.getElementById("tabBtn-sheet1").classList.toggle("active", s === "sheet1");
       document.getElementById("tabBtn-pool").classList.toggle("active", s === "pool");
+      var topS1 = document.getElementById("topBtn-sheet1");
+      if (topS1) topS1.classList.toggle("active-mode", s === "sheet1");
+      var topPool = document.getElementById("topBtn-pool");
+      if (topPool) topPool.classList.toggle("active-mode", s === "pool");
       var tabSt = document.getElementById("tabBtn-stats");
       if (tabSt) tabSt.classList.toggle("active", s === "stats");
       var topSt = document.getElementById("topBtn-stats");
@@ -1868,6 +1884,16 @@
         { id: "match", label: "🧩 Match (5'li Eşleştir)" }
       ];
       var html = ['<div class="study-modes-bar">'];
+      html.push(
+        '<button class="mode-btn" onclick="sekmeDegistir(\'sheet1\')" title="Ana Kelime Tablosuna Dön (Sheet1)">' +
+          '📋 Kelime Tablosu' +
+        '</button>'
+      );
+      html.push(
+        '<button class="mode-btn" onclick="sekmeDegistir(\'pool\')" title="Bilmediğim Kelimeler Havuzu Tablosu">' +
+          '📕 Bilmediklerim' +
+        '</button>'
+      );
       for (var i = 0; i < modes.length; i++) {
         var m = modes[i];
         html.push(
