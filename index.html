@@ -988,6 +988,20 @@
         <option value="C1">C1</option>
         <option value="C2">C2</option>
       </select>
+      <select id="streakWeeksSelect" class="inp" onchange="hedefHaftaDegistir(this.value)" title="Kaç hafta üst üste hatasız bilinen kelimeler otomatik Biliyorum sayılsın? (1-12 Hafta)">
+        <option value="1">Streak: 1W</option>
+        <option value="2">Streak: 2W</option>
+        <option value="3">Streak: 3W</option>
+        <option value="4" selected>Streak: 4W</option>
+        <option value="5">Streak: 5W</option>
+        <option value="6">Streak: 6W</option>
+        <option value="7">Streak: 7W</option>
+        <option value="8">Streak: 8W</option>
+        <option value="9">Streak: 9W</option>
+        <option value="10">Streak: 10W</option>
+        <option value="11">Streak: 11W</option>
+        <option value="12">Streak: 12W</option>
+      </select>
       <button class="btn" id="topBtn-sheet1" onclick="sekmeDegistir('sheet1')" title="Ana Kelime Tablosu (Words)">📋 Words</button>
       <button class="btn" id="topBtn-pool" onclick="sekmeDegistir('pool')" title="Bilmediğim Kelimeler Havuzu Tablosu (Unknown Words Pool)">📕 Havuz</button>
       <button class="btn" id="topBtn-knownPool" onclick="sekmeDegistir('knownPool')" title="Bildiğim Kelimeler Havuzu Tablosu (Known Words Pool)">📗 Known</button>
@@ -1107,6 +1121,21 @@
         <span class="stats-kpi" id="kpiAccuracy">🎯 Accuracy: -</span>
       </div>
       <div style="display:flex;gap:6px;align-items:center;">
+        <label for="statsStreakSelect" style="font-size:11px;font-weight:700;color:#334155;white-space:nowrap;">🏆 Auto-Known Streak:</label>
+        <select id="statsStreakSelect" class="inp" style="font-weight:700;color:#135c37;border-color:#86efac;background:#f0fdf4;" onchange="hedefHaftaDegistir(this.value)" title="Select consecutive zero-mistake weeks (1-12) before a word is automatically marked Known">
+          <option value="1">1 Week</option>
+          <option value="2">2 Weeks</option>
+          <option value="3">3 Weeks</option>
+          <option value="4" selected>4 Weeks</option>
+          <option value="5">5 Weeks</option>
+          <option value="6">6 Weeks</option>
+          <option value="7">7 Weeks</option>
+          <option value="8">8 Weeks</option>
+          <option value="9">9 Weeks</option>
+          <option value="10">10 Weeks</option>
+          <option value="11">11 Weeks</option>
+          <option value="12">12 Weeks</option>
+        </select>
         <button class="btn" onclick="istatistikleriSunucuyaSenkronizeEt(true)" title="Sync all historical stats to 'Mistake Stats' tab in Google Sheets">🔄 Sync Stats to Sheet</button>
         <a href="https://docs.google.com/spreadsheets/d/1cUYfuFg7OSsWjCtLA7jiB77bGJITR6V0jF2ZUnyrXtc/edit" target="_blank" class="btn btn-green" title="View 'Mistake Stats' sheet tab in Google Sheets">📊 Open in Google Sheets</a>
       </div>
@@ -1123,7 +1152,7 @@
           <th style="width:50px;" class="center">Total</th>
           <th style="width:72px;" class="center">Error Rate</th>
           <th style="width:140px;">Mistake Bar</th>
-          <th style="width:72px;" class="center" title="4 Consecutive Zero-Mistake Weeks = Auto Known">4W Streak</th>
+          <th id="thStreakCol" style="width:72px;" class="center" title="4 Consecutive Zero-Mistake Weeks = Auto Known">4W Streak</th>
           <th style="width:115px;">Last Practice</th>
         </tr>
       </thead>
@@ -1187,6 +1216,39 @@
     var YAZI_BOYUTU = 13;
     var SES_ACIK = true;
     var BILINENLERI_GOSTER = true;
+    var HEDEF_HAFTA = 4;
+
+    function hedefHaftaAl() {
+      var n = parseInt(HEDEF_HAFTA, 10);
+      if (isNaN(n) || n < 1) return 4;
+      if (n > 12) return 12;
+      return n;
+    }
+
+    function hedefHaftaSecicileriGuncelle() {
+      var h = hedefHaftaAl();
+      var s1 = document.getElementById("streakWeeksSelect");
+      if (s1 && String(s1.value) !== String(h)) s1.value = String(h);
+      var s2 = document.getElementById("statsStreakSelect");
+      if (s2 && String(s2.value) !== String(h)) s2.value = String(h);
+      var th = document.getElementById("thStreakCol");
+      if (th) {
+        th.innerText = h + "W Streak";
+        th.title = h + " Consecutive Zero-Mistake Weeks = Auto Known";
+      }
+    }
+
+    function hedefHaftaDegistir(val) {
+      var n = parseInt(val, 10);
+      if (isNaN(n) || n < 1) n = 1;
+      if (n > 12) n = 12;
+      HEDEF_HAFTA = n;
+      try { localStorage.setItem("kelime_hedef_hafta", String(HEDEF_HAFTA)); } catch (e) {}
+      hedefHaftaSecicileriGuncelle();
+      if (typeof tercihleriKaydet === "function") tercihleriKaydet();
+      tabloyuCiz();
+      bildirimGoster("🏆 Auto-Known Streak: " + HEDEF_HAFTA + (HEDEF_HAFTA === 1 ? " Week" : " Weeks"));
+    }
 
     function bilinenleriGosterDurumuUygula() {
       var btn = document.getElementById("toggleKnownBtn");
@@ -1286,10 +1348,13 @@
       if (kayitliSes === "0") { SES_ACIK = false; }
       var kayitliBilinen = localStorage.getItem("kelime_tablo_bilinen_goster");
       if (kayitliBilinen === "0") { BILINENLERI_GOSTER = false; }
+      var kayitliHafta = parseInt(localStorage.getItem("kelime_hedef_hafta"), 10);
+      if (!isNaN(kayitliHafta) && kayitliHafta >= 1 && kayitliHafta <= 12) { HEDEF_HAFTA = kayitliHafta; }
     } catch (e) {}
     yaziBoyutuUygula();
     sesDurumuUygula();
     bilinenleriGosterDurumuUygula();
+    hedefHaftaSecicileriGuncelle();
 
     function bildirimGoster(m) {
       var t = document.getElementById("toastBox");
@@ -1476,7 +1541,7 @@
         if (!w || w.toLowerCase() === "word" || w.toLowerCase() === "kelime") continue;
         var kVal = (dRow[map.known] || "").toUpperCase();
         var uVal = (dRow[map.unknown] || "").toUpperCase();
-        var durum = (kVal === "TRUE") ? "biliyorum" : ((uVal === "FALSE" && kVal === "FALSE") ? "beklemede" : "bilmiyorum");
+        var durum = (kVal === "TRUE") ? "biliyorum" : ((uVal === "TRUE") ? "bilmiyorum" : "beklemede");
         parsed.push({
           row: parsed.length + 2,
           tarih: dRow[map.date] || "",
@@ -1590,22 +1655,23 @@
       var baslangicTarih = st.cleanSince || (refWord && refWord.durum === "biliyorum" ? refWord.tarih : "");
       var gunFarki = haftalarArasiGunFarki(baslangicTarih);
       var takvimHafta = (c > 0 || (refWord && refWord.durum === "biliyorum")) && baslangicTarih
-        ? Math.min(4, Math.floor(gunFarki / 7) + 1)
+        ? Math.floor(gunFarki / 7) + 1
         : 0;
-      return Math.min(4, Math.max(cw, takvimHafta));
+      return Math.min(12, Math.max(cw, takvimHafta));
     }
 
     function kelimeDortHaftaUstalaMi(w) {
       if (!w || !w.kelime) return false;
+      var hedefHafta = hedefHaftaAl();
       var map = istatistikMapAl();
       var k = w.kelime.toString().trim().toLowerCase();
       var st = map[k];
-      if (st && st.mastered4w && (Number(st.mistakes) || 0) === 0) return true;
       var haftaSayi = kelimeHatasizHaftaSayisiAl(st, w);
-      return haftaSayi >= 4 && (!st || (Number(st.mistakes) || 0) === 0);
+      return haftaSayi >= hedefHafta && (!st || (Number(st.mistakes) || 0) === 0);
     }
 
     function dortHaftaHatasizKontrolEt() {
+      var hedefHafta = hedefHaftaAl();
       var map = istatistikMapAl();
       var mapDegisti = false;
       for (var i = 0; i < TUM_KELIMELER.length; i++) {
@@ -1614,7 +1680,7 @@
         if (!k) continue;
         var st = map[k];
         var haftaSayi = kelimeHatasizHaftaSayisiAl(st, w);
-        if (haftaSayi >= 4 && (!st || (Number(st.mistakes) || 0) === 0)) {
+        if (haftaSayi >= hedefHafta && (!st || (Number(st.mistakes) || 0) === 0)) {
           if (!st) {
             st = {
               kelime: w.kelime,
@@ -1625,12 +1691,14 @@
               cleanSince: w.tarih || new Date().toISOString().slice(0, 10),
               cleanWeeks: [haftaAnahtariAl(new Date())],
               mastered4w: true,
-              lastPractice: "4W Auto-Mastered"
+              autoMasteredByStreak: w.durum !== "biliyorum",
+              lastPractice: hedefHafta + "W Auto-Mastered"
             };
             map[k] = st;
             mapDegisti = true;
           } else if (!st.mastered4w) {
             st.mastered4w = true;
+            if (w.durum !== "biliyorum") st.autoMasteredByStreak = true;
             mapDegisti = true;
           }
           if (w.durum !== "biliyorum") {
@@ -1643,6 +1711,23 @@
                 method: "POST",
                 headers: { "Content-Type": "text/plain;charset=utf-8" },
                 body: JSON.stringify({ action: "setStatus", row: w.row, status: "biliyorum" })
+              }).catch(function() {});
+            }
+          }
+        } else if (st && st.mastered4w) {
+          st.mastered4w = false;
+          mapDegisti = true;
+          if (st.autoMasteredByStreak && w.durum === "biliyorum") {
+            st.autoMasteredByStreak = false;
+            w.durum = "bilmiyorum";
+            w.biliyorum = false;
+            w.bilmiyorum = true;
+            kisiselDurumKaydet(w.kelime, "bilmiyorum");
+            if (APPS_SCRIPT_URL) {
+              fetch(APPS_SCRIPT_URL, {
+                method: "POST",
+                headers: { "Content-Type": "text/plain;charset=utf-8" },
+                body: JSON.stringify({ action: "setStatus", row: w.row, status: "bilmiyorum" })
               }).catch(function() {});
             }
           }
@@ -1808,12 +1893,14 @@
         modAdi + " • " + (dogruMu ? "✅" : "❌") + " (" +
         bugunIso + " " + pad(simdi.getHours()) + ":" + pad(simdi.getMinutes()) + ")";
 
+      var hedefHafta = hedefHaftaAl();
       var haftaSayi = kelimeHatasizHaftaSayisiAl(kayit, hedef);
-      if (haftaSayi >= 4 && (Number(kayit.mistakes) || 0) === 0) {
+      if (haftaSayi >= hedefHafta && (Number(kayit.mistakes) || 0) === 0) {
         kayit.mastered4w = true;
         if (hedef && hedef.durum !== "biliyorum") {
+          kayit.autoMasteredByStreak = true;
           kutucukDegisti(hedef.row, "biliyorum", true);
-          bildirimGoster("🏆 4-Week Zero-Mistake Mastery: " + kayit.kelime + " → Known!");
+          bildirimGoster("🏆 " + hedefHafta + "-Week Zero-Mistake Mastery: " + kayit.kelime + " → Known!");
         }
       }
 
@@ -1869,6 +1956,8 @@
     }
 
     function istatistikTablosuCiz() {
+      var hedefHafta = hedefHaftaAl();
+      hedefHaftaSecicileriGuncelle();
       var map = istatistikMapAl();
       var kelimeMap = {};
       var tumAnahtarlar = {};
@@ -1934,7 +2023,7 @@
           total: total,
           errRate: errRate,
           cleanWeeksCount: haftaSayi,
-          mastered4w: haftaSayi >= 4 && m === 0,
+          mastered4w: haftaSayi >= hedefHafta && m === 0,
           lastPractice: st.lastPractice || "-"
         });
       }
@@ -1987,9 +2076,10 @@
         var barColor = it.mistakes === 0
           ? "#22c55e"
           : (it.errRate >= 60 ? "linear-gradient(90deg, #ef4444, #b91c1c)" : "linear-gradient(90deg, #f97316, #ea580c)");
+        var gosterilenSt = Math.min(hedefHafta, it.cleanWeeksCount);
         var streakHtml = it.mastered4w
-          ? '<span class="streak-pill mastered" title="4 Consecutive Zero-Mistake Weeks — Mastered!">🏆 4/4 Wk</span>'
-          : '<span class="streak-pill" title="Consecutive zero-mistake weeks (' + it.cleanWeeksCount + '/4)">' + it.cleanWeeksCount + '/4 Wk</span>';
+          ? '<span class="streak-pill mastered" title="' + hedefHafta + ' Consecutive Zero-Mistake Weeks — Mastered!">🏆 ' + gosterilenSt + '/' + hedefHafta + ' Wk</span>'
+          : '<span class="streak-pill" title="Consecutive zero-mistake weeks (' + gosterilenSt + '/' + hedefHafta + ')">' + gosterilenSt + '/' + hedefHafta + ' Wk</span>';
 
         rowsHtml.push(
           '<tr>' +
@@ -2077,6 +2167,7 @@
           yaziBoyutu: YAZI_BOYUTU,
           sesAcik: SES_ACIK,
           bilinenleriGoster: BILINENLERI_GOSTER,
+          hedefHafta: hedefHaftaAl(),
           levelFilter: lvlEl ? lvlEl.value : "ALL",
           searchQuery: qEl ? qEl.value : "",
           addBarOpen: addBarEl ? addBarEl.classList.contains("open") : false,
@@ -2105,6 +2196,10 @@
           BILINENLERI_GOSTER = p.bilinenleriGoster;
           bilinenleriGosterDurumuUygula();
         }
+        if (typeof p.hedefHafta === "number" && p.hedefHafta >= 1 && p.hedefHafta <= 12) {
+          HEDEF_HAFTA = p.hedefHafta;
+        }
+        hedefHaftaSecicileriGuncelle();
         if (typeof p.fcAltKartAcik === "boolean") {
           window.FC_ALT_KART_ACIK = p.fcAltKartAcik;
         }
@@ -2227,10 +2322,13 @@
     }
 
     function fcDestesiniGetir(poolList) {
-      if (!FC_SHUFFLED_KEYS || !FC_SHUFFLED_KEYS.length) return poolList;
+      var sadeceBilinmeyenler = (poolList || []).filter(function(w) {
+        return w && w.durum === "bilmiyorum" && !kelimeDortHaftaUstalaMi(w);
+      });
+      if (!FC_SHUFFLED_KEYS || !FC_SHUFFLED_KEYS.length) return sadeceBilinmeyenler;
       var byKey = {};
-      for (var i = 0; i < poolList.length; i++) {
-        byKey[poolList[i].kelime.toLowerCase()] = poolList[i];
+      for (var i = 0; i < sadeceBilinmeyenler.length; i++) {
+        byKey[sadeceBilinmeyenler[i].kelime.toLowerCase()] = sadeceBilinmeyenler[i];
       }
       var result = [];
       var used = {};
@@ -2241,9 +2339,9 @@
           used[k] = true;
         }
       }
-      for (var m = 0; m < poolList.length; m++) {
-        var km = poolList[m].kelime.toLowerCase();
-        if (!used[km]) result.push(poolList[m]);
+      for (var m = 0; m < sadeceBilinmeyenler.length; m++) {
+        var km = sadeceBilinmeyenler[m].kelime.toLowerCase();
+        if (!used[km]) result.push(sadeceBilinmeyenler[m]);
       }
       return result;
     }
@@ -2290,29 +2388,68 @@
     }
 
     function secenekleriUret(dogruCard, tumHavuz) {
-      var cacheKey = AKTIF_MOD + ":" + dogruCard.kelime.toLowerCase();
-      if (SECENEKLER_CACHE.key === cacheKey && SECENEKLER_CACHE.list.length === 4) {
+      var dogruKey = (dogruCard.kelime || "").toLowerCase().trim();
+      var havuzAdaylar = (tumHavuz || []).filter(function(w) {
+        if (!w || w.durum !== "bilmiyorum") return false;
+        if (kelimeDortHaftaUstalaMi(w)) return false;
+        return (w.kelime || "").toLowerCase().trim() !== dogruKey;
+      });
+      var tumBilinmeyenAdaylar = TUM_KELIMELER.filter(function(w) {
+        if (!w || w.durum !== "bilmiyorum") return false;
+        if (kelimeDortHaftaUstalaMi(w)) return false;
+        return (w.kelime || "").toLowerCase().trim() !== dogruKey;
+      });
+
+      var hedefSayi = Math.min(4, 1 + tumBilinmeyenAdaylar.length);
+      var cacheKey = AKTIF_MOD + ":" + dogruKey;
+      if (
+        SECENEKLER_CACHE.key === cacheKey &&
+        SECENEKLER_CACHE.list.length === hedefSayi &&
+        SECENEKLER_CACHE.list.every(function(w) { return w && w.durum === "bilmiyorum" && !kelimeDortHaftaUstalaMi(w); })
+      ) {
         return SECENEKLER_CACHE.list;
       }
-      var adaylar = TUM_KELIMELER.filter(function(w) {
-        if (kelimeDortHaftaUstalaMi(w)) return false;
-        return w.kelime.toLowerCase() !== dogruCard.kelime.toLowerCase();
-      });
-      for (var i = adaylar.length - 1; i > 0; i--) {
+
+      for (var i = havuzAdaylar.length - 1; i > 0; i--) {
         var r = Math.floor(Math.random() * (i + 1));
-        var tmp = adaylar[i];
-        adaylar[i] = adaylar[r];
-        adaylar[r] = tmp;
+        var tmp = havuzAdaylar[i];
+        havuzAdaylar[i] = havuzAdaylar[r];
+        havuzAdaylar[r] = tmp;
       }
+
       var secenekler = [dogruCard];
-      for (var j = 0; j < Math.min(3, adaylar.length); j++) {
-        secenekler.push(adaylar[j]);
+      var kullanilan = {};
+      kullanilan[dogruKey] = true;
+
+      for (var j = 0; j < havuzAdaylar.length && secenekler.length < 4; j++) {
+        var hk = (havuzAdaylar[j].kelime || "").toLowerCase().trim();
+        if (!kullanilan[hk]) {
+          secenekler.push(havuzAdaylar[j]);
+          kullanilan[hk] = true;
+        }
       }
+
+      if (secenekler.length < 4 && tumBilinmeyenAdaylar.length > havuzAdaylar.length) {
+        for (var m = tumBilinmeyenAdaylar.length - 1; m > 0; m--) {
+          var rm = Math.floor(Math.random() * (m + 1));
+          var tm = tumBilinmeyenAdaylar[m];
+          tumBilinmeyenAdaylar[m] = tumBilinmeyenAdaylar[rm];
+          tumBilinmeyenAdaylar[rm] = tm;
+        }
+        for (var n = 0; n < tumBilinmeyenAdaylar.length && secenekler.length < 4; n++) {
+          var tk = (tumBilinmeyenAdaylar[n].kelime || "").toLowerCase().trim();
+          if (!kullanilan[tk]) {
+            secenekler.push(tumBilinmeyenAdaylar[n]);
+            kullanilan[tk] = true;
+          }
+        }
+      }
+
       for (var k = secenekler.length - 1; k > 0; k--) {
         var rk = Math.floor(Math.random() * (k + 1));
-        var tk = secenekler[k];
+        var tk2 = secenekler[k];
         secenekler[k] = secenekler[rk];
-        secenekler[rk] = tk;
+        secenekler[rk] = tk2;
       }
       SECENEKLER_CACHE = { key: cacheKey, list: secenekler };
       return secenekler;
@@ -2980,7 +3117,7 @@
     }
 
     function fcKaristir() {
-      var unk = TUM_KELIMELER.filter(function(w){ return w.durum === "bilmiyorum"; }).map(function(w){ return w.kelime.toLowerCase(); });
+      var unk = TUM_KELIMELER.filter(function(w){ return w.durum === "bilmiyorum" && !kelimeDortHaftaUstalaMi(w); }).map(function(w){ return w.kelime.toLowerCase(); });
       for (var i = unk.length - 1; i > 0; i--) {
         var r = Math.floor(Math.random() * (i + 1));
         var tmp = unk[i];
