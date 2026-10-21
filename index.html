@@ -833,31 +833,47 @@
     .match-item.wrong { background: #fee2e2; border-color: #f87171; }
     .btn.active-mode { background: #135c37; color: #ffffff; border-color: #0e4629; }
     .btn.active-mode:hover { background: #0e4629; }
+    #statsView {
+      max-width: 980px;
+    }
+    #statsView table.sheet-table {
+      width: auto;
+      min-width: 820px;
+      max-width: 960px;
+      table-layout: fixed;
+    }
+    #statsView table.sheet-table th,
+    #statsView table.sheet-table td {
+      padding: 3px 6px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
     .stats-kpi-bar {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 10px;
+      gap: 8px;
       margin-bottom: 8px;
-      padding: 8px 12px;
+      padding: 6px 10px;
       background: #f8fafc;
       border: 1px solid #cbd5e1;
       border-radius: 6px;
+      max-width: 960px;
       flex-wrap: nowrap;
       white-space: nowrap;
-      overflow-x: auto;
     }
     .stats-kpis {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
       flex-wrap: nowrap;
       white-space: nowrap;
     }
     .stats-kpi {
-      padding: 4px 10px;
-      border-radius: 6px;
-      font-size: 12px;
+      padding: 3px 8px;
+      border-radius: 5px;
+      font-size: 11.5px;
       font-weight: 700;
       border: 1px solid #e2e8f0;
       background: #ffffff;
@@ -868,12 +884,12 @@
     .err-bar-wrap {
       display: flex;
       align-items: center;
-      gap: 8px;
-      min-width: 190px;
+      gap: 6px;
+      width: 100%;
     }
     .err-bar-track {
       flex: 1;
-      height: 12px;
+      height: 10px;
       background: #f1f5f9;
       border-radius: 99px;
       overflow: hidden;
@@ -883,15 +899,22 @@
       height: 100%;
       background: linear-gradient(90deg, #ef4444, #dc2626);
       border-radius: 99px;
-      transition: width 0.25s ease;
+      transition: width 0.2s ease;
+    }
+    .err-bar-pct {
+      font-size: 10.5px;
+      font-weight: 700;
+      color: #64748b;
+      min-width: 38px;
+      text-align: right;
     }
     .err-count-pill {
       display: inline-block;
-      min-width: 30px;
-      padding: 1px 7px;
+      min-width: 26px;
+      padding: 1px 6px;
       border-radius: 99px;
       font-weight: 800;
-      font-size: calc(var(--fs) - 1px);
+      font-size: calc(var(--fs) - 1.5px);
       background: #fee2e2;
       color: #b91c1c;
       text-align: center;
@@ -903,14 +926,29 @@
     }
     .corr-count-pill {
       display: inline-block;
-      min-width: 30px;
-      padding: 1px 7px;
+      min-width: 26px;
+      padding: 1px 6px;
       border-radius: 99px;
       font-weight: 700;
-      font-size: calc(var(--fs) - 1px);
+      font-size: calc(var(--fs) - 1.5px);
       background: #dcfce7;
       color: #15803d;
       text-align: center;
+    }
+    .streak-pill {
+      display: inline-block;
+      padding: 1px 6px;
+      border-radius: 99px;
+      font-weight: 700;
+      font-size: calc(var(--fs) - 1.5px);
+      background: #fef9c3;
+      color: #854d0e;
+      border: 1px solid #fde047;
+    }
+    .streak-pill.mastered {
+      background: #dcfce7;
+      color: #166534;
+      border-color: #86efac;
     }
 
     @media (max-width: 900px) {
@@ -1076,16 +1114,17 @@
     <table class="sheet-table">
       <thead>
         <tr>
-          <th class="col-row">#</th>
-          <th class="center">Level</th>
-          <th>Word</th>
-          <th>Meaning</th>
-          <th class="center">Mistakes (Hata)</th>
-          <th class="center">Correct (Doğru)</th>
-          <th class="center">Total</th>
-          <th class="center">Error Rate</th>
-          <th style="min-width:220px;">Mistake Bar (En Çok Hata Yapılanlar)</th>
-          <th>Last Exercise</th>
+          <th style="width:28px;" class="center">#</th>
+          <th style="width:44px;" class="center">Level</th>
+          <th style="width:115px;">Word</th>
+          <th style="width:170px;">Meaning</th>
+          <th style="width:66px;" class="center">Mistakes</th>
+          <th style="width:62px;" class="center">Correct</th>
+          <th style="width:50px;" class="center">Total</th>
+          <th style="width:72px;" class="center">Error Rate</th>
+          <th style="width:140px;">Mistake Bar</th>
+          <th style="width:72px;" class="center" title="4 Consecutive Zero-Mistake Weeks = Auto Known">4W Streak</th>
+          <th style="width:115px;">Last Practice</th>
         </tr>
       </thead>
       <tbody id="statsBody"></tbody>
@@ -1522,6 +1561,98 @@
       } catch (e) {}
     }
 
+    function haftaAnahtariAl(d) {
+      var dt = d ? new Date(d.getTime()) : new Date();
+      if (isNaN(dt.getTime())) dt = new Date();
+      dt.setHours(0, 0, 0, 0);
+      dt.setDate(dt.getDate() + 3 - ((dt.getDay() + 6) % 7));
+      var week1 = new Date(dt.getFullYear(), 0, 4);
+      var wNum = 1 + Math.round(((dt.getTime() - week1.getTime()) / 86400000 - 3 + ((week1.getDay() + 6) % 7)) / 7);
+      return dt.getFullYear() + "-W" + (wNum < 10 ? "0" + wNum : "" + wNum);
+    }
+
+    function haftalarArasiGunFarki(tarihStr) {
+      if (!tarihStr || tarihStr === "-") return 0;
+      var parcalar = tarihStr.toString().trim().slice(0, 10).split("-");
+      if (parcalar.length !== 3) return 0;
+      var d = new Date(Number(parcalar[0]), Number(parcalar[1]) - 1, Number(parcalar[2]));
+      if (isNaN(d.getTime())) return 0;
+      var simdi = new Date();
+      return Math.floor((simdi.getTime() - d.getTime()) / 86400000);
+    }
+
+    function kelimeHatasizHaftaSayisiAl(st, refWord) {
+      if (!st) st = {};
+      var m = Number(st.mistakes) || 0;
+      var c = Number(st.correct) || 0;
+      if (m > 0) return 0;
+      var cw = Array.isArray(st.cleanWeeks) ? st.cleanWeeks.length : 0;
+      var baslangicTarih = st.cleanSince || (refWord && refWord.durum === "biliyorum" ? refWord.tarih : "");
+      var gunFarki = haftalarArasiGunFarki(baslangicTarih);
+      var takvimHafta = (c > 0 || (refWord && refWord.durum === "biliyorum")) && baslangicTarih
+        ? Math.min(4, Math.floor(gunFarki / 7) + 1)
+        : 0;
+      return Math.min(4, Math.max(cw, takvimHafta));
+    }
+
+    function kelimeDortHaftaUstalaMi(w) {
+      if (!w || !w.kelime) return false;
+      var map = istatistikMapAl();
+      var k = w.kelime.toString().trim().toLowerCase();
+      var st = map[k];
+      if (st && st.mastered4w && (Number(st.mistakes) || 0) === 0) return true;
+      var haftaSayi = kelimeHatasizHaftaSayisiAl(st, w);
+      return haftaSayi >= 4 && (!st || (Number(st.mistakes) || 0) === 0);
+    }
+
+    function dortHaftaHatasizKontrolEt() {
+      var map = istatistikMapAl();
+      var mapDegisti = false;
+      for (var i = 0; i < TUM_KELIMELER.length; i++) {
+        var w = TUM_KELIMELER[i];
+        var k = (w.kelime || "").toString().trim().toLowerCase();
+        if (!k) continue;
+        var st = map[k];
+        var haftaSayi = kelimeHatasizHaftaSayisiAl(st, w);
+        if (haftaSayi >= 4 && (!st || (Number(st.mistakes) || 0) === 0)) {
+          if (!st) {
+            st = {
+              kelime: w.kelime,
+              seviye: w.seviye || "",
+              anlam: w.anlam || "",
+              mistakes: 0,
+              correct: 1,
+              cleanSince: w.tarih || new Date().toISOString().slice(0, 10),
+              cleanWeeks: [haftaAnahtariAl(new Date())],
+              mastered4w: true,
+              lastPractice: "4W Auto-Mastered"
+            };
+            map[k] = st;
+            mapDegisti = true;
+          } else if (!st.mastered4w) {
+            st.mastered4w = true;
+            mapDegisti = true;
+          }
+          if (w.durum !== "biliyorum") {
+            w.durum = "biliyorum";
+            w.biliyorum = true;
+            w.bilmiyorum = false;
+            kisiselDurumKaydet(w.kelime, "biliyorum");
+            if (APPS_SCRIPT_URL) {
+              fetch(APPS_SCRIPT_URL, {
+                method: "POST",
+                headers: { "Content-Type": "text/plain;charset=utf-8" },
+                body: JSON.stringify({ action: "setStatus", row: w.row, status: "biliyorum" })
+              }).catch(function() {});
+            }
+          }
+        }
+      }
+      if (mapDegisti) {
+        istatistikMapKaydet(map);
+      }
+    }
+
     function sunucuIstatistikleriniBirlestir(serverStats) {
       if (!serverStats || typeof serverStats !== "object") return;
       var localMap = istatistikMapAl();
@@ -1533,26 +1664,32 @@
         var k = sKeys[i].toLowerCase().trim();
         var sv = serverStats[sKeys[i]];
         if (!sv) continue;
+        var sWord = sv.kelime || sv.word || k;
+        var sLvl = sv.seviye || sv.level || "";
+        var sMean = sv.anlam || sv.meaning || "";
+        var sM = Number(sv.mistakes) || 0;
+        var sC = Number(sv.correct) || 0;
         var lc = localMap[k];
         if (!lc) {
           localMap[k] = {
-            kelime: sv.kelime || k,
-            seviye: sv.seviye || "",
-            anlam: sv.anlam || "",
-            mistakes: Number(sv.mistakes) || 0,
-            correct: Number(sv.correct) || 0,
-            lastPractice: sv.lastPractice || ""
+            kelime: sWord,
+            seviye: sLvl,
+            anlam: sMean,
+            mistakes: sM,
+            correct: sC,
+            cleanSince: sv.cleanSince || "",
+            cleanWeeks: Array.isArray(sv.cleanWeeks) ? sv.cleanWeeks : [],
+            mastered4w: !!sv.mastered4w,
+            lastPractice: sv.lastPractice || "-"
           };
           degisti = true;
         } else {
-          var sM = Number(sv.mistakes) || 0;
-          var sC = Number(sv.correct) || 0;
           var lM = Number(lc.mistakes) || 0;
           var lC = Number(lc.correct) || 0;
           if (sM > lM || sC > lC) {
             lc.mistakes = Math.max(lM, sM);
             lc.correct = Math.max(lC, sC);
-            if (sv.lastPractice && (!lc.lastPractice || sv.lastPractice > lc.lastPractice)) {
+            if (sv.lastPractice && sv.lastPractice !== "-" && (!lc.lastPractice || lc.lastPractice === "-")) {
               lc.lastPractice = sv.lastPractice;
             }
             degisti = true;
@@ -1564,13 +1701,16 @@
 
       var lKeys = Object.keys(localMap);
       for (var j = 0; j < lKeys.length; j++) {
-        if (!serverStats[lKeys[j]]) {
+        var lk = lKeys[j];
+        var lv = localMap[lk];
+        if (lv && ((Number(lv.mistakes) || 0) > 0 || (Number(lv.correct) || 0) > 0) && !serverStats[lk]) {
           yerelDahaIleri = true;
         }
       }
 
       if (degisti) {
         istatistikMapKaydet(localMap);
+        dortHaftaHatasizKontrolEt();
         istatistikTablosuCiz();
       }
       if (yerelDahaIleri) {
@@ -1586,8 +1726,11 @@
         var k = (w.kelime || "").toLowerCase().trim();
         if (localMap[k]) {
           localMap[k].kelime = w.kelime;
+          localMap[k].word = w.kelime;
           localMap[k].seviye = w.seviye || localMap[k].seviye || "";
+          localMap[k].level = w.seviye || localMap[k].seviye || "";
           localMap[k].anlam = w.anlam || localMap[k].anlam || "";
+          localMap[k].meaning = w.anlam || localMap[k].anlam || "";
         }
       }
       if (bildirimli) {
@@ -1595,16 +1738,16 @@
       }
       fetch(APPS_SCRIPT_URL, {
         method: "POST",
+        keepalive: true,
         headers: { "Content-Type": "text/plain;charset=utf-8" },
         body: JSON.stringify({ action: "syncStats", stats: localMap })
       })
         .then(function(r) { return r.json(); })
         .then(function(res) {
           if (res && res.ok && res.stats) {
-            istatistikMapKaydet(res.stats);
-            istatistikTablosuCiz();
+            sunucuIstatistikleriniBirlestir(res.stats);
             if (bildirimli) {
-              bildirimGoster("✅ 'Mistake Stats' tab updated in Google Sheets!");
+              bildirimGoster("✅ 'Mistake Stats' updated in Google Sheets!");
             }
           }
         })
@@ -1629,6 +1772,9 @@
         anlam: hedef ? hedef.anlam : "",
         mistakes: 0,
         correct: 0,
+        cleanSince: "",
+        cleanWeeks: [],
+        mastered4w: false,
         lastPractice: ""
       };
       if (hedef) {
@@ -1636,23 +1782,61 @@
         kayit.seviye = hedef.seviye || kayit.seviye;
         kayit.anlam = hedef.anlam || kayit.anlam;
       }
-      if (dogruMu) {
-        kayit.correct = (Number(kayit.correct) || 0) + 1;
-      } else {
-        kayit.mistakes = (Number(kayit.mistakes) || 0) + 1;
-      }
       var simdi = new Date();
       var pad = function(n) { return n < 10 ? "0" + n : "" + n; };
+      var bugunIso = simdi.getFullYear() + "-" + pad(simdi.getMonth() + 1) + "-" + pad(simdi.getDate());
+      var buHafta = haftaAnahtariAl(simdi);
+
+      if (dogruMu) {
+        kayit.correct = (Number(kayit.correct) || 0) + 1;
+        if (!Array.isArray(kayit.cleanWeeks)) kayit.cleanWeeks = [];
+        if (kayit.cleanWeeks.indexOf(buHafta) === -1) {
+          kayit.cleanWeeks.push(buHafta);
+        }
+        if (!kayit.cleanSince) {
+          kayit.cleanSince = (hedef && hedef.durum === "biliyorum" && hedef.tarih) ? hedef.tarih : bugunIso;
+        }
+      } else {
+        kayit.mistakes = (Number(kayit.mistakes) || 0) + 1;
+        kayit.cleanWeeks = [];
+        kayit.cleanSince = "";
+        kayit.mastered4w = false;
+      }
+
+      var modAdi = (mod || AKTIF_MOD || "Study").toString().toUpperCase();
       kayit.lastPractice =
-        simdi.getFullYear() + "-" + pad(simdi.getMonth() + 1) + "-" + pad(simdi.getDate()) +
-        " " + pad(simdi.getHours()) + ":" + pad(simdi.getMinutes());
+        modAdi + " • " + (dogruMu ? "✅" : "❌") + " (" +
+        bugunIso + " " + pad(simdi.getHours()) + ":" + pad(simdi.getMinutes()) + ")";
+
+      var haftaSayi = kelimeHatasizHaftaSayisiAl(kayit, hedef);
+      if (haftaSayi >= 4 && (Number(kayit.mistakes) || 0) === 0) {
+        kayit.mastered4w = true;
+        if (hedef && hedef.durum !== "biliyorum") {
+          kutucukDegisti(hedef.row, "biliyorum", true);
+          bildirimGoster("🏆 4-Week Zero-Mistake Mastery: " + kayit.kelime + " → Known!");
+        }
+      }
+
       map[key] = kayit;
       istatistikMapKaydet(map);
+      // Instantaneous UI update (0ms)
       istatistikTablosuCiz();
 
       if (APPS_SCRIPT_URL) {
+        var payloadEntry = {
+          word: kayit.kelime,
+          kelime: kayit.kelime,
+          level: kayit.seviye,
+          seviye: kayit.seviye,
+          meaning: kayit.anlam,
+          anlam: kayit.anlam,
+          mistakes: kayit.mistakes,
+          correct: kayit.correct,
+          lastPractice: kayit.lastPractice
+        };
         fetch(APPS_SCRIPT_URL, {
           method: "POST",
+          keepalive: true,
           headers: { "Content-Type": "text/plain;charset=utf-8" },
           body: JSON.stringify({
             action: "recordAttempt",
@@ -1660,7 +1844,8 @@
             isCorrect: !!dogruMu,
             mode: mod || AKTIF_MOD,
             level: kayit.seviye,
-            meaning: kayit.anlam
+            meaning: kayit.anlam,
+            entry: payloadEntry
           })
         })
           .then(function(r) { return r.json(); })
@@ -1669,16 +1854,36 @@
               sunucuIstatistikleriniBirlestir(res.stats);
             }
           })
-          .catch(function() {});
+          .catch(function() {
+            fetch(
+              APPS_SCRIPT_URL +
+                "?action=recordAttempt&word=" + encodeURIComponent(kayit.kelime) +
+                "&isCorrect=" + (dogruMu ? "1" : "0") +
+                "&mode=" + encodeURIComponent(mod || AKTIF_MOD) +
+                "&mistakes=" + kayit.mistakes +
+                "&correct=" + kayit.correct +
+                "&_=" + Date.now()
+            ).catch(function() {});
+          });
       }
     }
 
     function istatistikTablosuCiz() {
       var map = istatistikMapAl();
       var kelimeMap = {};
+      var tumAnahtarlar = {};
+
       for (var i = 0; i < TUM_KELIMELER.length; i++) {
         var w = TUM_KELIMELER[i];
-        kelimeMap[(w.kelime || "").toLowerCase().trim()] = w;
+        var wk = (w.kelime || "").toLowerCase().trim();
+        if (wk) {
+          kelimeMap[wk] = w;
+          tumAnahtarlar[wk] = true;
+        }
+      }
+      var mKeys = Object.keys(map);
+      for (var mk = 0; mk < mKeys.length; mk++) {
+        tumAnahtarlar[mKeys[mk].toLowerCase().trim()] = true;
       }
 
       var qEl = document.getElementById("searchInput");
@@ -1690,25 +1895,26 @@
       var topHata = 0;
       var topDogru = 0;
       var hataliKelimeSayisi = 0;
+      var pratikYapilanKelime = 0;
       var maxMistakes = 1;
 
-      var keys = Object.keys(map);
+      var keys = Object.keys(tumAnahtarlar);
       for (var k = 0; k < keys.length; k++) {
-        var st = map[keys[k]];
-        if (!st) continue;
+        var key = keys[k];
+        var st = map[key] || {};
+        var ref = kelimeMap[key];
         var m = Number(st.mistakes) || 0;
         var c = Number(st.correct) || 0;
-        if (m + c <= 0) continue;
 
         topHata += m;
         topDogru += c;
         if (m > 0) hataliKelimeSayisi++;
+        if (m + c > 0) pratikYapilanKelime++;
         if (m > maxMistakes) maxMistakes = m;
 
-        var ref = kelimeMap[keys[k]];
-        var gosterKelime = ref ? ref.kelime : (st.kelime || keys[k]);
-        var gosterSeviye = ref ? ref.seviye : (st.seviye || "-");
-        var gosterAnlam = ref ? ref.anlam : (st.anlam || "");
+        var gosterKelime = ref ? ref.kelime : (st.kelime || st.word || key);
+        var gosterSeviye = ref ? ref.seviye : (st.seviye || st.level || "-");
+        var gosterAnlam = ref ? ref.anlam : (st.anlam || st.meaning || "");
         var gosterOrnek = ref ? ref.ornek : "";
 
         if (lvl !== "ALL" && gosterSeviye !== lvl) continue;
@@ -1716,6 +1922,7 @@
 
         var total = m + c;
         var errRate = total > 0 ? Math.round((m / total) * 100) : 0;
+        var haftaSayi = kelimeHatasizHaftaSayisiAl(st, ref);
 
         liste.push({
           kelime: gosterKelime,
@@ -1726,6 +1933,8 @@
           correct: c,
           total: total,
           errRate: errRate,
+          cleanWeeksCount: haftaSayi,
+          mastered4w: haftaSayi >= 4 && m === 0,
           lastPractice: st.lastPractice || "-"
         });
       }
@@ -1744,14 +1953,20 @@
       var elErr = document.getElementById("kpiTotalMistakes");
       var elCorr = document.getElementById("kpiTotalCorrect");
       var elAcc = document.getElementById("kpiAccuracy");
-      if (elAttempts) elAttempts.innerText = "Total Exercises: " + topDeneme + " (" + keys.length + " words)";
-      if (elErr) elErr.innerText = "❌ Total Mistakes: " + topHata + " (" + hataliKelimeSayisi + " words)";
-      if (elCorr) elCorr.innerText = "✅ Total Correct: " + topDogru;
+      if (elAttempts) elAttempts.innerText = "Total Attempts: " + topDeneme + " (" + pratikYapilanKelime + "/" + keys.length + " words)";
+      if (elErr) elErr.innerText = "❌ Mistakes: " + topHata + " (" + hataliKelimeSayisi + " words)";
+      if (elCorr) elCorr.innerText = "✅ Correct: " + topDogru;
       if (elAcc) elAcc.innerText = "🎯 Accuracy: " + basariOrani;
 
       var tabStatsBtn = document.getElementById("tabBtn-stats");
       if (tabStatsBtn) {
-        tabStatsBtn.innerText = topHata > 0 ? "📊 Mistake Stats (" + topHata + ")" : "📊 Mistake Stats";
+        tabStatsBtn.innerText = topDeneme > 0
+          ? "📊 Mistake Stats (❌" + topHata + " / ✅" + topDogru + ")"
+          : "📊 Mistake Stats";
+      }
+      var topStatsBtn = document.getElementById("topBtn-stats");
+      if (topStatsBtn) {
+        topStatsBtn.innerText = topHata > 0 ? "📊 Stats (" + topHata + ")" : "📊 Stats";
       }
 
       var tbody = document.getElementById("statsBody");
@@ -1759,8 +1974,8 @@
 
       if (!liste.length) {
         tbody.innerHTML =
-          '<tr><td colspan="10" class="center" style="padding:24px;color:#64748b;">' +
-            'Henüz Quiz, Match, Cloze veya Listen alıştırma kaydı yok. Alıştırma yaptıkça en çok hata yapılan kelimeler burada ve Google Sheets <b>Mistake Stats</b> sekmesinde bar grafiğiyle sıralanır.' +
+          '<tr><td colspan="11" class="center" style="padding:20px;color:#64748b;">' +
+            'No matching words found.' +
           '</td></tr>';
         return;
       }
@@ -1772,6 +1987,9 @@
         var barColor = it.mistakes === 0
           ? "#22c55e"
           : (it.errRate >= 60 ? "linear-gradient(90deg, #ef4444, #b91c1c)" : "linear-gradient(90deg, #f97316, #ea580c)");
+        var streakHtml = it.mastered4w
+          ? '<span class="streak-pill mastered" title="4 Consecutive Zero-Mistake Weeks — Mastered!">🏆 4/4 Wk</span>'
+          : '<span class="streak-pill" title="Consecutive zero-mistake weeks (' + it.cleanWeeksCount + '/4)">' + it.cleanWeeksCount + '/4 Wk</span>';
 
         rowsHtml.push(
           '<tr>' +
@@ -1781,9 +1999,9 @@
               escHtml(it.kelime) +
               (it.ornek ? '<div class="word-hover-ex">' + ornekBicimlendir(it.ornek) + '</div>' : '') +
             '</td>' +
-            '<td class="col-meaning">' + escHtml(it.anlam) + '</td>' +
-            '<td class="center"><span class="err-count-pill">❌ ' + it.mistakes + '</span></td>' +
-            '<td class="center"><span class="corr-count-pill">✅ ' + it.correct + '</span></td>' +
+            '<td title="' + escHtml(it.anlam) + '">' + escHtml(it.anlam) + '</td>' +
+            '<td class="center"><span class="err-count-pill' + (it.mistakes === 0 ? ' zero' : '') + '">' + it.mistakes + '</span></td>' +
+            '<td class="center"><span class="corr-count-pill">' + it.correct + '</span></td>' +
             '<td class="center" style="font-weight:700;color:#334155;">' + it.total + '</td>' +
             '<td class="center" style="font-weight:700;color:' + (it.errRate >= 50 ? '#b91c1c' : '#334155') + ';">' + it.errRate + '%</td>' +
             '<td>' +
@@ -1791,10 +2009,11 @@
                 '<div class="err-bar-track">' +
                   '<div class="err-bar-fill" style="width:' + barPct + '%;background:' + barColor + ';"></div>' +
                 '</div>' +
-                '<span class="err-bar-pct">' + it.mistakes + ' err (' + it.errRate + '%)</span>' +
+                '<span class="err-bar-pct">' + it.mistakes + ' err</span>' +
               '</div>' +
             '</td>' +
-            '<td class="col-date">' + escHtml(it.lastPractice) + '</td>' +
+            '<td class="center">' + streakHtml + '</td>' +
+            '<td class="col-date" title="' + escHtml(it.lastPractice) + '">' + escHtml(it.lastPractice) + '</td>' +
           '</tr>'
         );
       }
@@ -2000,6 +2219,7 @@
       var lvl = document.getElementById("levelFilter").value;
       return TUM_KELIMELER.filter(function(w){
         if (w.durum !== "bilmiyorum") return false;
+        if (kelimeDortHaftaUstalaMi(w)) return false;
         if (lvl !== "ALL" && w.seviye !== lvl) return false;
         if (q && (w.kelime + " " + w.anlam + " " + w.ornek).toLowerCase().indexOf(q) === -1) return false;
         return true;
@@ -2075,6 +2295,7 @@
         return SECENEKLER_CACHE.list;
       }
       var adaylar = TUM_KELIMELER.filter(function(w) {
+        if (kelimeDortHaftaUstalaMi(w)) return false;
         return w.kelime.toLowerCase() !== dogruCard.kelime.toLowerCase();
       });
       for (var i = adaylar.length - 1; i > 0; i--) {
@@ -2229,6 +2450,7 @@
           '<button class="fc-btn' + (altAcik ? ' fc-btn-toggle-on' : '') + '" onclick="fcAltKartAcKapat()" title="Show meaning in a separate card below without flipping">' +
             (altAcik ? '📖 Alt Kart: AÇIK' : '📖 Alt Kart: KAPALI') +
           '</button>' +
+          '<button class="fc-btn" style="background:#fef2f2;border-color:#fecaca;color:#b91c1c;" onclick="fcHataIsaretle(' + card.row + ')" title="Record a mistake for this word & advance">❌ Mistake</button>' +
           '<button class="fc-btn" style="background:#fffbeb;border-color:#fde68a;color:#b45309;" onclick="fcSrsArtir(' + card.row + ')" title="3-Box Method: +1 Star (at 3/3 moves to Known)">⭐ +1 Step (' + srsSayi + '/3)</button>' +
           '<button class="fc-btn fc-btn-known" onclick="fcBiliyorumIsaretle(' + card.row + ')">✅ Known (Instant)</button>' +
           '<button class="fc-btn" onclick="fcDegistir(1)">Next ▶</button>' +
@@ -2708,10 +2930,22 @@
       tabloyuCiz();
     }
 
+    function fcHataIsaretle(row) {
+      var card = TUM_KELIMELER.filter(function(w){ return w.row === row; })[0];
+      if (!card) return;
+      FC_FLIPPED = false;
+      alistirmaSonucuKaydet(card.kelime, false, "Flashcards");
+      FC_INDEX++;
+      tercihleriKaydet();
+      tabloyuCiz();
+      bildirimGoster("❌ Mistake recorded: " + card.kelime);
+    }
+
     function fcSrsArtir(row) {
       var card = TUM_KELIMELER.filter(function(w){ return w.row === row; })[0];
       if (!card) return;
       FC_FLIPPED = false;
+      alistirmaSonucuKaydet(card.kelime, true, "Flashcards");
       var mezun = srsArtir(card);
       if (!mezun) FC_INDEX++;
       tercihleriKaydet();
@@ -2764,6 +2998,10 @@
     }
 
     function fcBiliyorumIsaretle(row) {
+      var card = TUM_KELIMELER.filter(function(w){ return w.row === row; })[0];
+      if (card) {
+        alistirmaSonucuKaydet(card.kelime, true, "Flashcards");
+      }
       FC_FLIPPED = false;
       kutucukDegisti(row, "biliyorum", true);
     }
@@ -2785,6 +3023,7 @@
     });
 
     function tabloyuCiz() {
+      dortHaftaHatasizKontrolEt();
       var total = TUM_KELIMELER.length, unk = 0, knw = 0;
       var lvlCounts = { B1: 0, B2: 0, C1: 0, C2: 0 };
       var knownLvlCounts = { B1: 0, B2: 0, C1: 0, C2: 0 };
@@ -2850,6 +3089,7 @@
 
       var poolList = TUM_KELIMELER.filter(function(w){
         if (w.durum !== "bilmiyorum") return false;
+        if (kelimeDortHaftaUstalaMi(w)) return false;
         if (lvl !== "ALL" && w.seviye !== lvl) return false;
         if (q && (w.kelime + " " + w.anlam + " " + w.ornek).toLowerCase().indexOf(q) === -1) return false;
         return true;
@@ -3039,6 +3279,17 @@
     tercihleriYukleVeUygula();
     listeyiBirlestirVeHazirla(FALLBACK_WORDS);
     verileriYukle(false);
+
+    window.addEventListener("storage", function(e) {
+      if (e && e.key === "kelime_istatistik_v1") {
+        istatistikTablosuCiz();
+      }
+    });
+    setInterval(function() {
+      if (AKTIF_SEKME === "stats") {
+        istatistikTablosuCiz();
+      }
+    }, 3000);
   </script>
 </body>
 </html>

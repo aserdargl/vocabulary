@@ -70,7 +70,14 @@ function doGet(e) {
   }
   if (e && e.parameter && e.parameter.action === 'recordAttempt' && e.parameter.word) {
     var isCorr = e.parameter.isCorrect === 'true' || e.parameter.isCorrect === '1';
-    var resStat = istatistikKaydet(e.parameter.word, isCorr, e.parameter.mode || 'Study');
+    var entryParam = null;
+    if (e.parameter.mistakes !== undefined || e.parameter.correct !== undefined) {
+      entryParam = {
+        mistakes: parseInt(e.parameter.mistakes, 10) || 0,
+        correct: parseInt(e.parameter.correct, 10) || 0
+      };
+    }
+    var resStat = istatistikKaydet(e.parameter.word, isCorr, e.parameter.mode || 'Study', entryParam);
     return ContentService
       .createTextOutput(JSON.stringify(resStat))
       .setMimeType(ContentService.MimeType.JSON);
@@ -262,18 +269,18 @@ function istatistikSayfasiniHazirla_(ss) {
     sh = ss.insertSheet(STATS_SHEET_NAME);
     yeniMi = true;
   }
-  var firstCell = sh.getRange(1, 1).getDisplayValue();
-  if (yeniMi || firstCell !== '#') {
+  var col5Header = sh.getRange(1, 5).getDisplayValue();
+  if (yeniMi || col5Header !== 'Mistakes') {
     var headers = [[
       '#',
       'Level',
       'Word',
       'Meaning',
-      'Mistakes (Hata)',
-      'Correct (Doğru)',
-      'Total Attempts',
-      'Error Rate (%)',
-      'Mistake Bar (En Çok Hata Yapılanlar)',
+      'Mistakes',
+      'Correct',
+      'Total',
+      'Error Rate',
+      'Mistake Bar',
       'Last Practice'
     ]];
     sh.getRange(1, 1, 1, 10).setValues(headers)
@@ -282,16 +289,16 @@ function istatistikSayfasiniHazirla_(ss) {
       .setFontWeight('bold');
     sh.setFrozenRows(1);
     try {
-      sh.setColumnWidth(1, 38);
-      sh.setColumnWidth(2, 56);
-      sh.setColumnWidth(3, 130);
-      sh.setColumnWidth(4, 210);
-      sh.setColumnWidth(5, 115);
-      sh.setColumnWidth(6, 115);
-      sh.setColumnWidth(7, 110);
-      sh.setColumnWidth(8, 105);
-      sh.setColumnWidth(9, 240);
-      sh.setColumnWidth(10, 160);
+      sh.setColumnWidth(1, 32);
+      sh.setColumnWidth(2, 48);
+      sh.setColumnWidth(3, 110);
+      sh.setColumnWidth(4, 165);
+      sh.setColumnWidth(5, 68);
+      sh.setColumnWidth(6, 65);
+      sh.setColumnWidth(7, 56);
+      sh.setColumnWidth(8, 76);
+      sh.setColumnWidth(9, 135);
+      sh.setColumnWidth(10, 130);
     } catch (e) {}
   }
   return sh;
@@ -419,55 +426,77 @@ function istatistikTablosunuYaz_(ss, statsMap, wordsList) {
 
   sh.getRange(2, 1, outVals.length, 10).setValues(outVals);
   sh.getRange(2, 9, barFormulas.length, 1).setFormulas(barFormulas);
+  try { SpreadsheetApp.flush(); } catch (e) {}
 }
 
 function istatistikKaydet(kelime, dogruMu, mod, clientEntry) {
-  var ss = getSpreadsheet_();
-  var temiz = (kelime || '').toString().trim();
-  if (!temiz) return { ok: false, error: 'Empty word' };
-  var key = temiz.toLowerCase();
-  var map = istatistikleriOku_(ss);
-  var mevcut = map[key] || { word: temiz, level: 'B2', meaning: '', mistakes: 0, correct: 0, lastPractice: '' };
+  var lock = LockService.getScriptLock();
+  try { lock.waitLock(5000); } catch (e) {}
+  try {
+    var ss = getSpreadsheet_();
+    var temiz = (kelime || '').toString().trim();
+    if (!temiz) return { ok: false, error: 'Empty word' };
+    var key = temiz.toLowerCase();
+    var map = istatistikleriOku_(ss);
+    var mevcut = map[key] || { word: temiz, level: 'B2', meaning: '', mistakes: 0, correct: 0, lastPractice: '' };
 
-  if (dogruMu) {
-    mevcut.correct = (mevcut.correct || 0) + 1;
-  } else {
-    mevcut.mistakes = (mevcut.mistakes || 0) + 1;
+    if (dogruMu) {
+      mevcut.correct = (mevcut.correct || 0) + 1;
+    } else {
+      mevcut.mistakes = (mevcut.mistakes || 0) + 1;
+    }
+    if (clientEntry) {
+      if ((clientEntry.mistakes || 0) > mevcut.mistakes) mevcut.mistakes = parseInt(clientEntry.mistakes, 10) || mevcut.mistakes;
+      if ((clientEntry.correct || 0) > mevcut.correct) mevcut.correct = parseInt(clientEntry.correct, 10) || mevcut.correct;
+      if (clientEntry.level || clientEntry.seviye) mevcut.level = clientEntry.level || clientEntry.seviye;
+      if (clientEntry.meaning || clientEntry.anlam) mevcut.meaning = clientEntry.meaning || clientEntry.anlam;
+    }
+
+    var tz = 'GMT+3';
+    try { tz = Session.getScriptTimeZone() || 'GMT+3'; } catch (e) {}
+    var tarihStr = Utilities.formatDate(new Date(), tz, 'yyyy-MM-dd HH:mm');
+    mevcut.lastPractice = (mod || 'Study').toUpperCase() + ' • ' + (dogruMu ? '✅' : '❌') + ' (' + tarihStr + ')';
+    map[key] = mevcut;
+
+    istatistikTablosunuYaz_(ss, map);
+    return { ok: true, word: temiz, entry: mevcut, stats: map };
+  } finally {
+    try { lock.releaseLock(); } catch (e) {}
   }
-  if (clientEntry) {
-    if ((clientEntry.mistakes || 0) > mevcut.mistakes) mevcut.mistakes = clientEntry.mistakes;
-    if ((clientEntry.correct || 0) > mevcut.correct) mevcut.correct = clientEntry.correct;
-  }
-
-  var tz = 'GMT+3';
-  try { tz = Session.getScriptTimeZone() || 'GMT+3'; } catch (e) {}
-  var tarihStr = Utilities.formatDate(new Date(), tz, 'yyyy-MM-dd HH:mm');
-  mevcut.lastPractice = (mod || 'Study').toUpperCase() + ' • ' + (dogruMu ? '✅' : '❌') + ' (' + tarihStr + ')';
-  map[key] = mevcut;
-
-  istatistikTablosunuYaz_(ss, map);
-  return { ok: true, word: temiz, entry: mevcut, stats: map };
 }
 
 function istatistikTopluSenkronizeEt(incomingStats) {
-  var ss = getSpreadsheet_();
-  var map = istatistikleriOku_(ss);
-  if (incomingStats && typeof incomingStats === 'object') {
-    for (var k in incomingStats) {
-      var inc = incomingStats[k];
-      if (!inc) continue;
-      var key = k.toLowerCase().trim();
-      var cur = map[key] || { word: inc.word || k, level: 'B2', meaning: '', mistakes: 0, correct: 0, lastPractice: '' };
-      cur.mistakes = Math.max(cur.mistakes || 0, parseInt(inc.mistakes, 10) || 0);
-      cur.correct = Math.max(cur.correct || 0, parseInt(inc.correct, 10) || 0);
-      if (inc.lastPractice && (!cur.lastPractice || cur.lastPractice === '-')) {
-        cur.lastPractice = inc.lastPractice;
+  var lock = LockService.getScriptLock();
+  try { lock.waitLock(5000); } catch (e) {}
+  try {
+    var ss = getSpreadsheet_();
+    var map = istatistikleriOku_(ss);
+    if (incomingStats && typeof incomingStats === 'object') {
+      for (var k in incomingStats) {
+        var inc = incomingStats[k];
+        if (!inc) continue;
+        var key = k.toLowerCase().trim();
+        var cur = map[key] || {
+          word: inc.word || inc.kelime || k,
+          level: inc.level || inc.seviye || 'B2',
+          meaning: inc.meaning || inc.anlam || '',
+          mistakes: 0,
+          correct: 0,
+          lastPractice: ''
+        };
+        cur.mistakes = Math.max(cur.mistakes || 0, parseInt(inc.mistakes, 10) || 0);
+        cur.correct = Math.max(cur.correct || 0, parseInt(inc.correct, 10) || 0);
+        if (inc.lastPractice && inc.lastPractice !== '-' && (!cur.lastPractice || cur.lastPractice === '-')) {
+          cur.lastPractice = inc.lastPractice;
+        }
+        map[key] = cur;
       }
-      map[key] = cur;
     }
+    istatistikTablosunuYaz_(ss, map);
+    return { ok: true, stats: map };
+  } finally {
+    try { lock.releaseLock(); } catch (e) {}
   }
-  istatistikTablosunuYaz_(ss, map);
-  return { ok: true, stats: map };
 }
 
 function getWebAppUrl_() {
@@ -859,17 +888,21 @@ function uygulamaHtmlGetir() {
     '  .match-item:hover { border-color: #135c37; background: #f8fafc; }',
     '  .match-item.selected { border-color: #135c37; background: #dcfce7; color: #0f172a; box-shadow: 0 0 0 2px rgba(19, 92, 55, 0.2); }',
     '  .match-item.matched { opacity: 0.38; pointer-events: none; background: #f1f5f9; border-color: #cbd5e1; text-decoration: line-through; }',
-    '  .stats-kpi-bar { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 8px; padding: 6px 10px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 6px; flex-wrap: nowrap; white-space: nowrap; overflow-x: auto; }',
+    '  #statsView { max-width: 980px; }',
+    '  #statsView table.sheet-table { width: auto; min-width: 820px; max-width: 960px; table-layout: fixed; }',
+    '  #statsView table.sheet-table th, #statsView table.sheet-table td { padding: 3px 6px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }',
+    '  .stats-kpi-bar { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 8px; padding: 6px 10px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 6px; max-width: 960px; flex-wrap: nowrap; white-space: nowrap; }',
     '  .stats-kpis { display: flex; align-items: center; gap: 8px; flex-wrap: nowrap; white-space: nowrap; }',
-    '  .stats-kpi { padding: 3px 9px; border-radius: 5px; font-size: 11.5px; font-weight: 700; background: #ffffff; border: 1px solid #cbd5e1; color: #1e293b; }',
+    '  .stats-kpi { padding: 3px 8px; border-radius: 5px; font-size: 11.5px; font-weight: 700; background: #ffffff; border: 1px solid #cbd5e1; color: #1e293b; }',
     '  .stats-kpi.err { background: #fef2f2; border-color: #fecaca; color: #991b1b; }',
     '  .stats-kpi.ok { background: #f0fdf4; border-color: #bbf7d0; color: #166534; }',
-    '  .err-bar-wrap { display: flex; align-items: center; gap: 8px; min-width: 190px; }',
-    '  .err-bar-track { flex: 1; height: 12px; background: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 99px; overflow: hidden; }',
-    '  .err-bar-fill { height: 100%; background: linear-gradient(90deg, #ef4444, #b91c1c); border-radius: 99px; transition: width 0.25s ease; }',
-    '  .err-bar-pct { font-size: 11px; font-weight: 700; color: #991b1b; min-width: 58px; text-align: right; }',
-    '  .err-count-pill { display: inline-block; padding: 2px 8px; border-radius: 99px; font-weight: 800; font-size: 11px; background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }',
-    '  .corr-count-pill { display: inline-block; padding: 2px 8px; border-radius: 99px; font-weight: 700; font-size: 11px; background: #dcfce7; color: #166534; border: 1px solid #86efac; }',
+    '  .err-bar-wrap { display: flex; align-items: center; gap: 6px; width: 100%; }',
+    '  .err-bar-track { flex: 1; height: 10px; background: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 99px; overflow: hidden; }',
+    '  .err-bar-fill { height: 100%; background: linear-gradient(90deg, #ef4444, #b91c1c); border-radius: 99px; transition: width 0.2s ease; }',
+    '  .err-bar-pct { font-size: 10.5px; font-weight: 700; color: #64748b; min-width: 38px; text-align: right; }',
+    '  .err-count-pill { display: inline-block; min-width: 26px; padding: 1px 6px; border-radius: 99px; font-weight: 800; font-size: 11px; background: #fee2e2; color: #991b1b; text-align: center; }',
+    '  .err-count-pill.zero { background: #f1f5f9; color: #64748b; font-weight: 600; }',
+    '  .corr-count-pill { display: inline-block; min-width: 26px; padding: 1px 6px; border-radius: 99px; font-weight: 700; font-size: 11px; background: #dcfce7; color: #166534; text-align: center; }',
     '  @media (max-width: 900px) { .pool-layout { grid-template-columns: 1fr; } }',
     '</style>',
     '</head>',
@@ -1023,16 +1056,16 @@ function uygulamaHtmlGetir() {
     '    <table class="sheet-table">',
     '      <thead>',
     '        <tr>',
-    '          <th class="col-row">#</th>',
-    '          <th class="center">Level</th>',
-    '          <th>Word</th>',
-    '          <th>Meaning</th>',
-    '          <th class="center">Mistakes (Hata)</th>',
-    '          <th class="center">Correct (Doğru)</th>',
-    '          <th class="center">Total</th>',
-    '          <th class="center">Error Rate</th>',
-    '          <th style="min-width:220px;">Mistake Bar (En Çok Hata Yapılanlar)</th>',
-    '          <th>Last Exercise</th>',
+    '          <th style="width:28px;" class="center">#</th>',
+    '          <th style="width:44px;" class="center">Level</th>',
+    '          <th style="width:115px;">Word</th>',
+    '          <th style="width:170px;">Meaning</th>',
+    '          <th style="width:66px;" class="center">Mistakes</th>',
+    '          <th style="width:62px;" class="center">Correct</th>',
+    '          <th style="width:50px;" class="center">Total</th>',
+    '          <th style="width:72px;" class="center">Error Rate</th>',
+    '          <th style="width:140px;">Mistake Bar</th>',
+    '          <th style="width:120px;">Last Practice</th>',
     '        </tr>',
     '      </thead>',
     '      <tbody id="statsBody"></tbody>',
@@ -1201,25 +1234,28 @@ function uygulamaHtmlGetir() {
     '    }).istatistikKaydet(kayit.kelime, !!dogruMu, mod || AKTIF_MOD, kayit.seviye, kayit.anlam);',
     '  }',
     '  function istatistikTablosuCiz() {',
-    '    var map = istatistikMapAl(), keys = Object.keys(map), liste = [], topHata = 0, topDogru = 0, hataliKelime = 0, maxMistakes = 1;',
+    '    var map = istatistikMapAl(), kelimeMap = {}, tum = {}, liste = [], topHata = 0, topDogru = 0, hataliKelime = 0, maxMistakes = 1;',
+    '    for (var i = 0; i < TUM_KELIMELER.length; i++) { var w = TUM_KELIMELER[i]; var wk = (w.kelime || "").toLowerCase().trim(); if (wk) { kelimeMap[wk] = w; tum[wk] = true; } }',
+    '    var mKeys = Object.keys(map); for (var mk = 0; mk < mKeys.length; mk++) tum[mKeys[mk].toLowerCase().trim()] = true;',
+    '    var keys = Object.keys(tum);',
     '    for (var k = 0; k < keys.length; k++) {',
-    '      var st = map[keys[k]]; if (!st) continue;',
-    '      var m = Number(st.mistakes) || 0, c = Number(st.correct) || 0; if (m + c <= 0) continue;',
+    '      var key = keys[k], st = map[key] || {}, ref = kelimeMap[key];',
+    '      var m = Number(st.mistakes) || 0, c = Number(st.correct) || 0;',
     '      topHata += m; topDogru += c; if (m > 0) hataliKelime++; if (m > maxMistakes) maxMistakes = m;',
-    '      var tot = m + c, errRate = Math.round((m / tot) * 100);',
-    '      liste.push({ kelime: st.kelime || keys[k], seviye: st.seviye || "-", anlam: st.anlam || "", mistakes: m, correct: c, total: tot, errRate: errRate, lastPractice: st.lastPractice || "-" });',
+    '      var tot = m + c, errRate = tot > 0 ? Math.round((m / tot) * 100) : 0;',
+    '      liste.push({ kelime: ref ? ref.kelime : (st.kelime || st.word || key), seviye: ref ? ref.seviye : (st.seviye || st.level || "-"), anlam: ref ? ref.anlam : (st.anlam || st.meaning || ""), mistakes: m, correct: c, total: tot, errRate: errRate, lastPractice: st.lastPractice || "-" });',
     '    }',
-    '    liste.sort(function(a, b) { if (b.mistakes !== a.mistakes) return b.mistakes - a.mistakes; if (b.errRate !== a.errRate) return b.errRate - a.errRate; return b.total - a.total; });',
+    '    liste.sort(function(a, b) { if (b.mistakes !== a.mistakes) return b.mistakes - a.mistakes; if (b.errRate !== a.errRate) return b.errRate - a.errRate; if (b.total !== a.total) return b.total - a.total; return a.kelime.localeCompare(b.kelime); });',
     '    var topDeneme = topHata + topDogru, acc = topDeneme > 0 ? Math.round((topDogru / topDeneme) * 100) + "%" : "—";',
     '    var elA = document.getElementById("kpiTotalAttempts"), elE = document.getElementById("kpiTotalMistakes"), elC = document.getElementById("kpiTotalCorrect"), elAc = document.getElementById("kpiAccuracy");',
-    '    if (elA) elA.innerText = "Total Exercises: " + topDeneme; if (elE) elE.innerText = "❌ Total Mistakes: " + topHata; if (elC) elC.innerText = "✅ Total Correct: " + topDogru; if (elAc) elAc.innerText = "🎯 Accuracy: " + acc;',
-    '    var tabStats = document.getElementById("tabBtn-stats"); if (tabStats) tabStats.innerText = topHata > 0 ? "📊 Mistake Stats (" + topHata + ")" : "📊 Mistake Stats";',
+    '    if (elA) elA.innerText = "Total Attempts: " + topDeneme; if (elE) elE.innerText = "❌ Mistakes: " + topHata; if (elC) elC.innerText = "✅ Correct: " + topDogru; if (elAc) elAc.innerText = "🎯 Accuracy: " + acc;',
+    '    var tabStats = document.getElementById("tabBtn-stats"); if (tabStats) tabStats.innerText = topDeneme > 0 ? "📊 Mistake Stats (❌" + topHata + " / ✅" + topDogru + ")" : "📊 Mistake Stats";',
     '    var tbody = document.getElementById("statsBody"); if (!tbody) return;',
-    '    if (!liste.length) { tbody.innerHTML = \'<tr><td colspan="10" class="center" style="padding:20px;color:#64748b;">No exercise attempts recorded yet.</td></tr>\'; return; }',
+    '    if (!liste.length) { tbody.innerHTML = \'<tr><td colspan="10" class="center" style="padding:20px;color:#64748b;">No words found.</td></tr>\'; return; }',
     '    var rows = [];',
     '    for (var r = 0; r < liste.length; r++) {',
     '      var it = liste[r], barPct = it.mistakes > 0 ? Math.max(6, Math.round((it.mistakes / maxMistakes) * 100)) : 0;',
-    '      rows.push(\'<tr><td class="col-row">\' + (r + 1) + \'</td><td class="col-lvl">\' + escHtml(it.seviye) + \'</td><td class="col-word" onclick="kelimeOku(\\\'\' + escJs(it.kelime) + \'\\\', this)">\' + escHtml(it.kelime) + \'</td><td class="col-meaning">\' + escHtml(it.anlam) + \'</td><td class="center"><span class="err-count-pill">❌ \' + it.mistakes + \'</span></td><td class="center"><span class="corr-count-pill">✅ \' + it.correct + \'</span></td><td class="center" style="font-weight:700;">\' + it.total + \'</td><td class="center" style="font-weight:700;">\' + it.errRate + \'%</td><td><div class="err-bar-wrap"><div class="err-bar-track"><div class="err-bar-fill" style="width:\' + barPct + \'%;"></div></div><span class="err-bar-pct">\' + it.mistakes + \' err</span></div></td><td class="col-date">\' + escHtml(it.lastPractice) + \'</td></tr>\');',
+    '      rows.push(\'<tr><td class="col-row">\' + (r + 1) + \'</td><td class="col-lvl">\' + escHtml(it.seviye) + \'</td><td class="col-word" onclick="kelimeOku(\\\'\' + escJs(it.kelime) + \'\\\', this)">\' + escHtml(it.kelime) + \'</td><td title="\' + escHtml(it.anlam) + \'">\' + escHtml(it.anlam) + \'</td><td class="center"><span class="err-count-pill\' + (it.mistakes === 0 ? \' zero\' : \'\') + \'">\' + it.mistakes + \'</span></td><td class="center"><span class="corr-count-pill">\' + it.correct + \'</span></td><td class="center" style="font-weight:700;">\' + it.total + \'</td><td class="center" style="font-weight:700;">\' + it.errRate + \'%</td><td><div class="err-bar-wrap"><div class="err-bar-track"><div class="err-bar-fill" style="width:\' + barPct + \'%;"></div></div><span class="err-bar-pct">\' + it.mistakes + \' err</span></div></td><td class="col-date">\' + escHtml(it.lastPractice) + \'</td></tr>\');',
     '    }',
     '    tbody.innerHTML = rows.join("");',
     '  }',
