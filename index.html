@@ -350,9 +350,9 @@
       bottom: 0;
       left: 0;
       right: 0;
-      height: 30px;
-      background: #f1f3f4;
-      border-top: 1px solid #dadce0;
+      height: 34px;
+      background: #f8fafc;
+      border-top: 1px solid #cbd5e1;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -360,34 +360,46 @@
       z-index: 30;
       flex-wrap: nowrap;
       white-space: nowrap;
-      overflow-x: auto;
     }
-    .bottom-tabs { display: flex; align-items: center; gap: 2px; height: 100%; flex-wrap: nowrap; white-space: nowrap; }
+    .bottom-tabs { display: flex; align-items: center; gap: 5px; height: 100%; flex-wrap: nowrap; white-space: nowrap; }
     .sheet-tab {
-      border: 1px solid transparent;
-      border-top: none;
-      background: transparent;
-      padding: 0 12px;
-      height: 29px;
-      font-size: 12px;
-      font-weight: 500;
-      color: #5f6368;
+      border: 1px solid #cbd5e1;
+      background: #ffffff;
+      padding: 0 11px;
+      height: 25px;
+      border-radius: 6px;
+      font-size: 11.5px;
+      font-weight: 700;
+      color: #334155;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
       gap: 5px;
       white-space: nowrap;
       flex-shrink: 0;
+      transition: all 0.15s ease;
     }
-    .sheet-tab:hover { background: #e8eaed; }
+    .sheet-tab:hover { filter: brightness(0.96); transform: translateY(-1px); }
     .sheet-tab.active {
-      background: #ffffff;
-      color: #137333;
-      font-weight: 700;
-      border-left-color: #dadce0;
-      border-right-color: #dadce0;
-      border-bottom: 2px solid #137333;
+      box-shadow: 0 2px 6px rgba(15, 23, 42, 0.18);
+      transform: translateY(-1px);
     }
+    #tabBtn-sheet1 { background: #dcfce7; color: #14532d; border-color: #86efac; }
+    #tabBtn-sheet1.active { background: #15803d; color: #ffffff; border-color: #14532d; }
+    #tabBtn-pool { background: #ffe4e6; color: #881337; border-color: #fda4af; }
+    #tabBtn-pool.active { background: #e11d48; color: #ffffff; border-color: #be123c; }
+    #tabBtn-stats { background: #fef3c7; color: #78350f; border-color: #fcd34d; }
+    #tabBtn-stats.active { background: #d97706; color: #ffffff; border-color: #b45309; }
+    #tabBtn-flashcards { background: #e0e7ff; color: #1e3a8a; border-color: #a5b4fc; }
+    #tabBtn-flashcards.active { background: #4f46e5; color: #ffffff; border-color: #4338ca; }
+    #tabBtn-cloze { background: #f3e8ff; color: #581c87; border-color: #d8b4fe; }
+    #tabBtn-cloze.active { background: #9333ea; color: #ffffff; border-color: #7e22ce; }
+    #tabBtn-quiz { background: #e0f2fe; color: #0c4a6e; border-color: #7dd3fc; }
+    #tabBtn-quiz.active { background: #0284c7; color: #ffffff; border-color: #0369a1; }
+    #tabBtn-listen { background: #fae8ff; color: #701a75; border-color: #f0abfc; }
+    #tabBtn-listen.active { background: #c026d3; color: #ffffff; border-color: #a21caf; }
+    #tabBtn-match { background: #ccfbf1; color: #134e4a; border-color: #5eead4; }
+    #tabBtn-match.active { background: #0d9488; color: #ffffff; border-color: #0f766e; }
     .bottom-info {
       font-size: 11px;
       color: #64748b;
@@ -604,26 +616,27 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
-      margin: 14px auto 0;
-      width: 100%;
+      gap: 6px;
+      margin: 12px auto 0;
+      width: fit-content;
       flex-wrap: nowrap;
       white-space: nowrap;
     }
     .fc-btn {
+      flex: 0 0 auto;
       border: 1px solid #cbd5e1;
       background: #fff;
       color: #1f2937;
-      border-radius: 6px;
-      padding: 0 12px;
-      height: 32px;
-      font-size: 12px;
+      border-radius: 5px;
+      padding: 0 9px;
+      height: 28px;
+      font-size: 11.5px;
       font-weight: 600;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 5px;
+      gap: 4px;
       white-space: nowrap;
       flex-shrink: 0;
     }
@@ -671,27 +684,27 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 6px;
-      margin: 0 auto 14px;
-      width: 100%;
+      gap: 5px;
+      margin: 0 auto 12px;
+      width: fit-content;
       flex-wrap: nowrap;
       white-space: nowrap;
     }
     .mode-btn {
-      flex: 1 1 auto;
+      flex: 0 0 auto;
       border: 1px solid #cbd5e1;
       background: #f8fafc;
       color: #334155;
-      border-radius: 6px;
-      padding: 0 10px;
-      height: 32px;
-      font-size: 12px;
+      border-radius: 5px;
+      padding: 0 9px;
+      height: 27px;
+      font-size: 11.5px;
       font-weight: 600;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 5px;
+      gap: 4px;
       transition: all 0.15s;
       white-space: nowrap;
     }
@@ -947,8 +960,8 @@
           <th class="col-date">Date</th>
           <th class="center">Level</th>
           <th>Type</th>
-          <th>Word</th>
           <th class="col-mark" title="Tek tık: ✓ Biliyorum | Çift tık: ✕ Bilmiyorum">✓/✕</th>
+          <th>Word</th>
           <th>Meaning</th>
           <th>Example Sentence</th>
           <th class="center">Status</th>
@@ -1910,20 +1923,20 @@
     function modCubuguHtml() {
       var modes = [
         { id: "flashcards", label: "🃏 Flashcards" },
-        { id: "cloze", label: "📝 Cloze (Boşluk Doldur)" },
-        { id: "quiz", label: "🎯 Quiz (TR → EN)" },
-        { id: "listen", label: "🎧 Listen (Dinle & Bul)" },
-        { id: "match", label: "🧩 Match (5'li Eşleştir)" }
+        { id: "cloze", label: "📝 Cloze" },
+        { id: "quiz", label: "🎯 Quiz" },
+        { id: "listen", label: "🎧 Listen" },
+        { id: "match", label: "🧩 Match" }
       ];
       var html = ['<div class="study-modes-bar">'];
       html.push(
         '<button class="mode-btn" onclick="sekmeDegistir(\'sheet1\')" title="Ana Kelime Tablosuna Dön (Sheet1)">' +
-          '📋 Kelime Tablosu' +
+          '📋 Tablo' +
         '</button>'
       );
       html.push(
         '<button class="mode-btn" onclick="sekmeDegistir(\'pool\')" title="Bilmediğim Kelimeler Havuzu Tablosu">' +
-          '📕 Bilmediklerim' +
+          '📕 Havuz' +
         '</button>'
       );
       for (var i = 0; i < modes.length; i++) {
@@ -1936,7 +1949,7 @@
       }
       html.push(
         '<button class="mode-btn" onclick="sekmeDegistir(\'stats\')" title="View Mistake & Practice Statistics">' +
-          '📊 Mistake Stats' +
+          '📊 Stats' +
         '</button>'
       );
       html.push('</div>');
@@ -2667,14 +2680,14 @@
             '<td class="col-date">' + escHtml(x.tarih) + '</td>' +
             '<td class="col-lvl">' + escHtml(x.seviye) + '</td>' +
             '<td class="col-type">' + escHtml(turTemizle(x.tur)) + '</td>' +
-            '<td class="col-word" onclick="kelimeOku(\'' + escJs(x.kelime) + '\', this)">' +
-              escHtml(x.kelime) +
-              (x.ornek ? '<div class="word-hover-ex">' + ornekBicimlendir(x.ornek) + '</div>' : '') +
-            '</td>' +
             '<td class="col-mark">' +
               '<button type="button" class="mark-btn ' + x.durum + '" onclick="durumTikla(event, ' + x.row + ')" ondblclick="durumCiftTikla(event, ' + x.row + ')" oncontextmenu="durumSifirla(event, ' + x.row + ')" title="Tek tık: ✓ Biliyorum | Çift tık: ✕ Bilmiyorum (Sağ tık: Sıfırla)">' +
                 markIcon +
               '</button>' +
+            '</td>' +
+            '<td class="col-word" onclick="kelimeOku(\'' + escJs(x.kelime) + '\', this)">' +
+              escHtml(x.kelime) +
+              (x.ornek ? '<div class="word-hover-ex">' + ornekBicimlendir(x.ornek) + '</div>' : '') +
             '</td>' +
             '<td class="col-meaning">' + escHtml(x.anlam) + '</td>' +
             '<td class="col-example">' + escHtml(x.ornek) + '</td>' +
@@ -2709,14 +2722,14 @@
           '<tr>' +
             '<td class="col-lvl">' + escHtml(p.seviye) + '</td>' +
             '<td class="col-type">' + escHtml(turTemizle(p.tur)) + '</td>' +
-            '<td class="col-word" onclick="kelimeOku(\'' + escJs(p.kelime) + '\', this)">' +
-              escHtml(p.kelime) +
-              (p.ornek ? '<div class="word-hover-ex">' + ornekBicimlendir(p.ornek) + '</div>' : '') +
-            '</td>' +
             '<td class="col-mark">' +
               '<button type="button" class="mark-btn ' + p.durum + '" onclick="durumTikla(event, ' + p.row + ')" ondblclick="durumCiftTikla(event, ' + p.row + ')" oncontextmenu="durumSifirla(event, ' + p.row + ')" title="Tek tık: ✓ Biliyorum | Çift tık: ✕ Bilmiyorum">' +
                 pIcon +
               '</button>' +
+            '</td>' +
+            '<td class="col-word" onclick="kelimeOku(\'' + escJs(p.kelime) + '\', this)">' +
+              escHtml(p.kelime) +
+              (p.ornek ? '<div class="word-hover-ex">' + ornekBicimlendir(p.ornek) + '</div>' : '') +
             '</td>' +
             '<td class="col-meaning">' + escHtml(p.anlam) + '</td>' +
             '<td class="col-example">' + escHtml(p.ornek) + '</td>' +
