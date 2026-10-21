@@ -388,6 +388,8 @@
     #tabBtn-sheet1.active { background: #15803d; color: #ffffff; border-color: #14532d; }
     #tabBtn-pool { background: #ffe4e6; color: #881337; border-color: #fda4af; }
     #tabBtn-pool.active { background: #e11d48; color: #ffffff; border-color: #be123c; }
+    #tabBtn-knownPool { background: #d1fae5; color: #065f46; border-color: #6ee7b7; }
+    #tabBtn-knownPool.active { background: #059669; color: #ffffff; border-color: #047857; }
     #tabBtn-stats { background: #fef3c7; color: #78350f; border-color: #fcd34d; }
     #tabBtn-stats.active { background: #d97706; color: #ffffff; border-color: #b45309; }
     #tabBtn-flashcards { background: #e0e7ff; color: #1e3a8a; border-color: #a5b4fc; }
@@ -894,7 +896,7 @@
       <div class="mini-stats">
         <span class="mini-stat" id="stTotal" style="cursor:pointer;" onclick="sekmeDegistir('sheet1')" title="Click to open Main Vocabulary Table (Sheet1)">Total: -</span>
         <span class="mini-stat unk" id="stUnk" style="cursor:pointer;" onclick="sekmeDegistir('pool')" title="Click to open Unknown Words Pool Table">In Pool: -</span>
-        <span class="mini-stat knw" id="stKnw" style="cursor:pointer;" onclick="sekmeDegistir('sheet1')" title="Click to open Main Vocabulary Table (Sheet1)">Known: -</span>
+        <span class="mini-stat knw" id="stKnw" style="cursor:pointer;" onclick="sekmeDegistir('knownPool')" title="Click to open Known Words Pool Table">Known: -</span>
       </div>
       <span class="sync-badge" id="syncBadge" title="Two-way live sync with Google Sheets (Sheet1)">
         <span class="sync-dot" id="syncDot"></span>
@@ -919,7 +921,8 @@
         <option value="C2">C2</option>
       </select>
       <button class="btn" id="topBtn-sheet1" onclick="sekmeDegistir('sheet1')" title="Ana Kelime Tablosu (Sheet1)">📋 Tablo</button>
-      <button class="btn" id="topBtn-pool" onclick="sekmeDegistir('pool')" title="Bilmediğim Kelimeler Havuzu Tablosu">📕 Havuz</button>
+      <button class="btn" id="topBtn-pool" onclick="sekmeDegistir('pool')" title="Bilmediğim Kelimeler Havuzu Tablosu (Unknown Words Pool)">📕 Havuz</button>
+      <button class="btn" id="topBtn-knownPool" onclick="sekmeDegistir('knownPool')" title="Bildiğim Kelimeler Havuzu Tablosu (Known Words Pool)">📗 Known</button>
       <button class="btn" id="topBtn-flashcards" onclick="calismaModuAc('flashcards')" title="3D Flashcards + 3-Step Spaced Repetition">🃏 Flashcards</button>
       <button class="btn" id="topBtn-cloze" onclick="calismaModuAc('cloze')" title="Fill in the blank in Example Sentences">📝 Cloze</button>
       <button class="btn" id="topBtn-quiz" onclick="calismaModuAc('quiz')" title="Active Recall (Turkish -> English Quiz & Typing)">🎯 Quiz</button>
@@ -987,14 +990,42 @@
           <tr>
             <th class="center">Level</th>
             <th>Type</th>
-            <th>Word</th>
             <th class="col-mark" title="Tek tık: ✓ Biliyorum | Çift tık: ✕ Bilmiyorum">✓/✕</th>
+            <th>Word</th>
             <th>Meaning</th>
             <th>Example Sentence</th>
             <th class="col-date">Date</th>
           </tr>
         </thead>
         <tbody id="poolBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="table-wrap" id="knownPoolView" style="display:none;">
+    <div class="pool-layout">
+      <table class="sheet-table">
+        <thead>
+          <tr>
+            <th>Level</th>
+            <th class="center">Known Words</th>
+          </tr>
+        </thead>
+        <tbody id="knownPoolSummaryBody"></tbody>
+      </table>
+      <table class="sheet-table">
+        <thead>
+          <tr>
+            <th class="center">Level</th>
+            <th>Type</th>
+            <th class="col-mark" title="Tek tık: ✓ Biliyorum | Çift tık: ✕ Bilmiyorum">✓/✕</th>
+            <th>Word</th>
+            <th>Meaning</th>
+            <th>Example Sentence</th>
+            <th class="col-date">Date</th>
+          </tr>
+        </thead>
+        <tbody id="knownPoolBody"></tbody>
       </table>
     </div>
   </div>
@@ -1039,6 +1070,7 @@
     <div class="bottom-tabs">
       <button class="sheet-tab active" id="tabBtn-sheet1" onclick="sekmeDegistir('sheet1')">Sheet1</button>
       <button class="sheet-tab" id="tabBtn-pool" onclick="sekmeDegistir('pool')">Unknown Words Pool</button>
+      <button class="sheet-tab" id="tabBtn-knownPool" onclick="sekmeDegistir('knownPool')">Known Words Pool</button>
       <button class="sheet-tab" id="tabBtn-stats" onclick="sekmeDegistir('stats')">📊 Mistake Stats</button>
       <button class="sheet-tab" id="tabBtn-flashcards" onclick="calismaModuAc('flashcards')">🃏 Flashcards</button>
       <button class="sheet-tab" id="tabBtn-cloze" onclick="calismaModuAc('cloze')">📝 Cloze</button>
@@ -1816,6 +1848,8 @@
 
         document.getElementById("sheet1View").style.display = AKTIF_SEKME === "sheet1" ? "block" : "none";
         document.getElementById("poolView").style.display = AKTIF_SEKME === "pool" ? "block" : "none";
+        var kpView = document.getElementById("knownPoolView");
+        if (kpView) kpView.style.display = AKTIF_SEKME === "knownPool" ? "block" : "none";
         document.getElementById("flashcardView").style.display = AKTIF_SEKME === "flashcards" ? "block" : "none";
         var stView = document.getElementById("statsView");
         if (stView) stView.style.display = AKTIF_SEKME === "stats" ? "block" : "none";
@@ -1828,10 +1862,14 @@
       var m = AKTIF_MOD;
       document.getElementById("tabBtn-sheet1").classList.toggle("active", s === "sheet1");
       document.getElementById("tabBtn-pool").classList.toggle("active", s === "pool");
+      var tabKnw = document.getElementById("tabBtn-knownPool");
+      if (tabKnw) tabKnw.classList.toggle("active", s === "knownPool");
       var topS1 = document.getElementById("topBtn-sheet1");
       if (topS1) topS1.classList.toggle("active-mode", s === "sheet1");
       var topPool = document.getElementById("topBtn-pool");
       if (topPool) topPool.classList.toggle("active-mode", s === "pool");
+      var topKnw = document.getElementById("topBtn-knownPool");
+      if (topKnw) topKnw.classList.toggle("active-mode", s === "knownPool");
       var tabSt = document.getElementById("tabBtn-stats");
       if (tabSt) tabSt.classList.toggle("active", s === "stats");
       var topSt = document.getElementById("topBtn-stats");
@@ -1851,6 +1889,8 @@
       sekmeButonlariniGuncelle();
       document.getElementById("sheet1View").style.display = s === "sheet1" ? "block" : "none";
       document.getElementById("poolView").style.display = s === "pool" ? "block" : "none";
+      var kpView = document.getElementById("knownPoolView");
+      if (kpView) kpView.style.display = s === "knownPool" ? "block" : "none";
       document.getElementById("flashcardView").style.display = s === "flashcards" ? "block" : "none";
       var stView = document.getElementById("statsView");
       if (stView) stView.style.display = s === "stats" ? "block" : "none";
@@ -1870,6 +1910,8 @@
       sekmeButonlariniGuncelle();
       document.getElementById("sheet1View").style.display = "none";
       document.getElementById("poolView").style.display = "none";
+      var kpView = document.getElementById("knownPoolView");
+      if (kpView) kpView.style.display = "none";
       document.getElementById("flashcardView").style.display = "block";
       var stView = document.getElementById("statsView");
       if (stView) stView.style.display = "none";
@@ -1935,8 +1977,13 @@
         '</button>'
       );
       html.push(
-        '<button class="mode-btn" onclick="sekmeDegistir(\'pool\')" title="Bilmediğim Kelimeler Havuzu Tablosu">' +
+        '<button class="mode-btn" onclick="sekmeDegistir(\'pool\')" title="Bilmediğim Kelimeler Havuzu Tablosu (Unknown Words Pool)">' +
           '📕 Havuz' +
+        '</button>'
+      );
+      html.push(
+        '<button class="mode-btn" onclick="sekmeDegistir(\'knownPool\')" title="Bildiğim Kelimeler Havuzu Tablosu (Known Words Pool)">' +
+          '📗 Known' +
         '</button>'
       );
       for (var i = 0; i < modes.length; i++) {
@@ -2652,12 +2699,16 @@
     function tabloyuCiz() {
       var total = TUM_KELIMELER.length, unk = 0, knw = 0;
       var lvlCounts = { B1: 0, B2: 0, C1: 0, C2: 0 };
+      var knownLvlCounts = { B1: 0, B2: 0, C1: 0, C2: 0 };
       for (var i = 0; i < TUM_KELIMELER.length; i++) {
         var w = TUM_KELIMELER[i];
         if (w.durum === "bilmiyorum") {
           unk++;
           lvlCounts[w.seviye] = (lvlCounts[w.seviye] || 0) + 1;
-        } else if (w.durum === "biliyorum") knw++;
+        } else if (w.durum === "biliyorum") {
+          knw++;
+          knownLvlCounts[w.seviye] = (knownLvlCounts[w.seviye] || 0) + 1;
+        }
       }
       document.getElementById("stTotal").innerText = "Total: " + total;
       document.getElementById("stUnk").innerText = "In Pool: " + unk;
@@ -2699,13 +2750,19 @@
 
       var sumLvls = ["A1", "A2", "B1", "B2", "C1", "C2"];
       var sumHtml = [];
+      var knownSumHtml = [];
       for (var k = 0; k < sumLvls.length; k++) {
         var sl = sumLvls[k];
         if (lvlCounts[sl] !== undefined || sl === "B1" || sl === "B2" || sl === "C1" || sl === "C2") {
           sumHtml.push('<tr><td>' + sl + '</td><td class="center">' + (lvlCounts[sl] || 0) + '</td></tr>');
         }
+        if (knownLvlCounts[sl] !== undefined || sl === "B1" || sl === "B2" || sl === "C1" || sl === "C2") {
+          knownSumHtml.push('<tr><td>' + sl + '</td><td class="center">' + (knownLvlCounts[sl] || 0) + '</td></tr>');
+        }
       }
       document.getElementById("poolSummaryBody").innerHTML = sumHtml.join("");
+      var kpSumBody = document.getElementById("knownPoolSummaryBody");
+      if (kpSumBody) kpSumBody.innerHTML = knownSumHtml.join("");
 
       var poolList = TUM_KELIMELER.filter(function(w){
         if (w.durum !== "bilmiyorum") return false;
@@ -2738,6 +2795,39 @@
         );
       }
       document.getElementById("poolBody").innerHTML = pRows.join("") || '<tr><td colspan="7" class="center" style="padding:14px;">No words in pool.</td></tr>';
+
+      var knownPoolList = TUM_KELIMELER.filter(function(w){
+        if (w.durum !== "biliyorum") return false;
+        if (lvl !== "ALL" && w.seviye !== lvl) return false;
+        if (q && (w.kelime + " " + w.anlam + " " + w.ornek).toLowerCase().indexOf(q) === -1) return false;
+        return true;
+      }).sort(function(a, b){ return (a.seviye || "").localeCompare(b.seviye || ""); });
+
+      var kpRows = [];
+      for (var n = 0; n < knownPoolList.length; n++) {
+        var kp = knownPoolList[n];
+        var kpIcon = kp.durum === "biliyorum" ? "✓" : (kp.durum === "bilmiyorum" ? "✕" : "");
+        kpRows.push(
+          '<tr class="row-known">' +
+            '<td class="col-lvl">' + escHtml(kp.seviye) + '</td>' +
+            '<td class="col-type">' + escHtml(turTemizle(kp.tur)) + '</td>' +
+            '<td class="col-mark">' +
+              '<button type="button" class="mark-btn ' + kp.durum + '" onclick="durumTikla(event, ' + kp.row + ')" ondblclick="durumCiftTikla(event, ' + kp.row + ')" oncontextmenu="durumSifirla(event, ' + kp.row + ')" title="Tek tık: ✓ Biliyorum | Çift tık: ✕ Bilmiyorum">' +
+                kpIcon +
+              '</button>' +
+            '</td>' +
+            '<td class="col-word" onclick="kelimeOku(\'' + escJs(kp.kelime) + '\', this)">' +
+              escHtml(kp.kelime) +
+              (kp.ornek ? '<div class="word-hover-ex">' + ornekBicimlendir(kp.ornek) + '</div>' : '') +
+            '</td>' +
+            '<td class="col-meaning">' + escHtml(kp.anlam) + '</td>' +
+            '<td class="col-example">' + escHtml(kp.ornek) + '</td>' +
+            '<td class="col-date">' + escHtml(kp.tarih) + '</td>' +
+          '</tr>'
+        );
+      }
+      var kpBody = document.getElementById("knownPoolBody");
+      if (kpBody) kpBody.innerHTML = kpRows.join("") || '<tr><td colspan="7" class="center" style="padding:14px;">No words in known pool.</td></tr>';
 
       fcCiz(poolList);
       istatistikTablosuCiz();

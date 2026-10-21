@@ -228,6 +228,10 @@ function verileriGetir() {
     statsMap = istatistikleriOku_(ss, words);
   } catch (e) {}
 
+  try {
+    knownHavuzSayfasiniHazirla_(ss);
+  } catch (e) {}
+
   return {
     ok: true,
     words: words,
@@ -605,13 +609,49 @@ function sesPaneliniAc() {
   SpreadsheetApp.getUi().showSidebar(html);
 }
 
+function knownHavuzSayfasiniHazirla_(ss) {
+  if (ss.getSheetByName('Known Words Pool') || ss.getSheetByName('Bildiğim Kelimeler Havuzu')) return;
+  var unkSheet = ss.getSheetByName('Unknown Words Pool') || ss.getSheetByName('Bilmediğim Kelimeler Havuzu');
+  if (!unkSheet) return;
+  var knwSheet = unkSheet.copyTo(ss);
+  knwSheet.setName('Known Words Pool');
+  try { knwSheet.setTabColor('#059669'); } catch (e) {}
+  var maxR = Math.min(knwSheet.getMaxRows(), 60);
+  var maxC = Math.min(knwSheet.getMaxColumns(), 15);
+  var range = knwSheet.getRange(1, 1, maxR, maxC);
+  var formulas = range.getFormulas();
+  var vals = range.getValues();
+  for (var r = 0; r < maxR; r++) {
+    for (var c = 0; c < maxC; c++) {
+      var f = formulas[r][c];
+      if (f) {
+        var newF = f
+          .replace(/Sheet1!\$?L/g, function(m) { return m.indexOf('$') !== -1 ? 'Sheet1!$K' : 'Sheet1!K'; })
+          .replace(/Unknown/gi, 'Known');
+        if (newF !== f) knwSheet.getRange(r + 1, c + 1).setFormula(newF);
+      } else if (typeof vals[r][c] === 'string' && vals[r][c]) {
+        var s = vals[r][c];
+        if (/unknown/i.test(s) || /bilmediğim/i.test(s)) {
+          var newS = s.replace(/Unknown/g, 'Known').replace(/unknown/g, 'known').replace(/Bilmediğim/g, 'Bildiğim');
+          knwSheet.getRange(r + 1, c + 1).setValue(newS);
+        }
+      }
+    }
+  }
+}
+
 function seciliKelimeyiAl() {
   var sheet = SpreadsheetApp.getActiveSheet();
   var cell = sheet.getActiveCell();
   if (!cell || cell.getRow() < 6) return '';
 
   var sheetName = sheet.getName();
-  var isHavuz = (sheetName === 'Unknown Words Pool' || sheetName === 'Bilmediğim Kelimeler Havuzu');
+  var isHavuz = (
+    sheetName === 'Unknown Words Pool' ||
+    sheetName === 'Bilmediğim Kelimeler Havuzu' ||
+    sheetName === 'Known Words Pool' ||
+    sheetName === 'Bildiğim Kelimeler Havuzu'
+  );
   var sesCol = isHavuz ? 8 : 5;
   var wordCol = isHavuz ? 6 : 3;
 
@@ -714,6 +754,8 @@ function uygulamaHtmlGetir() {
     '  #tabBtn-sheet1.active { background: #15803d; color: #ffffff; border-color: #14532d; }',
     '  #tabBtn-pool { background: #ffe4e6; color: #881337; border-color: #fda4af; }',
     '  #tabBtn-pool.active { background: #e11d48; color: #ffffff; border-color: #be123c; }',
+    '  #tabBtn-knownPool { background: #d1fae5; color: #065f46; border-color: #6ee7b7; }',
+    '  #tabBtn-knownPool.active { background: #059669; color: #ffffff; border-color: #047857; }',
     '  #tabBtn-stats { background: #fef3c7; color: #78350f; border-color: #fcd34d; }',
     '  #tabBtn-stats.active { background: #d97706; color: #ffffff; border-color: #b45309; }',
     '  #tabBtn-flashcards { background: #e0e7ff; color: #1e3a8a; border-color: #a5b4fc; }',
@@ -807,9 +849,9 @@ function uygulamaHtmlGetir() {
     '  <div class="toolbar">',
     '    <div class="toolbar-left">',
     '      <div class="mini-stats">',
-    '        <span class="mini-stat" id="stTotal">Total: -</span>',
-    '        <span class="mini-stat unk" id="stUnk">In Pool: -</span>',
-    '        <span class="mini-stat knw" id="stKnw">Known: -</span>',
+    '        <span class="mini-stat" id="stTotal" style="cursor:pointer;" onclick="sekmeDegistir(\'sheet1\')" title="Click to open Main Vocabulary Table (Sheet1)">Total: -</span>',
+    '        <span class="mini-stat unk" id="stUnk" style="cursor:pointer;" onclick="sekmeDegistir(\'pool\')" title="Click to open Unknown Words Pool Table">In Pool: -</span>',
+    '        <span class="mini-stat knw" id="stKnw" style="cursor:pointer;" onclick="sekmeDegistir(\'knownPool\')" title="Click to open Known Words Pool Table">Known: -</span>',
     '      </div>',
     '    </div>',
     '    <div class="toolbar-right">',
@@ -830,7 +872,8 @@ function uygulamaHtmlGetir() {
     '        <option value="C2">C2</option>',
     '      </select>',
     '      <button class="btn" id="topBtn-sheet1" onclick="sekmeDegistir(\'sheet1\')" title="Ana Kelime Tablosu (Sheet1)">📋 Tablo</button>',
-    '      <button class="btn" id="topBtn-pool" onclick="sekmeDegistir(\'pool\')" title="Bilmediğim Kelimeler Havuzu Tablosu">📕 Havuz</button>',
+    '      <button class="btn" id="topBtn-pool" onclick="sekmeDegistir(\'pool\')" title="Bilmediğim Kelimeler Havuzu Tablosu (Unknown Words Pool)">📕 Havuz</button>',
+    '      <button class="btn" id="topBtn-knownPool" onclick="sekmeDegistir(\'knownPool\')" title="Bildiğim Kelimeler Havuzu Tablosu (Known Words Pool)">📗 Known</button>',
     '      <button class="btn" onclick="calismaModuAc(\'flashcards\')" title="3D Flashcards + 3-Step Spaced Repetition">🃏 Flashcards</button>',
     '      <button class="btn" onclick="calismaModuAc(\'cloze\')" title="Fill in the blank in Example Sentences">📝 Cloze</button>',
     '      <button class="btn" onclick="calismaModuAc(\'quiz\')" title="Active Recall (Turkish -> English Quiz & Typing)">🎯 Quiz</button>',
@@ -899,14 +942,42 @@ function uygulamaHtmlGetir() {
     '          <tr>',
     '            <th class="center">Level</th>',
     '            <th>Type</th>',
-    '            <th>Word</th>',
     '            <th class="col-mark" title="Tek tık: ✓ Biliyorum | Çift tık: ✕ Bilmiyorum">✓/✕</th>',
+    '            <th>Word</th>',
     '            <th>Meaning</th>',
     '            <th>Example Sentence</th>',
     '            <th class="col-date">Date</th>',
     '          </tr>',
     '        </thead>',
     '        <tbody id="poolBody"></tbody>',
+    '      </table>',
+    '    </div>',
+    '  </div>',
+    '',
+    '  <div class="table-wrap" id="knownPoolView" style="display:none;">',
+    '    <div class="pool-layout">',
+    '      <table class="sheet-table">',
+    '        <thead>',
+    '          <tr>',
+    '            <th>Level</th>',
+    '            <th class="center">Known Words</th>',
+    '          </tr>',
+    '        </thead>',
+    '        <tbody id="knownPoolSummaryBody"></tbody>',
+    '      </table>',
+    '      <table class="sheet-table">',
+    '        <thead>',
+    '          <tr>',
+    '            <th class="center">Level</th>',
+    '            <th>Type</th>',
+    '            <th class="col-mark" title="Tek tık: ✓ Biliyorum | Çift tık: ✕ Bilmiyorum">✓/✕</th>',
+    '            <th>Word</th>',
+    '            <th>Meaning</th>',
+    '            <th>Example Sentence</th>',
+    '            <th class="col-date">Date</th>',
+    '          </tr>',
+    '        </thead>',
+    '        <tbody id="knownPoolBody"></tbody>',
     '      </table>',
     '    </div>',
     '  </div>',
@@ -946,6 +1017,7 @@ function uygulamaHtmlGetir() {
     '  <div class="bottom-bar">',
     '    <button class="sheet-tab active" id="tabBtn-sheet1" onclick="sekmeDegistir(\'sheet1\')">Sheet1</button>',
     '    <button class="sheet-tab" id="tabBtn-pool" onclick="sekmeDegistir(\'pool\')">Unknown Words Pool</button>',
+    '    <button class="sheet-tab" id="tabBtn-knownPool" onclick="sekmeDegistir(\'knownPool\')">Known Words Pool</button>',
     '    <button class="sheet-tab" id="tabBtn-stats" onclick="sekmeDegistir(\'stats\')">📊 Mistake Stats</button>',
     '    <button class="sheet-tab" id="tabBtn-flashcards" onclick="calismaModuAc(\'flashcards\')">🃏 Flashcards</button>',
     '    <button class="sheet-tab" id="tabBtn-cloze" onclick="calismaModuAc(\'cloze\')">📝 Cloze</button>',
@@ -1162,6 +1234,7 @@ function uygulamaHtmlGetir() {
     '      if (p.aktifSekme) AKTIF_SEKME = p.aktifSekme;',
     '      document.getElementById("sheet1View").style.display = AKTIF_SEKME === "sheet1" ? "block" : "none";',
     '      document.getElementById("poolView").style.display = AKTIF_SEKME === "pool" ? "block" : "none";',
+    '      var kpV = document.getElementById("knownPoolView"); if (kpV) kpV.style.display = AKTIF_SEKME === "knownPool" ? "block" : "none";',
     '      document.getElementById("flashcardView").style.display = AKTIF_SEKME === "flashcards" ? "block" : "none";',
     '      var stV = document.getElementById("statsView"); if (stV) stV.style.display = AKTIF_SEKME === "stats" ? "block" : "none";',
     '      sekmeButonlariniGuncelle();',
@@ -1172,6 +1245,7 @@ function uygulamaHtmlGetir() {
     '    var s = AKTIF_SEKME, m = AKTIF_MOD;',
     '    document.getElementById("tabBtn-sheet1").classList.toggle("active", s === "sheet1");',
     '    document.getElementById("tabBtn-pool").classList.toggle("active", s === "pool");',
+    '    var tkp = document.getElementById("tabBtn-knownPool"); if (tkp) tkp.classList.toggle("active", s === "knownPool");',
     '    var ts = document.getElementById("tabBtn-stats"); if (ts) ts.classList.toggle("active", s === "stats");',
     '    var studyTabs = ["flashcards", "cloze", "quiz", "listen", "match"];',
     '    for (var i = 0; i < studyTabs.length; i++) {',
@@ -1185,6 +1259,7 @@ function uygulamaHtmlGetir() {
     '    sekmeButonlariniGuncelle();',
     '    document.getElementById("sheet1View").style.display = s === "sheet1" ? "block" : "none";',
     '    document.getElementById("poolView").style.display = s === "pool" ? "block" : "none";',
+    '    var kpV = document.getElementById("knownPoolView"); if (kpV) kpV.style.display = s === "knownPool" ? "block" : "none";',
     '    document.getElementById("flashcardView").style.display = s === "flashcards" ? "block" : "none";',
     '    var stV = document.getElementById("statsView"); if (stV) stV.style.display = s === "stats" ? "block" : "none";',
     '    FC_FLIPPED = false;',
@@ -1201,6 +1276,7 @@ function uygulamaHtmlGetir() {
     '    sekmeButonlariniGuncelle();',
     '    document.getElementById("sheet1View").style.display = "none";',
     '    document.getElementById("poolView").style.display = "none";',
+    '    var kpV = document.getElementById("knownPoolView"); if (kpV) kpV.style.display = "none";',
     '    document.getElementById("flashcardView").style.display = "block";',
     '    var stV = document.getElementById("statsView"); if (stV) stV.style.display = "none";',
     '    tercihleriKaydet();',
@@ -1218,6 +1294,7 @@ function uygulamaHtmlGetir() {
     '    var html = [\'<div class="study-modes-bar">\'];',
     '    html.push(\'<button class="mode-btn" onclick="sekmeDegistir(\\\'sheet1\\\')">📋 Tablo</button>\');',
     '    html.push(\'<button class="mode-btn" onclick="sekmeDegistir(\\\'pool\\\')">📕 Havuz</button>\');',
+    '    html.push(\'<button class="mode-btn" onclick="sekmeDegistir(\\\'knownPool\\\')">📗 Known</button>\');',
     '    for (var i = 0; i < modes.length; i++) {',
     '      var m = modes[i];',
     '      html.push(\'<button class="mode-btn\' + (AKTIF_MOD === m.id ? \' active\' : \'\') + \'" onclick="calismaModuAc(\\\'\' + m.id + \'\\\')">\' + m.label + \'</button>\');',
@@ -1463,12 +1540,16 @@ function uygulamaHtmlGetir() {
     '  function tabloyuCiz() {',
     '    var total = TUM_KELIMELER.length, unk = 0, knw = 0;',
     '    var lvlCounts = { B1: 0, B2: 0, C1: 0, C2: 0 };',
+    '    var knownLvlCounts = { B1: 0, B2: 0, C1: 0, C2: 0 };',
     '    for (var i = 0; i < TUM_KELIMELER.length; i++) {',
     '      var w = TUM_KELIMELER[i];',
     '      if (w.durum === "bilmiyorum") {',
     '        unk++;',
     '        lvlCounts[w.seviye] = (lvlCounts[w.seviye] || 0) + 1;',
-    '      } else if (w.durum === "biliyorum") knw++;',
+    '      } else if (w.durum === "biliyorum") {',
+    '        knw++;',
+    '        knownLvlCounts[w.seviye] = (knownLvlCounts[w.seviye] || 0) + 1;',
+    '      }',
     '    }',
     '    document.getElementById("stTotal").innerText = "Total: " + total;',
     '    document.getElementById("stUnk").innerText = "In Pool: " + unk;',
@@ -1503,13 +1584,19 @@ function uygulamaHtmlGetir() {
     '',
     '    var sumLvls = ["A1", "A2", "B1", "B2", "C1", "C2"];',
     '    var sumHtml = [];',
+    '    var knownSumHtml = [];',
     '    for (var k = 0; k < sumLvls.length; k++) {',
     '      var sl = sumLvls[k];',
     '      if (lvlCounts[sl] !== undefined || sl === "B1" || sl === "B2" || sl === "C1" || sl === "C2") {',
     '        sumHtml.push(\'<tr><td>\' + sl + \'</td><td class="center">\' + (lvlCounts[sl] || 0) + \'</td></tr>\');',
     '      }',
+    '      if (knownLvlCounts[sl] !== undefined || sl === "B1" || sl === "B2" || sl === "C1" || sl === "C2") {',
+    '        knownSumHtml.push(\'<tr><td>\' + sl + \'</td><td class="center">\' + (knownLvlCounts[sl] || 0) + \'</td></tr>\');',
+    '      }',
     '    }',
     '    document.getElementById("poolSummaryBody").innerHTML = sumHtml.join("");',
+    '    var kpSumEl = document.getElementById("knownPoolSummaryBody");',
+    '    if (kpSumEl) kpSumEl.innerHTML = knownSumHtml.join("");',
     '',
     '    var poolList = TUM_KELIMELER.filter(function(w){',
     '      if (w.durum !== "bilmiyorum") return false;',
@@ -1535,6 +1622,32 @@ function uygulamaHtmlGetir() {
     '      );',
     '    }',
     '    document.getElementById("poolBody").innerHTML = pRows.join("") || \'<tr><td colspan="7" class="center" style="padding:14px;">No words in pool.</td></tr>\';',
+    '',
+    '    var knownPoolList = TUM_KELIMELER.filter(function(w){',
+    '      if (w.durum !== "biliyorum") return false;',
+    '      if (lvl !== "ALL" && w.seviye !== lvl) return false;',
+    '      if (q && (w.kelime + " " + w.anlam + " " + w.ornek).toLowerCase().indexOf(q) === -1) return false;',
+    '      return true;',
+    '    }).sort(function(a, b){ return (a.seviye || "").localeCompare(b.seviye || ""); });',
+    '',
+    '    var kpRows = [];',
+    '    for (var n = 0; n < knownPoolList.length; n++) {',
+    '      var kp = knownPoolList[n];',
+    '      var kpIcon = kp.durum === "biliyorum" ? "✓" : (kp.durum === "bilmiyorum" ? "✕" : "");',
+    '      kpRows.push(',
+    '        \'<tr class="row-known">\' +',
+    '          \'<td class="col-lvl">\' + escHtml(kp.seviye) + \'</td>\' +',
+    '          \'<td class="col-type">\' + escHtml(turTemizle(kp.tur)) + \'</td>\' +',
+    '          \'<td class="col-mark"><button type="button" class="mark-btn \' + kp.durum + \'" onclick="durumTikla(event, \' + kp.row + \')" ondblclick="durumCiftTikla(event, \' + kp.row + \')" oncontextmenu="durumSifirla(event, \' + kp.row + \')" title="Tek tık: ✓ Biliyorum | Çift tık: ✕ Bilmiyorum">\' + kpIcon + \'</button></td>\' +',
+    '          \'<td class="col-word" onclick="kelimeOku(\\\'\' + escJs(kp.kelime) + \'\\\', this)">\' + escHtml(kp.kelime) + (kp.ornek ? \'<div class="word-hover-ex">\' + ornekBicimlendir(kp.ornek) + \'</div>\' : \'\') + \'</td>\' +',
+    '          \'<td class="col-meaning">\' + escHtml(kp.anlam) + \'</td>\' +',
+    '          \'<td class="col-example">\' + escHtml(kp.ornek) + \'</td>\' +',
+    '          \'<td class="col-date">\' + escHtml(kp.tarih) + \'</td>\' +',
+    '        \'</tr>\'',
+    '      );',
+    '    }',
+    '    var kpBodyEl = document.getElementById("knownPoolBody");',
+    '    if (kpBodyEl) kpBodyEl.innerHTML = kpRows.join("") || \'<tr><td colspan="7" class="center" style="padding:14px;">No words in known pool.</td></tr>\';',
     '',
     '    fcCiz(poolList);',
     '    istatistikTablosuCiz();',
