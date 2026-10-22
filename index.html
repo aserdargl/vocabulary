@@ -1747,6 +1747,8 @@
 
       var map = { date: 1, word: 2, pron: 3, type: 5, level: 6, meaning: 7, example: 8, known: 10, unknown: 11 };
       var startIdx = 0;
+      var hasMeaningCol = false;
+      var hasTransferredCol = false;
 
       for (var idx = 0; idx < Math.min(allRows.length, 8); idx++) {
         var candidate = allRows[idx];
@@ -1764,13 +1766,19 @@
             else if (hk.indexOf("pronun") !== -1 || hk.indexOf("okunu") !== -1) map.pron = n;
             else if (hk === "type" || hk === "tür" || hk === "tur") map.type = n;
             else if (hk === "level" || hk === "seviye") map.level = n;
-            else if (hk.indexOf("meaning") !== -1 || hk.indexOf("anlam") !== -1) map.meaning = n;
+            else if (hk.indexOf("meaning") !== -1 || hk.indexOf("anlam") !== -1) { map.meaning = n; hasMeaningCol = true; }
             else if (hk.indexOf("example") !== -1 || hk.indexOf("örnek") !== -1 || hk.indexOf("ornek") !== -1) map.example = n;
             else if (hk === "known" || hk === "biliyorum") map.known = n;
             else if (hk === "unknown" || hk === "bilmiyorum") map.unknown = n;
+            else if (hk.indexOf("transfer") !== -1 || hk.indexOf("aktar") !== -1) hasTransferredCol = true;
           }
           break;
         }
+      }
+
+      // Guard: Never allow the 4-column Havuz/Pool sheet to be parsed as the Words table
+      if (hasTransferredCol && !hasMeaningCol) {
+        return [];
       }
 
       var parsed = [];
@@ -1870,12 +1878,30 @@
       return parsed;
     }
 
+    function yerelOnbellekKaydet(anahtar, veri) {
+      try {
+        localStorage.setItem(anahtar, JSON.stringify(veri));
+      } catch (e) {}
+    }
+
+    function yerelOnbellekAl(anahtar) {
+      try {
+        var raw = localStorage.getItem(anahtar);
+        if (!raw) return null;
+        var parsed = JSON.parse(raw);
+        return Array.isArray(parsed) && parsed.length > 0 ? parsed : null;
+      } catch (e) {
+        return null;
+      }
+    }
+
     window.__onSheetData = function(response) {
       try {
         if (response && response.table) {
           var liste = gvizTablosunuCozumle(response.table);
           if (liste && liste.length > 0) {
             SHEET_KELIMELER = liste;
+            yerelOnbellekKaydet("kelime_son_sheet_words_v1", SHEET_KELIMELER);
             listeyiBirlestirVeHazirla(SHEET_KELIMELER, true);
             document.getElementById("syncDot").className = "sync-dot";
             document.getElementById("syncText").innerText = "Live (" + liste.length + ")";
@@ -1891,6 +1917,7 @@
           var hListe = gvizHavuzTablosunuCozumle(response.table);
           if (hListe && hListe.length > 0) {
             HAVUZ_KELIMELER = hListe;
+            yerelOnbellekKaydet("kelime_son_havuz_v1", HAVUZ_KELIMELER);
             havuzTablosuCiz();
           }
         }
@@ -1904,15 +1931,15 @@
       // 1. Primary live sync via Apps Script JSON endpoint (zero cache delay, exact row numbers)
       appsScripttenYukle();
 
-      // 2. Fast JSONP from Google Sheets gviz endpoint (Words tab)
+      // 2. Fast JSONP from Google Sheets gviz endpoint (explicitly targeting 'Words' tab)
       var oldScript = document.getElementById("gvizJsonpScript");
       if (oldScript && oldScript.parentNode) oldScript.parentNode.removeChild(oldScript);
       var s = document.createElement("script");
       s.id = "gvizJsonpScript";
-      s.src = "https://docs.google.com/spreadsheets/d/" + SHEET_ID + "/gviz/tq?tqx=responseHandler:__onSheetData&_=" + Date.now();
+      s.src = "https://docs.google.com/spreadsheets/d/" + SHEET_ID + "/gviz/tq?sheet=Words&tqx=responseHandler:__onSheetData&_=" + Date.now();
       document.body.appendChild(s);
 
-      // 3. Fast JSONP from Google Sheets gviz endpoint (Havuz tab)
+      // 3. Fast JSONP from Google Sheets gviz endpoint (explicitly targeting 'Havuz' tab)
       var oldHavuzScript = document.getElementById("gvizHavuzJsonpScript");
       if (oldHavuzScript && oldHavuzScript.parentNode) oldHavuzScript.parentNode.removeChild(oldHavuzScript);
       var sh = document.createElement("script");
@@ -1936,9 +1963,11 @@
             }
             if (res.havuz && res.havuz.length > 0) {
               HAVUZ_KELIMELER = res.havuz;
+              yerelOnbellekKaydet("kelime_son_havuz_v1", HAVUZ_KELIMELER);
             }
             if (res.words && res.words.length > 0) {
               SHEET_KELIMELER = res.words;
+              yerelOnbellekKaydet("kelime_son_sheet_words_v1", SHEET_KELIMELER);
               listeyiBirlestirVeHazirla(SHEET_KELIMELER, true);
               document.getElementById("syncDot").className = "sync-dot";
               document.getElementById("syncText").innerText = "Live (" + res.words.length + ")";
@@ -5122,7 +5151,17 @@
 
     // Restore all saved button/tab/filter preferences, then render and live sync from Google Sheet
     tercihleriYukleVeUygula();
-    listeyiBirlestirVeHazirla(FALLBACK_WORDS);
+    var onbellekHavuz = yerelOnbellekAl("kelime_son_havuz_v1");
+    if (onbellekHavuz) {
+      HAVUZ_KELIMELER = onbellekHavuz;
+    }
+    var onbellekWords = yerelOnbellekAl("kelime_son_sheet_words_v1");
+    if (onbellekWords) {
+      SHEET_KELIMELER = onbellekWords;
+      listeyiBirlestirVeHazirla(SHEET_KELIMELER, false);
+    } else {
+      listeyiBirlestirVeHazirla(FALLBACK_WORDS, false);
+    }
     verileriYukle(false);
 
     window.addEventListener("storage", function(e) {
