@@ -11,66 +11,83 @@
       font-family: Roboto, Arial, sans-serif;
       font-size: var(--fs);
       color: #1f2937;
-      background: #ffffff;
-      overflow-x: auto;
-      padding-bottom: 36px;
+      background: #f8fafc;
+      overflow-x: hidden;
+      padding-bottom: 42px;
     }
 
-    /* Compact Single-Row Toolbar */
+    /* Compact Sticky Top Toolbar */
     .toolbar {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 5px 8px;
-      background: #f8fafc;
-      border-bottom: 1px solid #cbd5e1;
-      gap: 4px;
-      flex-wrap: nowrap;
-      white-space: nowrap;
+      padding: 6px 10px;
+      background: #ffffff;
+      border-bottom: 2px solid #cbd5e1;
+      box-shadow: 0 2px 6px rgba(15, 23, 42, 0.05);
+      gap: 6px;
+      flex-wrap: wrap;
       position: sticky;
       top: 0;
-      z-index: 20;
+      z-index: 40;
     }
     .toolbar-left {
       display: flex;
       align-items: center;
       gap: 6px;
-      flex-wrap: nowrap;
-      white-space: nowrap;
-      flex-shrink: 0;
+      flex-wrap: wrap;
+    }
+    .mobile-menu-btn {
+      display: none;
+      border: 2px solid #135c37;
+      background: #135c37;
+      color: #ffffff;
+      border-radius: 7px;
+      padding: 0 10px;
+      height: 32px;
+      font-size: 12.5px;
+      font-weight: 800;
+      cursor: pointer;
+      align-items: center;
+      gap: 5px;
+      box-shadow: 0 2px 5px rgba(19, 92, 55, 0.25);
     }
     .mini-stats {
       display: flex;
       align-items: center;
-      gap: 4px;
-      font-size: 11px;
+      gap: 5px;
+      font-size: 11.5px;
       color: #475569;
-      flex-wrap: nowrap;
-      white-space: nowrap;
+      flex-wrap: wrap;
     }
     .mini-stat {
-      padding: 2px 6px;
-      border-radius: 4px;
+      padding: 4px 8px;
+      border-radius: 6px;
       background: #e2e8f0;
-      font-weight: 600;
+      border: 1.5px solid #cbd5e1;
+      font-weight: 700;
       white-space: nowrap;
+      transition: transform 0.12s;
     }
-    .mini-stat.unk { background: #fee2e2; color: #991b1b; }
-    .mini-stat.knw { background: #dcfce7; color: #166534; }
+    .mini-stat:hover { transform: translateY(-1px); }
+    .mini-stat.unk { background: #fee2e2; color: #991b1b; border-color: #fca5a5; }
+    .mini-stat.knw { background: #dcfce7; color: #166534; border-color: #86efac; }
     .sync-badge {
       font-size: 11px;
-      color: #64748b;
+      font-weight: 600;
+      color: #475569;
       display: inline-flex;
       align-items: center;
-      gap: 4px;
-      padding: 2px 6px;
-      border-radius: 4px;
+      gap: 5px;
+      padding: 4px 8px;
+      border-radius: 6px;
       background: #f1f5f9;
+      border: 1px solid #cbd5e1;
       white-space: nowrap;
     }
     .sync-dot {
-      width: 7px;
-      height: 7px;
+      width: 8px;
+      height: 8px;
       border-radius: 50%;
       background: #16a34a;
       display: inline-block;
@@ -80,42 +97,46 @@
     .toolbar-right {
       display: flex;
       align-items: center;
-      gap: 4px;
-      flex-wrap: nowrap;
-      white-space: nowrap;
-      flex-shrink: 0;
+      gap: 6px;
+      flex-wrap: wrap;
     }
     .inp {
-      border: 1px solid #cbd5e1;
-      border-radius: 4px;
-      padding: 3px 6px;
-      font-size: 11px;
-      height: 26px;
+      border: 1.5px solid #94a3b8;
+      border-radius: 6px;
+      padding: 4px 8px;
+      font-size: 12px;
+      font-weight: 600;
+      height: 32px;
       outline: none;
       background: #fff;
+      color: #0f172a;
     }
-    .inp:focus { border-color: #137333; }
+    .inp:focus { border-color: #137333; box-shadow: 0 0 0 2px rgba(19, 115, 51, 0.15); }
     .btn {
-      border: 1px solid #cbd5e1;
-      background: #fff;
-      color: #1f2937;
-      border-radius: 4px;
-      padding: 0 7px;
-      height: 26px;
-      font-size: 11px;
-      font-weight: 600;
+      border: 1.5px solid #94a3b8;
+      background: #ffffff;
+      color: #0f172a;
+      border-radius: 7px;
+      padding: 0 11px;
+      height: 32px;
+      font-size: 12px;
+      font-weight: 700;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
-      gap: 3px;
+      justify-content: center;
+      gap: 4px;
       text-decoration: none;
       user-select: none;
       white-space: nowrap;
       flex-shrink: 0;
+      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
+      transition: all 0.14s ease;
     }
-    .btn:hover { background: #f1f5f9; }
-    .btn-green { background: #135c37; color: #fff; border-color: #135c37; }
-    .btn-green:hover { background: #0e4629; }
+    .btn:hover { background: #f1f5f9; border-color: #64748b; transform: translateY(-1px); }
+    .btn:active { transform: translateY(0); }
+    .btn-green { background: #15803d; color: #fff; border-color: #14532d; box-shadow: 0 2px 5px rgba(21, 128, 61, 0.25); }
+    .btn-green:hover { background: #166534; border-color: #14532d; }
     .toggle-known-btn.show-mode { background: #f0fdf4; border-color: #86efac; color: #166534; }
     .toggle-known-btn.show-mode:hover { background: #dcfce7; }
     .toggle-known-btn.hide-mode { background: #fffbeb; border-color: #fcd34d; color: #92400e; }
@@ -123,55 +144,176 @@
 
     /* Iconic Speaker On/Off Button */
     .spk-toggle {
-      width: 30px;
-      height: 26px;
-      border-radius: 4px;
-      border: 1px solid #cbd5e1;
+      width: 34px;
+      height: 32px;
+      border-radius: 7px;
+      border: 1.5px solid #94a3b8;
       background: #fff;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      font-size: 14px;
+      font-size: 15px;
       transition: all 0.15s;
       user-select: none;
       padding: 0;
+      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
     }
-    .spk-toggle.on { background: #e6f4ea; border-color: #81c995; color: #137333; }
-    .spk-toggle.off { background: #f1f5f9; border-color: #cbd5e1; color: #94a3b8; opacity: 0.8; }
-    .spk-toggle:hover { transform: scale(1.04); }
+    .spk-toggle.on { background: #dcfce7; border-color: #22c55e; color: #14532d; }
+    .spk-toggle.off { background: #f1f5f9; border-color: #cbd5e1; color: #94a3b8; opacity: 0.85; }
+    .spk-toggle:hover { transform: scale(1.05); }
 
     /* Font Size Control */
     .font-ctrl {
       display: inline-flex;
       align-items: center;
-      border: 1px solid #cbd5e1;
-      border-radius: 4px;
+      border: 1.5px solid #94a3b8;
+      border-radius: 7px;
       background: #fff;
-      height: 26px;
+      height: 32px;
       overflow: hidden;
       user-select: none;
+      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
     }
     .font-btn {
       border: none;
       background: transparent;
-      color: #1f2937;
-      padding: 0 8px;
+      color: #0f172a;
+      padding: 0 9px;
       height: 100%;
-      font-size: 11.5px;
-      font-weight: 700;
+      font-size: 12px;
+      font-weight: 800;
       cursor: pointer;
     }
     .font-btn:hover { background: #e2e8f0; }
     .font-val {
-      font-size: 10.5px;
-      color: #475569;
-      padding: 0 5px;
-      border-left: 1px solid #e2e8f0;
-      border-right: 1px solid #e2e8f0;
-      min-width: 34px;
+      font-size: 11px;
+      color: #334155;
+      padding: 0 6px;
+      border-left: 1px solid #cbd5e1;
+      border-right: 1px solid #cbd5e1;
+      min-width: 36px;
       text-align: center;
-      font-weight: 600;
+      font-weight: 700;
+    }
+
+    /* App Shell with Left Sidebar + Main Content */
+    .app-body {
+      display: flex;
+      align-items: flex-start;
+      min-height: calc(100vh - 86px);
+      width: 100%;
+    }
+    .sidebar-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.45);
+      z-index: 55;
+    }
+    .sidebar-backdrop.open {
+      display: block;
+    }
+    .left-sidebar {
+      width: 210px;
+      flex-shrink: 0;
+      position: sticky;
+      top: 46px;
+      height: calc(100vh - 82px);
+      overflow-y: auto;
+      background: #f1f5f9;
+      border-right: 2px solid #cbd5e1;
+      padding: 10px 10px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      z-index: 25;
+      user-select: none;
+    }
+    .sidebar-header-mobile {
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      padding-bottom: 8px;
+      margin-bottom: 4px;
+      border-bottom: 1px solid #cbd5e1;
+      font-weight: 800;
+      font-size: 13px;
+      color: #0f172a;
+    }
+    .sidebar-group-title {
+      font-size: 10.5px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.7px;
+      color: #475569;
+      padding: 6px 4px 2px;
+    }
+    .side-nav-btn {
+      width: 100%;
+      min-height: 38px;
+      padding: 7px 11px;
+      border-radius: 9px;
+      border: 2px solid #cbd5e1;
+      background: #ffffff;
+      color: #1e293b;
+      font-size: 12.5px;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      text-align: left;
+      box-shadow: 0 2px 4px rgba(15, 23, 42, 0.06);
+      transition: all 0.15s ease;
+    }
+    .side-nav-btn:hover {
+      transform: translateX(2px);
+      filter: brightness(0.97);
+      box-shadow: 0 3px 8px rgba(15, 23, 42, 0.12);
+    }
+    .side-nav-badge {
+      font-size: 11px;
+      font-weight: 800;
+      padding: 1px 7px;
+      border-radius: 99px;
+      background: rgba(15, 23, 42, 0.08);
+      color: inherit;
+    }
+    /* High-visibility distinct color themes for Left Sidebar Buttons */
+    #topBtn-sheet1 { background: #dcfce7; color: #14532d; border-color: #4ade80; }
+    #topBtn-sheet1.active-mode { background: #15803d; color: #ffffff; border-color: #14532d; box-shadow: 0 4px 12px rgba(21, 128, 61, 0.35); transform: translateX(3px); }
+    #topBtn-sheetHavuz { background: #e0e7ff; color: #312e81; border-color: #818cf8; }
+    #topBtn-sheetHavuz.active-mode { background: #4338ca; color: #ffffff; border-color: #312e81; box-shadow: 0 4px 12px rgba(67, 56, 202, 0.35); transform: translateX(3px); }
+    #topBtn-pool { background: #ffe4e6; color: #881337; border-color: #fb7185; }
+    #topBtn-pool.active-mode { background: #e11d48; color: #ffffff; border-color: #9f1239; box-shadow: 0 4px 12px rgba(225, 29, 72, 0.35); transform: translateX(3px); }
+    #topBtn-knownPool { background: #d1fae5; color: #065f46; border-color: #34d399; }
+    #topBtn-knownPool.active-mode { background: #059669; color: #ffffff; border-color: #065f46; box-shadow: 0 4px 12px rgba(5, 150, 105, 0.35); transform: translateX(3px); }
+    #topBtn-stats { background: #fef3c7; color: #78350f; border-color: #fbbf24; }
+    #topBtn-stats.active-mode { background: #d97706; color: #ffffff; border-color: #92400e; box-shadow: 0 4px 12px rgba(217, 119, 6, 0.35); transform: translateX(3px); }
+    #topBtn-flashcards { background: #dbeafe; color: #1e3a8a; border-color: #60a5fa; }
+    #topBtn-flashcards.active-mode { background: #2563eb; color: #ffffff; border-color: #1d4ed8; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35); transform: translateX(3px); }
+    #topBtn-cloze { background: #f3e8ff; color: #581c87; border-color: #c084fc; }
+    #topBtn-cloze.active-mode { background: #9333ea; color: #ffffff; border-color: #6b21a8; box-shadow: 0 4px 12px rgba(147, 51, 234, 0.35); transform: translateX(3px); }
+    #topBtn-quiz { background: #e0f2fe; color: #0c4a6e; border-color: #38bdf8; }
+    #topBtn-quiz.active-mode { background: #0284c7; color: #ffffff; border-color: #0369a1; box-shadow: 0 4px 12px rgba(2, 132, 199, 0.35); transform: translateX(3px); }
+    #topBtn-confusables { background: #ffedd5; color: #7c2d12; border-color: #fb923c; }
+    #topBtn-confusables.active-mode { background: #ea580c; color: #ffffff; border-color: #c2410c; box-shadow: 0 4px 12px rgba(234, 88, 12, 0.35); transform: translateX(3px); }
+    #topBtn-listen { background: #fae8ff; color: #701a75; border-color: #e879f9; }
+    #topBtn-listen.active-mode { background: #c026d3; color: #ffffff; border-color: #86198f; box-shadow: 0 4px 12px rgba(192, 38, 211, 0.35); transform: translateX(3px); }
+    #topBtn-match { background: #ccfbf1; color: #134e4a; border-color: #2dd4bf; }
+    #topBtn-match.active-mode { background: #0d9488; color: #ffffff; border-color: #115e59; box-shadow: 0 4px 12px rgba(13, 148, 136, 0.35); transform: translateX(3px); }
+    .side-nav-btn.active-mode .side-nav-badge {
+      background: rgba(255, 255, 255, 0.24);
+      color: #ffffff;
+    }
+
+    .main-content {
+      flex: 1;
+      min-width: 0;
+      background: #ffffff;
+      min-height: calc(100vh - 86px);
     }
 
     /* Tight Spreadsheet Table */
@@ -384,26 +526,27 @@
       bottom: 0;
       left: 0;
       right: 0;
-      height: 34px;
+      height: 38px;
       background: #f8fafc;
-      border-top: 1px solid #cbd5e1;
+      border-top: 2px solid #cbd5e1;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0 12px;
-      z-index: 30;
-      flex-wrap: nowrap;
-      white-space: nowrap;
+      padding: 0 10px;
+      z-index: 35;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      gap: 10px;
     }
-    .bottom-tabs { display: flex; align-items: center; gap: 5px; height: 100%; flex-wrap: nowrap; white-space: nowrap; }
+    .bottom-tabs { display: flex; align-items: center; gap: 6px; height: 100%; flex-wrap: nowrap; white-space: nowrap; }
     .sheet-tab {
-      border: 1px solid #cbd5e1;
+      border: 1.5px solid #cbd5e1;
       background: #ffffff;
       padding: 0 11px;
-      height: 25px;
-      border-radius: 6px;
+      height: 28px;
+      border-radius: 7px;
       font-size: 11.5px;
-      font-weight: 700;
+      font-weight: 800;
       color: #334155;
       cursor: pointer;
       display: inline-flex;
@@ -415,7 +558,7 @@
     }
     .sheet-tab:hover { filter: brightness(0.96); transform: translateY(-1px); }
     .sheet-tab.active {
-      box-shadow: 0 2px 6px rgba(15, 23, 42, 0.18);
+      box-shadow: 0 2px 6px rgba(15, 23, 42, 0.22);
       transform: translateY(-1px);
     }
     #tabBtn-sheet1 { background: #dcfce7; color: #14532d; border-color: #86efac; }
@@ -442,8 +585,8 @@
     #tabBtn-match.active { background: #0d9488; color: #ffffff; border-color: #0f766e; }
     .havuz-badge-wait {
       display: inline-block;
-      padding: 1px 8px;
-      border-radius: 4px;
+      padding: 2px 8px;
+      border-radius: 5px;
       font-size: 11px;
       font-weight: 700;
       background: #fef3c7;
@@ -452,8 +595,8 @@
     }
     .havuz-badge-done {
       display: inline-block;
-      padding: 1px 8px;
-      border-radius: 4px;
+      padding: 2px 8px;
+      border-radius: 5px;
       font-size: 11px;
       font-weight: 700;
       background: #dcfce7;
@@ -486,31 +629,32 @@
     .add-bar {
       display: none;
       background: #f8fafc;
-      border: 1px solid #cbd5e1;
-      border-radius: 4px;
-      padding: 6px 10px;
-      margin: 6px 8px 0;
+      border: 1.5px solid #cbd5e1;
+      border-radius: 8px;
+      padding: 8px 10px;
+      margin: 8px 8px 0;
       align-items: center;
       gap: 6px;
-      flex-wrap: nowrap;
-      white-space: nowrap;
-      overflow-x: auto;
+      flex-wrap: wrap;
     }
     .add-bar.open { display: flex; }
 
     .toast {
       position: fixed;
-      bottom: 36px;
+      bottom: 46px;
       right: 14px;
-      background: #202124;
+      background: #0f172a;
       color: #fff;
-      padding: 5px 10px;
-      border-radius: 4px;
-      font-size: 11.5px;
+      padding: 7px 12px;
+      border-radius: 7px;
+      font-size: 12px;
+      font-weight: 600;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.22);
       opacity: 0;
       pointer-events: none;
       transition: opacity 0.15s;
       z-index: 100;
+      max-width: calc(100vw - 28px);
     }
     .toast.show { opacity: 1; }
 
@@ -518,7 +662,7 @@
     .fc-wrap {
       width: 100%;
       max-width: 100%;
-      margin: 10px auto 32px;
+      margin: 12px auto 32px;
       padding: 0 14px;
       user-select: none;
     }
@@ -528,7 +672,7 @@
     .fc-below-card,
     .study-box,
     .fc-empty {
-      max-width: 960px;
+      max-width: 920px;
       margin-left: auto;
       margin-right: auto;
     }
@@ -536,17 +680,16 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 8px;
-      font-size: 12px;
-      color: #475569;
-      font-weight: 600;
-      flex-wrap: nowrap;
-      white-space: nowrap;
+      margin-bottom: 10px;
+      font-size: 12.5px;
+      color: #334155;
+      font-weight: 700;
+      flex-wrap: wrap;
       gap: 8px;
     }
     .fc-progress-track {
       width: 100%;
-      height: 5px;
+      height: 6px;
       background: #e2e8f0;
       border-radius: 99px;
       overflow: hidden;
@@ -579,10 +722,10 @@
       inset: 0;
       backface-visibility: hidden;
       -webkit-backface-visibility: hidden;
-      border: 1px solid #cbd5e1;
-      border-radius: 10px;
+      border: 2px solid #cbd5e1;
+      border-radius: 12px;
       background: #ffffff;
-      box-shadow: 0 4px 14px rgba(15, 23, 42, 0.06);
+      box-shadow: 0 6px 18px rgba(15, 23, 42, 0.08);
       display: flex;
       flex-direction: column;
       justify-content: space-between;
@@ -591,35 +734,37 @@
     .fc-face.fc-back {
       transform: rotateY(180deg);
       background: #f8faf9;
-      border-color: #86efac;
+      border-color: #4ade80;
     }
     .fc-badges {
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 8px;
+      flex-wrap: wrap;
     }
     .fc-badge-group {
       display: flex;
       align-items: center;
       gap: 6px;
+      flex-wrap: wrap;
     }
     .fc-lvl-badge {
       background: #135c37;
       color: #fff;
-      font-weight: 700;
-      font-size: 11px;
-      padding: 2px 8px;
-      border-radius: 4px;
+      font-weight: 800;
+      font-size: 11.5px;
+      padding: 3px 9px;
+      border-radius: 5px;
     }
     .fc-type-badge {
       background: #f1f5f9;
-      color: #475569;
-      font-weight: 600;
-      font-size: 11px;
-      padding: 2px 8px;
-      border-radius: 4px;
-      border: 1px solid #e2e8f0;
+      color: #334155;
+      font-weight: 700;
+      font-size: 11.5px;
+      padding: 3px 9px;
+      border-radius: 5px;
+      border: 1px solid #cbd5e1;
     }
     .fc-center {
       text-align: center;
@@ -629,6 +774,7 @@
       display: inline-block;
       padding: 6px 14px;
       border-radius: 8px;
+      max-width: 100%;
     }
     .fc-word {
       font-size: calc(var(--fs) * 2.2);
@@ -638,6 +784,7 @@
       margin-bottom: 6px;
       display: inline-block;
       transition: color 0.15s;
+      word-break: break-word;
     }
     .fc-word-box:hover .fc-word {
       color: #135c37;
@@ -646,7 +793,7 @@
       color: #0f172a;
     }
     .fc-hover-example {
-      font-size: calc(var(--fs) + 3.5px);
+      font-size: calc(var(--fs) + 3px);
       font-weight: 600;
       color: #0f172a;
       background: #fffef7;
@@ -657,7 +804,7 @@
       box-shadow: 0 8px 20px rgba(15, 23, 42, 0.14);
       line-height: 1.45;
       max-width: 480px;
-      margin: 24px auto 0;
+      margin: 18px auto 0;
       pointer-events: auto;
       cursor: pointer;
       opacity: 0;
@@ -681,10 +828,10 @@
       font-size: calc(var(--fs) * 1.05);
       color: #334155;
       background: #ffffff;
-      border: 1px solid #e2e8f0;
-      border-radius: 6px;
-      padding: 8px 12px;
-      line-height: 1.4;
+      border: 1.5px solid #cbd5e1;
+      border-radius: 8px;
+      padding: 9px 12px;
+      line-height: 1.45;
       cursor: pointer;
       transition: color 0.1s, background-color 0.15s, border-color 0.15s;
     }
@@ -700,42 +847,45 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 6px;
-      margin: 12px auto 0;
-      width: fit-content;
-      flex-wrap: nowrap;
-      white-space: nowrap;
+      gap: 8px;
+      margin: 14px auto 0;
+      width: 100%;
+      max-width: 920px;
+      flex-wrap: wrap;
     }
     .fc-btn {
       flex: 0 0 auto;
-      border: 1px solid #cbd5e1;
-      background: #fff;
-      color: #1f2937;
-      border-radius: 5px;
-      padding: 0 9px;
-      height: 28px;
-      font-size: 11.5px;
-      font-weight: 600;
+      border: 1.5px solid #94a3b8;
+      background: #ffffff;
+      color: #0f172a;
+      border-radius: 8px;
+      padding: 0 13px;
+      height: 36px;
+      font-size: 12.5px;
+      font-weight: 700;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 4px;
+      gap: 5px;
       white-space: nowrap;
-      flex-shrink: 0;
+      box-shadow: 0 2px 4px rgba(15, 23, 42, 0.08);
+      transition: all 0.14s ease;
     }
-    .fc-btn:hover { background: #f1f5f9; }
+    .fc-btn:hover { background: #f1f5f9; border-color: #64748b; transform: translateY(-1px); }
+    .fc-btn:active { transform: translateY(0); }
     .fc-btn-known {
-      background: #135c37;
+      background: #15803d;
       color: #fff;
-      border-color: #135c37;
+      border-color: #14532d;
+      box-shadow: 0 3px 8px rgba(21, 128, 61, 0.28);
     }
-    .fc-btn-known:hover { background: #0e4629; }
+    .fc-btn-known:hover { background: #166534; border-color: #14532d; }
     .fc-btn-toggle-on {
       background: #dcfce7;
       color: #14532d;
       border-color: #22c55e;
-      font-weight: 700;
+      font-weight: 800;
     }
     .fc-btn-toggle-on:hover { background: #bbf7d0; }
     .fc-below-card {
@@ -759,59 +909,28 @@
     .fc-empty {
       text-align: center;
       padding: 36px 20px;
-      border: 1px dashed #cbd5e1;
-      border-radius: 8px;
+      border: 2px dashed #cbd5e1;
+      border-radius: 10px;
       color: #64748b;
       background: #f8fafc;
     }
     .study-modes-bar {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 5px;
-      margin: 0 auto 12px;
-      width: fit-content;
-      flex-wrap: nowrap;
-      white-space: nowrap;
-    }
-    .mode-btn {
-      flex: 0 0 auto;
-      border: 1px solid #cbd5e1;
-      background: #f8fafc;
-      color: #334155;
-      border-radius: 5px;
-      padding: 0 9px;
-      height: 27px;
-      font-size: 11.5px;
-      font-weight: 600;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 4px;
-      transition: all 0.15s;
-      white-space: nowrap;
-    }
-    .mode-btn:hover { background: #e2e8f0; }
-    .mode-btn.active {
-      background: #135c37;
-      color: #ffffff;
-      border-color: #135c37;
+      display: none;
     }
     .srs-badge {
       background: #fef9c3;
       color: #854d0e;
-      border: 1px solid #fde047;
-      font-size: 11px;
-      font-weight: 700;
-      padding: 2px 7px;
-      border-radius: 4px;
+      border: 1.5px solid #fde047;
+      font-size: 11.5px;
+      font-weight: 800;
+      padding: 3px 8px;
+      border-radius: 6px;
     }
     .study-box {
-      border: 1px solid #cbd5e1;
-      border-radius: 10px;
+      border: 2px solid #cbd5e1;
+      border-radius: 12px;
       background: #ffffff;
-      box-shadow: 0 4px 14px rgba(15, 23, 42, 0.06);
+      box-shadow: 0 6px 18px rgba(15, 23, 42, 0.06);
       padding: 18px 20px;
     }
     .cloze-sentence {
@@ -819,7 +938,7 @@
       font-weight: 700;
       color: #0f172a;
       line-height: 1.5;
-      margin: 14px 0 8px;
+      margin: 14px 0 10px;
       text-align: center;
     }
     .cloze-blank {
@@ -830,26 +949,42 @@
       padding: 0 6px;
       margin: 0 3px;
     }
+    .cloze-hint {
+      text-align: center;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 8px 12px;
+      margin-bottom: 10px;
+      font-size: 13px;
+      color: #1e293b;
+    }
     .choice-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 8px;
+      gap: 10px;
       margin-top: 14px;
     }
     .choice-btn {
-      border: 1px solid #cbd5e1;
-      background: #f8fafc;
-      color: #1e293b;
-      border-radius: 7px;
-      padding: 10px 12px;
-      font-size: calc(var(--fs) * 1.05);
-      font-weight: 600;
+      border: 2px solid #cbd5e1;
+      background: #ffffff;
+      color: #0f172a;
+      border-radius: 10px;
+      padding: 13px 15px;
+      font-size: calc(var(--fs) * 1.08);
+      font-weight: 700;
       cursor: pointer;
       text-align: left;
-      transition: all 0.12s;
+      box-shadow: 0 2px 5px rgba(15, 23, 42, 0.06);
+      transition: all 0.14s ease;
     }
-    .choice-btn:hover { background: #f1f5f9; border-color: #94a3b8; }
-    .choice-btn.correct { background: #dcfce7 !important; border-color: #16a34a !important; color: #14532d !important; }
+    .choice-btn:hover {
+      background: #f0fdf4;
+      border-color: #15803d;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 10px rgba(21, 128, 61, 0.14);
+    }
+    .choice-btn.correct { background: #dcfce7 !important; border-color: #16a34a !important; color: #14532d !important; box-shadow: 0 3px 10px rgba(22, 163, 74, 0.22) !important; }
     .choice-btn.wrong { background: #fee2e2 !important; border-color: #ef4444 !important; color: #7f1d1d !important; }
     .twin-cluster-banner {
       display: flex;
@@ -857,12 +992,12 @@
       justify-content: space-between;
       gap: 8px;
       background: #fff7ed;
-      border: 1px solid #fdba74;
-      border-left: 4px solid #ea580c;
-      border-radius: 7px;
-      padding: 7px 12px;
+      border: 1.5px solid #fdba74;
+      border-left: 5px solid #ea580c;
+      border-radius: 8px;
+      padding: 8px 12px;
       margin-top: 8px;
-      font-size: 11.5px;
+      font-size: 12px;
       color: #7c2d12;
       flex-wrap: wrap;
     }
@@ -871,16 +1006,17 @@
       align-items: center;
       gap: 4px;
       background: #ffffff;
-      border: 1px solid #fed7aa;
+      border: 1.5px solid #fb923c;
       color: #9a3412;
-      font-weight: 700;
-      font-size: 11.5px;
-      padding: 2px 8px;
+      font-weight: 800;
+      font-size: 12px;
+      padding: 4px 10px;
       border-radius: 99px;
       cursor: pointer;
+      box-shadow: 0 1px 3px rgba(234, 88, 12, 0.12);
       transition: all 0.12s;
     }
-    .twin-pill:hover { background: #ffedd5; border-color: #fb923c; }
+    .twin-pill:hover { background: #ffedd5; border-color: #ea580c; transform: translateY(-1px); }
     .twin-compare-box {
       margin-top: 12px;
       background: #fffaf5;
@@ -900,6 +1036,8 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 4px;
     }
     .twin-compare-grid {
       display: grid;
@@ -908,8 +1046,8 @@
     }
     .twin-compare-item {
       background: #ffffff;
-      border: 1px solid #fed7aa;
-      border-radius: 6px;
+      border: 1.5px solid #fed7aa;
+      border-radius: 7px;
       padding: 8px 10px;
       font-size: 12px;
       line-height: 1.4;
@@ -924,9 +1062,29 @@
     }
     .type-row {
       display: flex;
-      gap: 6px;
-      margin-top: 12px;
+      gap: 8px;
+      margin-top: 14px;
       justify-content: center;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .type-inp {
+      flex: 1;
+      min-width: 180px;
+      max-width: 420px;
+      height: 36px;
+      padding: 0 12px;
+      border: 2px solid #94a3b8;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #0f172a;
+      outline: none;
+      background: #ffffff;
+    }
+    .type-inp:focus {
+      border-color: #15803d;
+      box-shadow: 0 0 0 3px rgba(21, 128, 61, 0.15);
     }
     .match-grid {
       display: grid;
@@ -937,38 +1095,44 @@
     .match-col {
       display: flex;
       flex-direction: column;
-      gap: 7px;
+      gap: 8px;
     }
     .match-item {
-      border: 1px solid #cbd5e1;
+      border: 2px solid #cbd5e1;
       background: #ffffff;
-      color: #1e293b;
-      border-radius: 7px;
-      padding: 10px 12px;
-      font-size: calc(var(--fs) * 1.02);
-      font-weight: 600;
+      color: #0f172a;
+      border-radius: 9px;
+      padding: 11px 14px;
+      font-size: calc(var(--fs) * 1.05);
+      font-weight: 700;
       cursor: pointer;
       text-align: left;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      box-shadow: 0 2px 4px rgba(15, 23, 42, 0.05);
       transition: all 0.12s;
     }
-    .match-item:hover { background: #f8fafc; }
-    .match-item.selected { border: 2px solid #135c37; background: #f0fdf4; color: #135c37; }
+    .match-item:hover { background: #f8fafc; border-color: #64748b; }
+    .match-item.selected { border: 2px solid #15803d; background: #dcfce7; color: #14532d; }
     .match-item.matched { background: #dcfce7; border-color: #86efac; color: #15803d; opacity: 0.55; pointer-events: none; text-decoration: line-through; }
-    .match-item.wrong { background: #fee2e2; border-color: #f87171; }
+    .match-item.wrong { background: #fee2e2; border-color: #ef4444; }
     .btn.active-mode { background: #135c37; color: #ffffff; border-color: #0e4629; }
     .btn.active-mode:hover { background: #0e4629; }
     #statsView {
-      max-width: 980px;
+      max-width: 100%;
+      overflow-x: auto;
     }
     #statsView table.sheet-table {
-      width: auto;
-      min-width: 820px;
-      max-width: 960px;
+      width: 100%;
+      min-width: 720px;
+      max-width: 1040px;
       table-layout: fixed;
     }
     #statsView table.sheet-table th,
     #statsView table.sheet-table td {
-      padding: 3px 6px;
+      padding: 4px 6px;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
@@ -978,33 +1142,31 @@
       align-items: center;
       justify-content: space-between;
       gap: 8px;
-      margin-bottom: 8px;
-      padding: 6px 10px;
+      margin-bottom: 10px;
+      padding: 8px 12px;
       background: #f8fafc;
-      border: 1px solid #cbd5e1;
-      border-radius: 6px;
-      max-width: 960px;
-      flex-wrap: nowrap;
-      white-space: nowrap;
+      border: 1.5px solid #cbd5e1;
+      border-radius: 8px;
+      max-width: 1040px;
+      flex-wrap: wrap;
     }
     .stats-kpis {
       display: flex;
       align-items: center;
       gap: 8px;
-      flex-wrap: nowrap;
-      white-space: nowrap;
+      flex-wrap: wrap;
     }
     .stats-kpi {
-      padding: 3px 8px;
-      border-radius: 5px;
-      font-size: 11.5px;
-      font-weight: 700;
-      border: 1px solid #e2e8f0;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 800;
+      border: 1.5px solid #cbd5e1;
       background: #ffffff;
       color: #1e293b;
     }
-    .stats-kpi.err { background: #fef2f2; border-color: #fecaca; color: #b91c1c; }
-    .stats-kpi.ok { background: #f0fdf4; border-color: #bbf7d0; color: #15803d; }
+    .stats-kpi.err { background: #fef2f2; border-color: #fca5a5; color: #b91c1c; }
+    .stats-kpi.ok { background: #f0fdf4; border-color: #86efac; color: #15803d; }
     .err-bar-wrap {
       display: flex;
       align-items: center;
@@ -1075,15 +1237,124 @@
       border-color: #86efac;
     }
 
+    /* Mobile & Tablet Responsive Layout */
     @media (max-width: 900px) {
-      .pool-layout { grid-template-columns: 1fr; }
+      .pool-layout { grid-template-columns: 1fr !important; }
       .choice-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 820px) {
+      .mobile-menu-btn {
+        display: inline-flex;
+      }
+      .left-sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        width: 255px;
+        height: 100vh;
+        z-index: 60;
+        background: #f8fafc;
+        box-shadow: 6px 0 24px rgba(15, 23, 42, 0.25);
+        transform: translateX(-105%);
+        transition: transform 0.24s cubic-bezier(0.4, 0, 0.2, 1);
+        padding-top: 12px;
+      }
+      .left-sidebar.open {
+        transform: translateX(0);
+      }
+      .sidebar-header-mobile {
+        display: flex;
+      }
+      .table-wrap {
+        padding: 6px 4px;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+      table.sheet-table th {
+        position: static;
+      }
+      .bottom-info {
+        display: none;
+      }
+      .fc-wrap {
+        padding: 0 8px;
+        margin-top: 8px;
+      }
+      .study-box {
+        padding: 14px 12px;
+      }
+      .fc-scene {
+        height: 270px;
+      }
+      .fc-face {
+        padding: 12px 14px;
+      }
+      .fc-hover-example {
+        max-width: calc(100vw - 44px);
+        font-size: calc(var(--fs) + 1.5px);
+      }
+      .word-hover-ex {
+        min-width: 210px;
+        max-width: calc(100vw - 40px);
+      }
+    }
+
+    @media (max-width: 600px) {
+      .toolbar {
+        padding: 6px;
+        gap: 5px;
+      }
+      .toolbar-left, .toolbar-right {
+        width: 100%;
+        justify-content: space-between;
+      }
+      #searchInput {
+        flex: 1;
+        min-width: 90px;
+      }
+      /* Hide secondary columns on phone screens so Word, Meaning & Example fit comfortably */
+      #sheet1View th.col-date, #sheet1View td.col-date,
+      #sheet1View th.col-type, #sheet1View td.col-type,
+      #sheet1View th.col-status, #sheet1View td.col-status,
+      #poolView th.col-date, #poolView td.col-date,
+      #poolView th.col-type, #poolView td.col-type,
+      #knownPoolView th.col-date, #knownPoolView td.col-date,
+      #knownPoolView th.col-type, #knownPoolView td.col-type {
+        display: none;
+      }
+      .col-meaning { min-width: 105px; }
+      .col-example { min-width: 135px; }
+      .fc-controls {
+        gap: 6px;
+      }
+      .fc-controls .fc-btn {
+        flex: 1 1 calc(50% - 6px);
+        min-height: 38px;
+      }
+      .match-grid {
+        grid-template-columns: 1fr;
+      }
+      .type-row {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .type-inp {
+        max-width: 100%;
+        width: 100%;
+      }
+      .type-row .fc-btn {
+        width: 100%;
+        height: 38px;
+      }
     }
   </style>
 </head>
 <body>
   <div class="toolbar">
     <div class="toolbar-left">
+      <button class="mobile-menu-btn" id="mobileMenuBtn" onclick="mobilMenuAcKapat()" title="Open Navigation & Quiz Menu">☰ Modes</button>
       <div class="mini-stats">
         <span class="mini-stat" id="stTotal" style="cursor:pointer;" onclick="sekmeDegistir('sheet1')" title="Click to open Main Vocabulary Table (Words)">Total: -</span>
         <span class="mini-stat unk" id="stUnk" style="cursor:pointer;" onclick="sekmeDegistir('pool')" title="Click to open Unknown Words Pool Table">In Pool: -</span>
@@ -1101,7 +1372,7 @@
         <span class="font-val" id="fontValLabel">13px</span>
         <button class="font-btn" onclick="yaziBoyutuDegistir(1)">A+</button>
       </div>
-      <input type="text" id="searchInput" class="inp" placeholder="Search..." style="width:110px;" oninput="tercihleriKaydet(); tabloyuCiz();">
+      <input type="text" id="searchInput" class="inp" placeholder="Search..." style="width:120px;" oninput="tercihleriKaydet(); tabloyuCiz();">
       <select id="levelFilter" class="inp" onchange="tercihleriKaydet(); tabloyuCiz();">
         <option value="ALL">Level: All</option>
         <option value="A1">A1</option>
@@ -1111,219 +1382,264 @@
         <option value="C1">C1</option>
         <option value="C2">C2</option>
       </select>
-      <div class="font-ctrl" style="padding:0 5px;gap:3px;background:#f0fdf4;border-color:#86efac;" title="Set the minimum number of distinct days or weeks with correct answers required to auto-master a word (Known)">
-        <span style="font-size:11px;font-weight:700;color:#166534;">🎯 Goal:</span>
-        <input type="number" id="topMasteryCount" min="1" max="365" value="5" style="width:40px;height:20px;border:1px solid #86efac;border-radius:3px;text-align:center;font-size:11px;font-weight:700;color:#14532d;outline:none;background:#fff;" onchange="ogrenmeHedefiDegistir(this.value, null)">
-        <select id="topMasteryUnit" style="height:20px;border:none;background:transparent;font-size:11px;font-weight:700;color:#14532d;outline:none;cursor:pointer;" onchange="ogrenmeHedefiDegistir(null, this.value)">
+      <div class="font-ctrl" style="padding:0 6px;gap:4px;background:#f0fdf4;border-color:#4ade80;" title="Set the minimum number of distinct days or weeks with correct answers required to auto-master a word (Known)">
+        <span style="font-size:11.5px;font-weight:800;color:#166534;">🎯 Goal:</span>
+        <input type="number" id="topMasteryCount" min="1" max="365" value="5" style="width:42px;height:22px;border:1.5px solid #86efac;border-radius:4px;text-align:center;font-size:11.5px;font-weight:800;color:#14532d;outline:none;background:#fff;" onchange="ogrenmeHedefiDegistir(this.value, null)">
+        <select id="topMasteryUnit" style="height:22px;border:none;background:transparent;font-size:11.5px;font-weight:800;color:#14532d;outline:none;cursor:pointer;" onchange="ogrenmeHedefiDegistir(null, this.value)">
           <option value="gun" selected>Days</option>
           <option value="hafta">Weeks</option>
         </select>
       </div>
-      <button class="btn" style="background:#fff7ed;border-color:#fdba74;color:#9a3412;" onclick="tumKelimeleriBilinmeyenYap(true)" title="Move all words in Words back to Unknown status and reset streak progress">↩️ Reset All to Unknown</button>
-      <button class="btn" id="topBtn-sheet1" onclick="sekmeDegistir('sheet1')" title="Main Vocabulary Table (Words)">📋 Words</button>
-      <button class="btn" id="topBtn-sheetHavuz" onclick="sekmeDegistir('sheetHavuz')" title="Google Sheets 'Havuz' (Word Pool) Tab — Candidate words to transfer into Words">📦 Pool</button>
-      <button class="btn" id="topBtn-pool" onclick="sekmeDegistir('pool')" title="Unknown Words in Words Table">📕 Unknown</button>
-      <button class="btn" id="topBtn-knownPool" onclick="sekmeDegistir('knownPool')" title="Known Words in Words Table">📗 Known</button>
-      <button class="btn" id="topBtn-flashcards" onclick="calismaModuAc('flashcards')" title="3D Flashcards + Spaced Repetition">🃏 Flashcards</button>
-      <button class="btn" id="topBtn-cloze" onclick="calismaModuAc('cloze')" title="Fill in the blank in Example Sentences">📝 Cloze</button>
-      <button class="btn" id="topBtn-quiz" onclick="calismaModuAc('quiz')" title="Active Recall (Turkish <-> English Quiz & Typing)">🎯 Quiz</button>
-      <button class="btn" id="topBtn-confusables" onclick="calismaModuAc('confusables')" title="Confusable / Similar Words Quiz (e.g. Ambiguous vs Ambitious)">🔀 Confusables</button>
-      <button class="btn" id="topBtn-listen" onclick="calismaModuAc('listen')" title="Listen to audio & find/type the word">🎧 Listen</button>
-      <button class="btn" id="topBtn-match" onclick="calismaModuAc('match')" title="Match 5 English words with Turkish meanings">🧩 Match</button>
-      <button class="btn" id="topBtn-stats" onclick="sekmeDegistir('stats')" title="Mistake Statistics & Error Bars">📊 Stats</button>
-      <button class="btn btn-green" id="addWordToggleBtn" onclick="ekleBarAcKapat()">+ Add</button>
-      <button class="btn" onclick="verileriYukle(true)" title="Sync latest words from Google Sheet">🔄</button>
+      <button class="btn" style="background:#fff7ed;border-color:#fb923c;color:#9a3412;" onclick="tumKelimeleriBilinmeyenYap(true)" title="Move all words in Words back to Unknown status and reset streak progress">↩️ Reset All</button>
+      <button class="btn btn-green" id="addWordToggleBtn" onclick="ekleBarAcKapat()">+ Add Word</button>
+      <button class="btn" onclick="verileriYukle(true)" title="Sync latest words from Google Sheet">🔄 Sync</button>
     </div>
   </div>
 
-  <div class="add-bar" id="addBar">
-    <select id="inSeviye" class="inp" onchange="tercihleriKaydet()">
-      <option value="A2">A2</option>
-      <option value="B1">B1</option>
-      <option value="B2" selected>B2</option>
-      <option value="C1">C1</option>
-      <option value="C2">C2</option>
-    </select>
-    <select id="inTur" class="inp" onchange="tercihleriKaydet()">
-      <option value="Adjective">Adjective</option>
-      <option value="Verb">Verb</option>
-      <option value="Noun">Noun</option>
-      <option value="Adverb">Adverb</option>
-    </select>
-    <input type="text" id="inKelime" class="inp" placeholder="Word (e.g. Reluctant)" style="width:140px;">
-    <input type="text" id="inAnlam" class="inp" placeholder="Meaning (Turkish)" style="width:180px;">
-    <input type="text" id="inOrnek" class="inp" placeholder="Example Sentence" style="flex:1;min-width:190px;">
-    <button class="btn btn-green" id="saveWordBtn" onclick="yeniKelimeKaydet()">Save</button>
-    <button class="btn" onclick="ekleBarAcKapat()">Close</button>
-  </div>
+  <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="mobilMenuKapat()"></div>
 
-  <div class="table-wrap" id="sheet1View">
-    <table class="sheet-table">
-      <thead>
-        <tr>
-          <th class="col-row">#</th>
-          <th class="col-date">Date</th>
-          <th class="center">Level</th>
-          <th>Type</th>
-          <th class="col-mark" title="Top (✓): Known | Bottom (✕): Unknown">✓/✕</th>
-          <th>Word</th>
-          <th>Meaning</th>
-          <th>Example Sentence</th>
-          <th class="center">Status</th>
-        </tr>
-      </thead>
-      <tbody id="sheet1Body"></tbody>
-    </table>
-  </div>
-
-  <div class="table-wrap" id="sheetHavuzView" style="display:none;">
-    <div class="stats-kpi-bar">
-      <div class="stats-kpis">
-        <span class="stats-kpi" id="kpiHavuzTotal">📦 Total Pool: 0</span>
-        <span class="stats-kpi" style="background:#fef3c7;border-color:#fcd34d;color:#92400e;" id="kpiHavuzWaiting">⏳ Waiting: 0</span>
-        <span class="stats-kpi ok" id="kpiHavuzTransferred">✅ Transferred to Words: 0</span>
-        <span style="font-size:11px;color:#475569;font-weight:600;">ℹ️ Words in the Pool remain hidden from quizzes and the main table until transferred to <b>Words</b>.</span>
+  <div class="app-body">
+    <aside class="left-sidebar" id="leftSidebar">
+      <div class="sidebar-header-mobile">
+        <span>📚 Navigation & Quizzes</span>
+        <button class="btn" style="height:26px;padding:0 8px;" onclick="mobilMenuKapat()">✕ Close</button>
       </div>
-      <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
-        <select id="havuzDurumFilter" class="inp" onchange="havuzTablosuCiz()" title="Filter by transfer status">
-          <option value="all" selected>📋 All (Waiting First)</option>
-          <option value="bekliyor">⏳ Waiting Only</option>
-          <option value="aktarildi">✅ Transferred Only</option>
+
+      <div class="sidebar-group-title">📚 Tables & Pools</div>
+      <button class="side-nav-btn active-mode" id="topBtn-sheet1" onclick="sekmeDegistir('sheet1')" title="Main Vocabulary Table (Words)">
+        <span>📋 Words</span>
+        <span class="side-nav-badge" id="navBadge-sheet1">-</span>
+      </button>
+      <button class="side-nav-btn" id="topBtn-sheetHavuz" onclick="sekmeDegistir('sheetHavuz')" title="Google Sheets 'Havuz' (Word Pool) Tab — Candidate words to transfer into Words">
+        <span>📦 Pool</span>
+        <span class="side-nav-badge" id="navBadge-sheetHavuz">-</span>
+      </button>
+      <button class="side-nav-btn" id="topBtn-pool" onclick="sekmeDegistir('pool')" title="Unknown Words in Words Table">
+        <span>📕 Unknown</span>
+        <span class="side-nav-badge" id="navBadge-pool">-</span>
+      </button>
+      <button class="side-nav-btn" id="topBtn-knownPool" onclick="sekmeDegistir('knownPool')" title="Known Words in Words Table">
+        <span>📗 Known</span>
+        <span class="side-nav-badge" id="navBadge-knownPool">-</span>
+      </button>
+      <button class="side-nav-btn" id="topBtn-stats" onclick="sekmeDegistir('stats')" title="Mistake Statistics & Error Bars">
+        <span>📊 Stats</span>
+        <span class="side-nav-badge" id="navBadge-stats">0</span>
+      </button>
+
+      <div class="sidebar-group-title" style="margin-top:6px;">🎓 Study & Quizzes</div>
+      <button class="side-nav-btn" id="topBtn-flashcards" onclick="calismaModuAc('flashcards')" title="3D Flashcards + Spaced Repetition">
+        <span>🃏 Flashcards</span>
+        <span class="side-nav-badge" id="navBadge-flashcards">-</span>
+      </button>
+      <button class="side-nav-btn" id="topBtn-cloze" onclick="calismaModuAc('cloze')" title="Fill in the blank in Example Sentences">
+        <span>📝 Cloze</span>
+      </button>
+      <button class="side-nav-btn" id="topBtn-quiz" onclick="calismaModuAc('quiz')" title="Active Recall (Turkish <-> English Quiz & Typing)">
+        <span>🎯 Quiz</span>
+      </button>
+      <button class="side-nav-btn" id="topBtn-confusables" onclick="calismaModuAc('confusables')" title="Confusable / Similar Words Quiz (e.g. Ambiguous vs Ambitious)">
+        <span>🔀 Confusables</span>
+      </button>
+      <button class="side-nav-btn" id="topBtn-listen" onclick="calismaModuAc('listen')" title="Listen to audio & find/type the word">
+        <span>🎧 Listen</span>
+      </button>
+      <button class="side-nav-btn" id="topBtn-match" onclick="calismaModuAc('match')" title="Match 5 English words with Turkish meanings">
+        <span>🧩 Match</span>
+      </button>
+    </aside>
+
+    <main class="main-content">
+      <div class="add-bar" id="addBar">
+        <select id="inSeviye" class="inp" onchange="tercihleriKaydet()">
+          <option value="A2">A2</option>
+          <option value="B1">B1</option>
+          <option value="B2" selected>B2</option>
+          <option value="C1">C1</option>
+          <option value="C2">C2</option>
         </select>
-        <div style="display:inline-flex;align-items:center;gap:4px;background:#eef2ff;border:1px solid #a5b4fc;border-radius:4px;padding:1px 6px;">
-          <span style="font-size:11px;font-weight:700;color:#312e81;">🎲 Count:</span>
-          <input type="number" id="havuzRandomCount" class="inp" min="1" max="50" value="5" style="width:44px;height:21px;text-align:center;font-weight:800;border-color:#a5b4fc;color:#312e81;">
-          <button class="btn" id="havuzRandomTransferBtn" style="height:22px;background:#4338ca;border-color:#3730a3;color:#fff;" onclick="havuzdanRastgeleAktar()" title="Pick N random waiting words from the selected level and transfer them to Words with auto-generated meaning, pronunciation, and example sentence">🎲 Transfer Random to Words</button>
+        <select id="inTur" class="inp" onchange="tercihleriKaydet()">
+          <option value="Adjective">Adjective</option>
+          <option value="Verb">Verb</option>
+          <option value="Noun">Noun</option>
+          <option value="Adverb">Adverb</option>
+        </select>
+        <input type="text" id="inKelime" class="inp" placeholder="Word (e.g. Reluctant)" style="width:140px;">
+        <input type="text" id="inAnlam" class="inp" placeholder="Meaning (Turkish)" style="width:180px;">
+        <input type="text" id="inOrnek" class="inp" placeholder="Example Sentence" style="flex:1;min-width:190px;">
+        <button class="btn btn-green" id="saveWordBtn" onclick="yeniKelimeKaydet()">Save</button>
+        <button class="btn" onclick="ekleBarAcKapat()">Close</button>
+      </div>
+
+      <div class="table-wrap" id="sheet1View">
+        <table class="sheet-table">
+          <thead>
+            <tr>
+              <th class="col-row">#</th>
+              <th class="col-date">Date</th>
+              <th class="center">Level</th>
+              <th class="col-type">Type</th>
+              <th class="col-mark" title="Top (✓): Known | Bottom (✕): Unknown">✓/✕</th>
+              <th>Word</th>
+              <th>Meaning</th>
+              <th>Example Sentence</th>
+              <th class="center col-status">Status</th>
+            </tr>
+          </thead>
+          <tbody id="sheet1Body"></tbody>
+        </table>
+      </div>
+
+      <div class="table-wrap" id="sheetHavuzView" style="display:none;">
+        <div class="stats-kpi-bar">
+          <div class="stats-kpis">
+            <span class="stats-kpi" id="kpiHavuzTotal">📦 Total Pool: 0</span>
+            <span class="stats-kpi" style="background:#fef3c7;border-color:#fcd34d;color:#92400e;" id="kpiHavuzWaiting">⏳ Waiting: 0</span>
+            <span class="stats-kpi ok" id="kpiHavuzTransferred">✅ Transferred to Words: 0</span>
+            <span style="font-size:11px;color:#475569;font-weight:600;">ℹ️ Words in the Pool remain hidden from quizzes and the main table until transferred to <b>Words</b>.</span>
+          </div>
+          <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
+            <select id="havuzDurumFilter" class="inp" onchange="havuzTablosuCiz()" title="Filter by transfer status">
+              <option value="all" selected>📋 All (Waiting First)</option>
+              <option value="bekliyor">⏳ Waiting Only</option>
+              <option value="aktarildi">✅ Transferred Only</option>
+            </select>
+            <div style="display:inline-flex;align-items:center;gap:4px;background:#eef2ff;border:1.5px solid #818cf8;border-radius:7px;padding:2px 6px;">
+              <span style="font-size:11.5px;font-weight:800;color:#312e81;">🎲 Count:</span>
+              <input type="number" id="havuzRandomCount" class="inp" min="1" max="50" value="5" style="width:46px;height:26px;text-align:center;font-weight:800;border-color:#818cf8;color:#312e81;">
+              <button class="btn" id="havuzRandomTransferBtn" style="height:26px;background:#4338ca;border-color:#3730a3;color:#fff;" onclick="havuzdanRastgeleAktar()" title="Pick N random waiting words from the selected level and transfer them to Words with auto-generated meaning, pronunciation, and example sentence">🎲 Transfer Random</button>
+            </div>
+            <button class="btn btn-green" id="havuzSelectedTransferBtn" onclick="havuzSecilenleriAktar()" title="Transfer selected words to Words with auto-generated meaning, pronunciation, and example sentence">➕ Transfer Selected to Words (0)</button>
+          </div>
         </div>
-        <button class="btn btn-green" id="havuzSelectedTransferBtn" onclick="havuzSecilenleriAktar()" title="Transfer selected words to Words with auto-generated meaning, pronunciation, and example sentence">➕ Transfer Selected to Words (0)</button>
+        <div class="pool-layout" style="grid-template-columns: 260px 1fr;">
+          <table class="sheet-table">
+            <thead>
+              <tr>
+                <th>Level</th>
+                <th class="center">Waiting</th>
+                <th class="center">Transferred</th>
+                <th class="center">Total</th>
+              </tr>
+            </thead>
+            <tbody id="sheetHavuzSummaryBody"></tbody>
+          </table>
+          <table class="sheet-table">
+            <thead>
+              <tr>
+                <th style="width:32px;" class="center"><input type="checkbox" id="havuzSelectAllCb" onchange="havuzTumunuSecDegistir(this.checked)" title="Select / deselect all visible waiting words"></th>
+                <th class="col-row">#</th>
+                <th style="width:60px;" class="center">Level</th>
+                <th style="width:220px;">Word (Click to Listen)</th>
+                <th style="width:120px;" class="center">Status</th>
+                <th>Action (Transfer to Words)</th>
+              </tr>
+            </thead>
+            <tbody id="sheetHavuzBody"></tbody>
+          </table>
+        </div>
       </div>
-    </div>
-    <div class="pool-layout" style="grid-template-columns: 260px 1fr;">
-      <table class="sheet-table">
-        <thead>
-          <tr>
-            <th>Level</th>
-            <th class="center">Waiting</th>
-            <th class="center">Transferred</th>
-            <th class="center">Total</th>
-          </tr>
-        </thead>
-        <tbody id="sheetHavuzSummaryBody"></tbody>
-      </table>
-      <table class="sheet-table">
-        <thead>
-          <tr>
-            <th style="width:32px;" class="center"><input type="checkbox" id="havuzSelectAllCb" onchange="havuzTumunuSecDegistir(this.checked)" title="Select / deselect all visible waiting words"></th>
-            <th class="col-row">#</th>
-            <th style="width:60px;" class="center">Level</th>
-            <th style="width:220px;">Word (Click to Listen)</th>
-            <th style="width:120px;" class="center">Status</th>
-            <th>Action (Transfer to Words)</th>
-          </tr>
-        </thead>
-        <tbody id="sheetHavuzBody"></tbody>
-      </table>
-    </div>
-  </div>
 
-  <div class="table-wrap" id="poolView" style="display:none;">
-    <div class="pool-layout">
-      <table class="sheet-table">
-        <thead>
-          <tr>
-            <th>Level</th>
-            <th class="center">Unknown Words</th>
-          </tr>
-        </thead>
-        <tbody id="poolSummaryBody"></tbody>
-      </table>
-      <table class="sheet-table">
-        <thead>
-          <tr>
-            <th class="center">Level</th>
-            <th>Type</th>
-            <th class="col-mark" title="Top (✓): Known | Bottom (✕): Unknown">✓/✕</th>
-            <th>Word</th>
-            <th>Meaning</th>
-            <th>Example Sentence</th>
-            <th class="col-date">Date</th>
-          </tr>
-        </thead>
-        <tbody id="poolBody"></tbody>
-      </table>
-    </div>
-  </div>
-
-  <div class="table-wrap" id="knownPoolView" style="display:none;">
-    <div class="pool-layout">
-      <table class="sheet-table">
-        <thead>
-          <tr>
-            <th>Level</th>
-            <th class="center">Known Words</th>
-          </tr>
-        </thead>
-        <tbody id="knownPoolSummaryBody"></tbody>
-      </table>
-      <table class="sheet-table">
-        <thead>
-          <tr>
-            <th class="center">Level</th>
-            <th>Type</th>
-            <th class="col-mark" title="Top (✓): Known | Bottom (✕): Unknown">✓/✕</th>
-            <th>Word</th>
-            <th>Meaning</th>
-            <th>Example Sentence</th>
-            <th class="col-date">Date</th>
-          </tr>
-        </thead>
-        <tbody id="knownPoolBody"></tbody>
-      </table>
-    </div>
-  </div>
-
-  <div class="table-wrap" id="statsView" style="display:none;">
-    <div class="stats-kpi-bar">
-      <div class="stats-kpis">
-        <span class="stats-kpi" id="kpiTotalAttempts">Total Exercises: 0</span>
-        <span class="stats-kpi err" id="kpiTotalMistakes">❌ Total Mistakes: 0</span>
-        <span class="stats-kpi ok" id="kpiTotalCorrect">✅ Total Correct: 0</span>
-        <span class="stats-kpi" id="kpiAccuracy">🎯 Accuracy: -</span>
+      <div class="table-wrap" id="poolView" style="display:none;">
+        <div class="pool-layout">
+          <table class="sheet-table">
+            <thead>
+              <tr>
+                <th>Level</th>
+                <th class="center">Unknown Words</th>
+              </tr>
+            </thead>
+            <tbody id="poolSummaryBody"></tbody>
+          </table>
+          <table class="sheet-table">
+            <thead>
+              <tr>
+                <th class="center">Level</th>
+                <th class="col-type">Type</th>
+                <th class="col-mark" title="Top (✓): Known | Bottom (✕): Unknown">✓/✕</th>
+                <th>Word</th>
+                <th>Meaning</th>
+                <th>Example Sentence</th>
+                <th class="col-date">Date</th>
+              </tr>
+            </thead>
+            <tbody id="poolBody"></tbody>
+          </table>
+        </div>
       </div>
-      <div style="display:flex;gap:6px;align-items:center;">
-        <label for="statsMasteryCount" style="font-size:11px;font-weight:700;color:#334155;white-space:nowrap;">🎯 Mastery Goal:</label>
-        <input type="number" id="statsMasteryCount" class="inp" min="1" max="365" value="5" style="width:52px;font-weight:700;color:#135c37;border-color:#86efac;background:#f0fdf4;text-align:center;" onchange="ogrenmeHedefiDegistir(this.value, null)" title="Minimum number of distinct days/weeks with correct answers required for a word to be marked as Known">
-        <select id="statsMasteryUnit" class="inp" style="font-weight:700;color:#135c37;border-color:#86efac;background:#f0fdf4;" onchange="ogrenmeHedefiDegistir(null, this.value)" title="Track progress by Days or Weeks">
-          <option value="gun" selected>Days</option>
-          <option value="hafta">Weeks</option>
-        </select>
-        <button class="btn" style="background:#fffbeb;border-color:#fcd34d;color:#92400e;" onclick="erkenBilinenleriHavuzaGeriAl()" title="Move words back to the Unknown Pool">↩️ Reset All to Unknown</button>
-        <button class="btn" onclick="istatistikleriSunucuyaSenkronizeEt(true)" title="Sync all historical stats to 'Mistake Stats' tab in Google Sheets">🔄 Sync Stats to Sheet</button>
-        <a href="https://docs.google.com/spreadsheets/d/1cUYfuFg7OSsWjCtLA7jiB77bGJITR6V0jF2ZUnyrXtc/edit" target="_blank" class="btn btn-green" title="View 'Mistake Stats' sheet tab in Google Sheets">📊 Open in Google Sheets</a>
-      </div>
-    </div>
-    <table class="sheet-table">
-      <thead>
-        <tr>
-          <th style="width:28px;" class="center">#</th>
-          <th style="width:44px;" class="center">Level</th>
-          <th style="width:115px;">Word</th>
-          <th style="width:170px;">Meaning</th>
-          <th style="width:66px;" class="center">Mistakes</th>
-          <th style="width:62px;" class="center">Correct</th>
-          <th style="width:50px;" class="center">Total</th>
-          <th style="width:72px;" class="center">Error Rate</th>
-          <th style="width:140px;">Mistake Bar</th>
-          <th id="thStreakCol" style="width:72px;" class="center" title="Consecutive Zero-Mistake Streak = Auto Known">Streak</th>
-          <th style="width:115px;">Last Practice</th>
-        </tr>
-      </thead>
-      <tbody id="statsBody"></tbody>
-    </table>
-  </div>
 
-  <div id="flashcardView" style="display:none;">
-    <div class="fc-wrap" id="fcContainer"></div>
+      <div class="table-wrap" id="knownPoolView" style="display:none;">
+        <div class="pool-layout">
+          <table class="sheet-table">
+            <thead>
+              <tr>
+                <th>Level</th>
+                <th class="center">Known Words</th>
+              </tr>
+            </thead>
+            <tbody id="knownPoolSummaryBody"></tbody>
+          </table>
+          <table class="sheet-table">
+            <thead>
+              <tr>
+                <th class="center">Level</th>
+                <th class="col-type">Type</th>
+                <th class="col-mark" title="Top (✓): Known | Bottom (✕): Unknown">✓/✕</th>
+                <th>Word</th>
+                <th>Meaning</th>
+                <th>Example Sentence</th>
+                <th class="col-date">Date</th>
+              </tr>
+            </thead>
+            <tbody id="knownPoolBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="table-wrap" id="statsView" style="display:none;">
+        <div class="stats-kpi-bar">
+          <div class="stats-kpis">
+            <span class="stats-kpi" id="kpiTotalAttempts">Total Exercises: 0</span>
+            <span class="stats-kpi err" id="kpiTotalMistakes">❌ Total Mistakes: 0</span>
+            <span class="stats-kpi ok" id="kpiTotalCorrect">✅ Total Correct: 0</span>
+            <span class="stats-kpi" id="kpiAccuracy">🎯 Accuracy: -</span>
+          </div>
+          <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
+            <label for="statsMasteryCount" style="font-size:11px;font-weight:700;color:#334155;white-space:nowrap;">🎯 Mastery Goal:</label>
+            <input type="number" id="statsMasteryCount" class="inp" min="1" max="365" value="5" style="width:52px;font-weight:700;color:#135c37;border-color:#86efac;background:#f0fdf4;text-align:center;" onchange="ogrenmeHedefiDegistir(this.value, null)" title="Minimum number of distinct days/weeks with correct answers required for a word to be marked as Known">
+            <select id="statsMasteryUnit" class="inp" style="font-weight:700;color:#135c37;border-color:#86efac;background:#f0fdf4;" onchange="ogrenmeHedefiDegistir(null, this.value)" title="Track progress by Days or Weeks">
+              <option value="gun" selected>Days</option>
+              <option value="hafta">Weeks</option>
+            </select>
+            <button class="btn" style="background:#fffbeb;border-color:#fcd34d;color:#92400e;" onclick="erkenBilinenleriHavuzaGeriAl()" title="Move words back to the Unknown Pool">↩️ Reset All to Unknown</button>
+            <button class="btn" onclick="istatistikleriSunucuyaSenkronizeEt(true)" title="Sync all historical stats to 'Mistake Stats' tab in Google Sheets">🔄 Sync Stats to Sheet</button>
+            <a href="https://docs.google.com/spreadsheets/d/1cUYfuFg7OSsWjCtLA7jiB77bGJITR6V0jF2ZUnyrXtc/edit" target="_blank" class="btn btn-green" title="View 'Mistake Stats' sheet tab in Google Sheets">📊 Open in Google Sheets</a>
+          </div>
+        </div>
+        <table class="sheet-table">
+          <thead>
+            <tr>
+              <th style="width:28px;" class="center">#</th>
+              <th style="width:44px;" class="center">Level</th>
+              <th style="width:115px;">Word</th>
+              <th style="width:170px;">Meaning</th>
+              <th style="width:66px;" class="center">Mistakes</th>
+              <th style="width:62px;" class="center">Correct</th>
+              <th style="width:50px;" class="center">Total</th>
+              <th style="width:72px;" class="center">Error Rate</th>
+              <th style="width:140px;">Mistake Bar</th>
+              <th id="thStreakCol" style="width:72px;" class="center" title="Consecutive Zero-Mistake Streak = Auto Known">Streak</th>
+              <th style="width:115px;">Last Practice</th>
+            </tr>
+          </thead>
+          <tbody id="statsBody"></tbody>
+        </table>
+      </div>
+
+      <div id="flashcardView" style="display:none;">
+        <div class="fc-wrap" id="fcContainer"></div>
+      </div>
+    </main>
   </div>
 
   <div class="bottom-bar">
@@ -2485,9 +2801,9 @@
           ? "📊 Mistake Stats (❌" + topHata + " / ✅" + topDogru + ")"
           : "📊 Mistake Stats";
       }
-      var topStatsBtn = document.getElementById("topBtn-stats");
-      if (topStatsBtn) {
-        topStatsBtn.innerText = topHata > 0 ? "📊 Stats (" + topHata + ")" : "📊 Stats";
+      var navStatsBadge = document.getElementById("navBadge-stats");
+      if (navStatsBadge) {
+        navStatsBadge.innerText = String(topHata);
       }
 
       var tbody = document.getElementById("statsBody");
@@ -2702,8 +3018,24 @@
       }
     }
 
+    function mobilMenuAcKapat() {
+      var sb = document.getElementById("leftSidebar");
+      var bd = document.getElementById("sidebarBackdrop");
+      if (!sb) return;
+      var acikMi = sb.classList.toggle("open");
+      if (bd) bd.classList.toggle("open", acikMi);
+    }
+
+    function mobilMenuKapat() {
+      var sb = document.getElementById("leftSidebar");
+      var bd = document.getElementById("sidebarBackdrop");
+      if (sb) sb.classList.remove("open");
+      if (bd) bd.classList.remove("open");
+    }
+
     function sekmeDegistir(s) {
       AKTIF_SEKME = s;
+      mobilMenuKapat();
       sekmeButonlariniGuncelle();
       document.getElementById("sheet1View").style.display = s === "sheet1" ? "block" : "none";
       var shHavuzView = document.getElementById("sheetHavuzView");
@@ -2722,6 +3054,7 @@
     function calismaModuAc(mod) {
       AKTIF_MOD = mod || "flashcards";
       AKTIF_SEKME = "flashcards";
+      mobilMenuKapat();
       FC_FLIPPED = false;
       SECENEKLER_CACHE = { key: "", list: [] };
       if (mod === "match") {
@@ -4378,6 +4711,14 @@
       document.getElementById("stKnw").innerText = "Known: " + knw;
       var fcTabBtn = document.getElementById("tabBtn-flashcards");
       if (fcTabBtn) fcTabBtn.innerText = "🃏 Flashcards (" + unk + ")";
+      var nbS1 = document.getElementById("navBadge-sheet1");
+      if (nbS1) nbS1.innerText = String(total);
+      var nbPool = document.getElementById("navBadge-pool");
+      if (nbPool) nbPool.innerText = String(unk);
+      var nbKnw = document.getElementById("navBadge-knownPool");
+      if (nbKnw) nbKnw.innerText = String(knw);
+      var nbFc = document.getElementById("navBadge-flashcards");
+      if (nbFc) nbFc.innerText = String(unk);
 
       var q = (document.getElementById("searchInput").value || "").toLowerCase().trim();
       var lvl = document.getElementById("levelFilter").value;
@@ -4631,6 +4972,10 @@
       var tabHavuzBtn = document.getElementById("tabBtn-sheetHavuz");
       if (tabHavuzBtn) {
         tabHavuzBtn.innerText = totalCount > 0 ? ("📦 Pool (" + waitCount + ")") : "📦 Pool";
+      }
+      var nbHavuz = document.getElementById("navBadge-sheetHavuz");
+      if (nbHavuz) {
+        nbHavuz.innerText = totalCount > 0 ? String(waitCount) : "-";
       }
 
       var aktifLvl = (document.getElementById("levelFilter") ? document.getElementById("levelFilter").value : "ALL");
