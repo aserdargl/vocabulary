@@ -4253,7 +4253,7 @@
           SECENEKLER_CACHE = { key: "", list: [] };
           if (!mezun) FC_INDEX++;
           tabloyuCiz();
-        }, 3000);
+        }, QUIZ_CORRECT_DELAY_MS);
       } else {
         btnEl.classList.add("wrong");
         if (twinArea && card) {
@@ -4297,7 +4297,7 @@
           SECENEKLER_CACHE = { key: "", list: [] };
           if (!mezun) FC_INDEX++;
           tabloyuCiz();
-        }, 3000);
+        }, QUIZ_CORRECT_DELAY_MS);
       } else {
         inp.style.borderColor = "#ef4444";
         if (twinArea && card) {
@@ -4417,7 +4417,7 @@
           SECENEKLER_CACHE = { key: "", list: [] };
           if (!mezun) FC_INDEX++;
           tabloyuCiz();
-        }, confModMu ? 3000 : QUIZ_CORRECT_DELAY_MS);
+        }, QUIZ_CORRECT_DELAY_MS);
       } else {
         btnEl.classList.add("wrong");
         if (fb && card && card.ornek) {
@@ -4472,7 +4472,7 @@
           SECENEKLER_CACHE = { key: "", list: [] };
           if (!mezun) FC_INDEX++;
           tabloyuCiz();
-        }, confModMu ? 3000 : QUIZ_CORRECT_DELAY_MS);
+        }, QUIZ_CORRECT_DELAY_MS);
       } else {
         inp.style.borderColor = "#ef4444";
         if (fb && card && card.ornek) {
@@ -4728,7 +4728,7 @@
             var nextCard = yeniDeck[FC_INDEX % yeniDeck.length];
             if (nextCard) kelimeOku(nextCard.kelime);
           }
-        }, 3000);
+        }, QUIZ_CORRECT_DELAY_MS);
       } else {
         btnEl.classList.add("wrong");
         alistirmaSonucuKaydet(dogruKelime, false, "Listen");
@@ -4769,7 +4769,7 @@
             var nextCard = yeniDeck[FC_INDEX % yeniDeck.length];
             if (nextCard) kelimeOku(nextCard.kelime);
           }
-        }, 3000);
+        }, QUIZ_CORRECT_DELAY_MS);
       } else {
         inp.style.borderColor = "#ef4444";
         alistirmaSonucuKaydet(dogru, false, "Listen");
