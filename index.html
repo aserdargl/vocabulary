@@ -3277,6 +3277,7 @@
       document.body.style.overflow = isMobile && isOpen ? "hidden" : "";
     }
 
+    var QUIZ_CORRECT_DELAY_MS = 1000;
     var QUIZ_GECIS_TIMER = null;
 
     function quizGecisZamanlayiciTemizle() {
@@ -4416,7 +4417,7 @@
           SECENEKLER_CACHE = { key: "", list: [] };
           if (!mezun) FC_INDEX++;
           tabloyuCiz();
-        }, 3000);
+        }, confModMu ? 3000 : QUIZ_CORRECT_DELAY_MS);
       } else {
         btnEl.classList.add("wrong");
         if (fb && card && card.ornek) {
@@ -4471,7 +4472,7 @@
           SECENEKLER_CACHE = { key: "", list: [] };
           if (!mezun) FC_INDEX++;
           tabloyuCiz();
-        }, 3000);
+        }, confModMu ? 3000 : QUIZ_CORRECT_DELAY_MS);
       } else {
         inp.style.borderColor = "#ef4444";
         if (fb && card && card.ornek) {
