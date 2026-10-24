@@ -1622,6 +1622,31 @@
     #flashcardView .fc-word { font-size:calc(var(--fs) + 12px); }
     #flashcardView .fc-meaning { font-size:calc(var(--fs) + 5px); }
     @media(max-width:600px) { #flashcardView .fc-wrap { padding:8px; } #flashcardView .fc-top { padding:7px; } #flashcardView .study-box { padding:8px; } #flashcardView .fc-top > span { line-height:1.35; } #flashcardView .fc-controls .fc-btn { min-height:30px; } #flashcardView .type-row { flex-direction:row; } #flashcardView .type-row .type-inp { width:auto; flex:1; } #flashcardView .type-row .fc-btn { width:auto; height:30px; } #flashcardView .fc-scene { height:210px; } }
+    /* Let library rows grow with the page instead of creating a nested vertical scroller. */
+    .main-content.library-layout { display:flex; flex-direction:column; min-height:calc(100dvh - var(--header-height)); padding:12px 16px; overflow:visible; }
+    .library-layout > .page-heading,.library-layout .collection-heading,.library-layout .collection-footer { display:none; }
+    .library-layout .workspace-panel.words-panel { display:flex; flex-direction:column; flex:1; min-height:0; max-width:none; border:0; border-radius:0; background:transparent; }
+    .library-layout .toolbar { flex:none; justify-content:flex-start; padding:0 0 10px; gap:8px; }
+    .library-layout .toolbar > .collection-label { display:flex; align-items:center; gap:8px; margin-right:4px; }
+    .library-layout #collectionTitle { white-space:nowrap; font-size:17px; letter-spacing:-.4px; }
+    .library-layout .search-field { max-width:none; flex:1 1 200px; }
+    .library-layout .collection-tools { display:flex; align-items:center; gap:8px; margin-left:auto; }
+    .library-layout .table-hint { display:none; }
+    .library-layout .overview-grid { flex:none; max-width:none; margin:0 0 10px; }
+    .library-layout .add-bar { flex:none; margin:0 0 10px; }
+    .library-layout #sheet1View { flex:1; min-height:100px; max-height:none; overflow-x:auto; background:white; }
+    .library-layout #sheet1View .sheet-table { min-width:calc(var(--fs) * 74); width:max(100%,calc(var(--fs) * 74)); }
+    .library-only { display:none; }
+    .library-layout .library-only { display:inline-flex; }
+    #overviewToggle[aria-expanded="true"] { background:var(--accent-soft); border-color:#a8b8aa; }
+    @media(max-width:600px) {
+      .main-content.library-layout { padding:10px; }
+      .library-layout .toolbar > .collection-label { flex:1; }
+      .library-layout .search-field { order:1; flex-basis:100%; }
+      .library-layout .filter-actions { order:2; width:auto; flex:1; flex-wrap:wrap; }
+      .library-layout .collection-tools { order:3; }
+      .library-layout #sheet1View .sheet-table { min-width:calc(var(--fs) * 50); width:max(100%,calc(var(--fs) * 50)); }
+    }
     @media(prefers-reduced-motion:reduce) { *,*::before,*::after { transition:none !important; animation:none !important; scroll-behavior:auto !important; } }
   </style>
 </head>
@@ -1706,9 +1731,9 @@
       <div class="sidebar-bottom"><div class="sidebar-note"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 4C9 2 3 8 6 15s15 5 14-11ZM5 21l10-11"/></svg><strong>Keep growing.</strong><p>A few words, a little practice,<br>a world of difference.</p></div><a class="sheet-link" href="https://docs.google.com/spreadsheets/d/1cUYfuFg7OSsWjCtLA7jiB77bGJITR6V0jF2ZUnyrXtc/edit" target="_blank" rel="noopener noreferrer"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg> Open Google Sheets <span>↗</span></a></div>
     </aside>
 
-    <main class="main-content" id="mainContent" tabindex="-1">
+    <main class="main-content library-layout" id="mainContent" tabindex="-1">
       <div class="page-heading"><div><div class="eyebrow">A LITTLE EVERY DAY</div><h1 id="workspaceTitle">My vocabulary</h1><p id="workspaceDescription">A home for the words you’re learning. Make each one stick.</p></div><button class="btn btn-green" id="addWordToggleBtn" onclick="ekleBarAcKapat()"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg> Add word</button></div>
-      <section class="overview-grid" aria-label="Learning overview">
+      <section class="overview-grid" id="learningOverview" aria-label="Learning overview" hidden>
         <button class="overview-card" onclick="sekmeDegistir('sheet1')"><span class="card-top"><span>Total words</span><span class="stat-icon"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20M6.5 3H20v19H6.5A2.5 2.5 0 0 1 4 19.5v-14A2.5 2.5 0 0 1 6.5 3Z"/><path d="M8 7h8M8 11h6"/></svg></span></span><strong id="stTotal">0</strong><span class="stat-caption">In your collection</span></button>
         <button class="overview-card" onclick="sekmeDegistir('pool')"><span class="card-top"><span>Still learning</span><span class="stat-icon amber"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span></span><strong id="stUnk">0</strong><span class="stat-caption">A little more practice</span></button>
         <button class="overview-card" onclick="sekmeDegistir('knownPool')"><span class="card-top"><span>Words mastered</span><span class="stat-icon green"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/></svg></span></span><strong id="stKnw">0</strong><span class="stat-caption">Look how far you’ve come</span></button>
@@ -1716,7 +1741,7 @@
       </section>
       <section class="practice-banner" aria-label="Quick practice"><span class="practice-icon"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="7" y="5" width="14" height="16" rx="2"/><path d="M3 17V5a2 2 0 0 1 2-2h12M11 11h6m-6 4h4"/></svg></span><div><strong>Small sessions. Lasting progress.</strong><p id="practiceDescription">Review your words with a quick flashcard session.</p></div><button class="btn practice-start" onclick="calismaModuAc('flashcards')">Let’s practice <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h16m-6-6 6 6-6 6"/></svg></button></section>
       <section class="workspace-panel words-panel" aria-labelledby="collectionTitle">
-        <div class="collection-heading"><div><h2 id="collectionTitle">Your word collection</h2><span id="resultCount" aria-live="polite"></span></div><div class="collection-tools"><div class="font-ctrl" role="group" aria-label="Table font size" title="Table font size"><button class="font-btn" aria-label="Decrease table font size" onclick="yaziBoyutuDegistir(-1)">A−</button><span class="font-val" id="fontValLabel" aria-live="polite">13px</span><button class="font-btn" aria-label="Increase table font size" onclick="yaziBoyutuDegistir(1)">A+</button></div><span class="table-hint">Click a word to hear it <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 14v-3a9 9 0 0 1 18 0v3"/><rect x="3" y="12" width="4" height="8" rx="2"/><rect x="17" y="12" width="4" height="8" rx="2"/></svg></span></div></div>
+        <div class="collection-heading"><div class="collection-label"><h2 id="collectionTitle">Your word collection</h2><span id="resultCount" aria-live="polite"></span></div><div class="collection-tools"><div class="font-ctrl" role="group" aria-label="Table font size" title="Table font size"><button class="font-btn" aria-label="Decrease table font size" onclick="yaziBoyutuDegistir(-1)">A−</button><span class="font-val" id="fontValLabel" aria-live="polite">13px</span><button class="font-btn" aria-label="Increase table font size" onclick="yaziBoyutuDegistir(1)">A+</button></div><span class="table-hint">Click a word to hear it <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 14v-3a9 9 0 0 1 18 0v3"/><rect x="3" y="12" width="4" height="8" rx="2"/><rect x="17" y="12" width="4" height="8" rx="2"/></svg></span></div></div>
         <div class="toolbar"><label class="search-field"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></svg><input type="search" id="searchInput" class="inp" placeholder="Search words, meanings, or examples…" aria-label="Search vocabulary" oninput="tercihleriKaydet(); tabloyuCiz();"><kbd>/</kbd></label><div class="filter-actions"><select id="levelFilter" class="inp" aria-label="Filter by level" onchange="tercihleriKaydet(); tabloyuCiz();">
         <option value="ALL">All levels</option>
         <option value="A1">A1</option>
@@ -1726,6 +1751,10 @@
         <option value="C1">C1</option>
         <option value="C2">C2</option>
       </select><button class="btn" onclick="clearVocabularyFilters()" title="Clear search and level filter">Clear filters</button><button class="btn sync-button" onclick="verileriYukle(true)" title="Refresh from Google Sheets"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 7v5h-5M4 17v-5h5"/><path d="M6 6a8 8 0 0 1 13 2M5 16a8 8 0 0 0 13 2"/></svg><span>Sync</span></button></div></div>
+      <div id="libraryControls" hidden>
+        <button class="btn library-only" id="overviewToggle" aria-expanded="false" aria-controls="learningOverview" onclick="toggleLearningOverview()">Statistics</button>
+        <button class="btn library-only" id="libraryPractice" onclick="calismaModuAc('flashcards')">Practice</button>
+      </div>
       <div class="add-bar" id="addBar" role="group" aria-label="Add a vocabulary word">
         <select id="inSeviye" aria-label="Word level" class="inp" onchange="tercihleriKaydet()">
           <option value="A2">A2</option>
@@ -5864,13 +5893,51 @@
       updateWorkspaceHeading();
     }
 
+    /** Move existing controls while retaining their original position in other views. */
+    function placeLibraryControl(element, target, isLibrary, before) {
+      if (!element.libraryHome) {
+        element.libraryHome = document.createComment("Library control home");
+        element.before(element.libraryHome);
+      }
+      if (isLibrary) {
+        if (element.parentNode !== target) target.insertBefore(element, before || null);
+      } else {
+        element.libraryHome.before(element);
+      }
+    }
+
+    /** Keep the library focused on rows and restore the other workspace layouts. */
+    function updateLibraryLayout() {
+      var isLibrary = AKTIF_SEKME === "sheet1";
+      var panel = document.querySelector(".workspace-panel");
+      var toolbar = panel.querySelector(".toolbar");
+      document.getElementById("mainContent").classList.toggle("library-layout", isLibrary);
+      placeLibraryControl(document.querySelector(".collection-label"), toolbar, isLibrary, toolbar.firstChild);
+      ["overviewToggle", "libraryPractice", "addWordToggleBtn"].forEach(function(id) {
+        placeLibraryControl(document.getElementById(id), toolbar, isLibrary);
+      });
+      placeLibraryControl(document.querySelector(".collection-tools"), toolbar, isLibrary);
+      placeLibraryControl(document.getElementById("learningOverview"), panel, isLibrary, document.getElementById("libraryControls"));
+      if (!isLibrary) document.getElementById("overviewToggle").setAttribute("aria-expanded", "false");
+      document.getElementById("learningOverview").hidden = isLibrary ? document.getElementById("overviewToggle").getAttribute("aria-expanded") !== "true" : AKTIF_SEKME === "flashcards";
+      document.querySelector(".practice-banner").hidden = isLibrary || AKTIF_SEKME === "flashcards";
+    }
+
+    /** Expand optional library statistics without changing filters or table state. */
+    function toggleLearningOverview() {
+      var toggle = document.getElementById("overviewToggle");
+      var expanded = toggle.getAttribute("aria-expanded") !== "true";
+      toggle.setAttribute("aria-expanded", String(expanded));
+      document.getElementById("learningOverview").hidden = !expanded;
+    }
+
     /** Keep page context and navigation accessible across library and study views. */
     function updateWorkspaceHeading() {
       document.querySelector(".workspace-panel").classList.toggle("words-panel", AKTIF_SEKME === "sheet1");
       document.querySelector(".workspace-panel").classList.toggle("study-panel", AKTIF_SEKME === "flashcards");
       document.querySelector(".main-content").classList.toggle("study-layout", AKTIF_SEKME === "flashcards");
       var views = {
-        sheet1: ["My vocabulary", "A home for the words you’re learning. Make each one stick.", "Your word collection", "Words"],
+        sheet1: ["My vocabulary", "A home for the words you’re learning. Make each one stick.", "My vocabulary", "Words"],
         sheetHavuz: ["Word pool", "Discover your next words and add them to your collection.", "Words to explore", "Word pool"],
         pool: ["Still learning", "Give these words a little more time and practice.", "Words in progress", "Still learning"],
         knownPool: ["Words mastered", "The words you’ve made your own. Revisit them anytime.", "Your mastered words", "Mastered"],
@@ -5883,8 +5950,7 @@
         if (button.classList.contains("active-mode")) button.setAttribute("aria-current", "page");
         else button.removeAttribute("aria-current");
       });
-      document.querySelector(".practice-banner").hidden = AKTIF_SEKME === "flashcards";
-      document.querySelector(".overview-grid").hidden = AKTIF_SEKME === "flashcards";
+      updateLibraryLayout();
     }
 
     /** Show the number of matching rows rather than the unfiltered collection size. */
