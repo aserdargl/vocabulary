@@ -1531,6 +1531,48 @@
     #sheet1View .status-pill { min-width:0; padding:3px 5px; font-size:9px; }
     @media(max-width:820px) { #sheet1View .sheet-table { min-width:840px; } }
     @media(max-width:600px) { #sheet1View .sheet-table { min-width:650px; } #sheet1View .sheet-table .col-example { min-width:0 !important; } #sheet1View .sheet-table td { padding:5px 6px; } }
+    /* Compact summary and high-contrast, user-scalable table typography. */
+    :root { --header-height:52px; --table-ink:#171717; }
+    .main-content { padding-top:16px; }
+    .page-heading { max-width:1080px; margin-bottom:12px; }
+    .page-heading .eyebrow,.page-heading p { display:none; }
+    .page-heading h1 { font-size:23px; letter-spacing:-.6px; }
+    #addWordToggleBtn { height:32px; }
+    .overview-grid { max-width:1080px; gap:9px; margin-bottom:10px; }
+    .overview-card { display:grid; grid-template-columns:minmax(0,1fr) auto; align-items:center; gap:5px 8px; padding:10px 12px; min-height:57px; border-radius:6px; }
+    .overview-card .card-top { grid-column:1; grid-row:1; min-height:0; color:#394a35; font-size:11px; }
+    .overview-card .stat-icon,.overview-card .stat-caption,.progress-card .card-top > .icon { display:none; }
+    .overview-card > strong { grid-column:2; grid-row:1; margin:0; font-size:23px; letter-spacing:-.5px; color:#162a1b; }
+    .progress-card strong > span { font-size:13px; color:#394a35; }
+    .mastery-track { grid-column:1 / -1; margin:0; height:3px; }
+    .practice-banner { max-width:1080px; gap:9px; margin-bottom:12px; padding:7px 12px; border-radius:6px; }
+    .practice-icon { width:27px; height:27px; border-radius:5px; }
+    .practice-icon .icon { width:17px; height:17px; }
+    .practice-banner strong { display:none; }
+    .practice-banner p { margin:0; font-size:11px; color:#394a35; }
+    .practice-start { height:28px; }
+    .collection-heading,.words-panel .collection-heading { padding:9px 12px; }
+    .collection-heading h2 { font-size:13px; }
+    .collection-heading .collection-tools { display:flex; align-items:center; gap:12px; flex-shrink:0; }
+    .collection-tools .font-ctrl { height:30px; border:1px solid #c2ccbc; border-radius:5px; box-shadow:none; }
+    .collection-tools .font-btn { padding:0 10px; color:#171717; font-size:13px; }
+    .collection-tools .font-val { color:#171717; font-size:11px; min-width:42px; }
+    .toolbar,.words-panel .toolbar { padding:0 12px 9px; }
+    table.sheet-table td,
+    table.sheet-table td:is(.col-row,.col-date,.col-lvl,.col-type,.col-word,.col-meaning,.col-example) { color:var(--table-ink); font-size:var(--fs); font-weight:500; }
+    table.sheet-table td.col-word { font-weight:700; }
+    table.sheet-table th,#sheet1View .sheet-table th { color:#172313; font-size:calc(var(--fs) - 1px); font-weight:650; }
+    table.sheet-table .status-pill { color:#252525; font-size:calc(var(--fs) - 2px); font-weight:600; }
+    #sheet1View .sheet-table .status-pill { font-size:calc(var(--fs) - 2px); }
+    #sheet1View .sheet-table th:nth-child(1) { width:calc(var(--fs) * 2.2); }
+    #sheet1View .sheet-table th:nth-child(2) { width:calc(var(--fs) * 6.3); }
+    #sheet1View .sheet-table th:nth-child(3) { width:calc(var(--fs) * 3.3); }
+    #sheet1View .sheet-table th:nth-child(4) { width:calc(var(--fs) * 5.7); }
+    #sheet1View .sheet-table th:nth-child(6) { width:calc(var(--fs) * 8); }
+    #sheet1View .sheet-table th:nth-child(7) { width:calc(var(--fs) * 13); }
+    #sheet1View .sheet-table th:nth-child(9) { width:calc(var(--fs) * 8.6); }
+    @media(min-width:601px) { #sheet1View .sheet-table { width:max(100%,calc(var(--fs) * 74)); } }
+    @media(max-width:600px) { .main-content { padding-top:12px; } .page-heading h1 { font-size:21px; } .page-heading { margin-bottom:10px; } .overview-grid { gap:7px; } .overview-card { min-height:43px; padding:8px 10px; } .overview-card > strong { font-size:21px; } .practice-banner { flex-wrap:nowrap; padding:6px 9px; } .practice-banner > div { flex:1; flex-basis:auto; } .practice-start { margin-left:auto; padding:0 8px; font-size:10px; } .practice-banner p { font-size:10px; } .practice-icon { display:none; } .collection-heading { gap:8px; flex-wrap:wrap; } .collection-heading .collection-tools { margin-left:auto; } #sheet1View .sheet-table { width:calc(var(--fs) * 50); min-width:calc(var(--fs) * 50); } }
     @media(prefers-reduced-motion:reduce) { *,*::before,*::after { transition:none !important; animation:none !important; scroll-behavior:auto !important; } }
   </style>
 </head>
@@ -1547,11 +1589,7 @@
       <span class="language-pair">EN <span>↔</span> TR</span>
       <details class="settings-menu" id="settingsMenu">
         <summary class="icon-button" aria-label="Learning settings" title="Learning settings"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M4 17h16"/><circle cx="9" cy="7" r="3"/><circle cx="16" cy="17" r="3"/></svg></summary>
-        <div class="settings-panel"><strong>Learning settings</strong><p>Pronunciation & text size</p><div class="settings-row"><button class="spk-toggle on" id="audioToggleBtn" onclick="sesAcKapat()" title="Audio ON: Click any word to hear pronunciation (Click to mute)">🔊</button><div class="font-ctrl" title="Decrease / Increase Font Size">
-        <button class="font-btn" onclick="yaziBoyutuDegistir(-1)">A-</button>
-        <span class="font-val" id="fontValLabel">13px</span>
-        <button class="font-btn" onclick="yaziBoyutuDegistir(1)">A+</button>
-      </div></div><p>Mastery goal</p><div class="font-ctrl" style="padding:0 6px;gap:4px;background:#f0fdf4;border-color:#4ade80;" title="Set the minimum number of distinct days or weeks with correct answers required to auto-master a word (Known)">
+        <div class="settings-panel"><strong>Learning settings</strong><p>Pronunciation</p><div class="settings-row"><button class="spk-toggle on" id="audioToggleBtn" onclick="sesAcKapat()" title="Audio ON: Click any word to hear pronunciation (Click to mute)">🔊</button></div><p>Mastery goal</p><div class="font-ctrl" style="padding:0 6px;gap:4px;background:#f0fdf4;border-color:#4ade80;" title="Set the minimum number of distinct days or weeks with correct answers required to auto-master a word (Known)">
         <span style="font-size:11.5px;font-weight:800;color:#166534;">🎯 Goal:</span>
         <input type="number" id="topMasteryCount" aria-label="Mastery goal count" min="1" max="365" value="5" style="width:42px;height:22px;border:1.5px solid #86efac;border-radius:4px;text-align:center;font-size:11.5px;font-weight:800;color:#14532d;outline:none;background:#fff;" onchange="ogrenmeHedefiDegistir(this.value, null)">
         <select id="topMasteryUnit" aria-label="Mastery goal period" style="height:22px;border:none;background:transparent;font-size:11.5px;font-weight:800;color:#14532d;outline:none;cursor:pointer;" onchange="ogrenmeHedefiDegistir(null, this.value)">
@@ -1629,7 +1667,7 @@
       </section>
       <section class="practice-banner" aria-label="Quick practice"><span class="practice-icon"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="7" y="5" width="14" height="16" rx="2"/><path d="M3 17V5a2 2 0 0 1 2-2h12M11 11h6m-6 4h4"/></svg></span><div><strong>Small sessions. Lasting progress.</strong><p id="practiceDescription">Review your words with a quick flashcard session.</p></div><button class="btn practice-start" onclick="calismaModuAc('flashcards')">Let’s practice <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h16m-6-6 6 6-6 6"/></svg></button></section>
       <section class="workspace-panel words-panel" aria-labelledby="collectionTitle">
-        <div class="collection-heading"><div><h2 id="collectionTitle">Your word collection</h2><span id="resultCount" aria-live="polite"></span></div><span class="table-hint">Click a word to hear it <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 14v-3a9 9 0 0 1 18 0v3"/><rect x="3" y="12" width="4" height="8" rx="2"/><rect x="17" y="12" width="4" height="8" rx="2"/></svg></span></div>
+        <div class="collection-heading"><div><h2 id="collectionTitle">Your word collection</h2><span id="resultCount" aria-live="polite"></span></div><div class="collection-tools"><div class="font-ctrl" role="group" aria-label="Table font size" title="Table font size"><button class="font-btn" aria-label="Decrease table font size" onclick="yaziBoyutuDegistir(-1)">A−</button><span class="font-val" id="fontValLabel" aria-live="polite">13px</span><button class="font-btn" aria-label="Increase table font size" onclick="yaziBoyutuDegistir(1)">A+</button></div><span class="table-hint">Click a word to hear it <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 14v-3a9 9 0 0 1 18 0v3"/><rect x="3" y="12" width="4" height="8" rx="2"/><rect x="17" y="12" width="4" height="8" rx="2"/></svg></span></div></div>
         <div class="toolbar"><label class="search-field"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></svg><input type="search" id="searchInput" class="inp" placeholder="Search words, meanings, or examples…" aria-label="Search vocabulary" oninput="tercihleriKaydet(); tabloyuCiz();"><kbd>/</kbd></label><div class="filter-actions"><select id="levelFilter" class="inp" aria-label="Filter by level" onchange="tercihleriKaydet(); tabloyuCiz();">
         <option value="ALL">All levels</option>
         <option value="A1">A1</option>
@@ -2025,7 +2063,7 @@
     }
 
     function yaziBoyutuDegistir(delta) {
-      YAZI_BOYUTU = Math.max(9, Math.min(20, +(YAZI_BOYUTU + delta * 0.5).toFixed(1)));
+      YAZI_BOYUTU = Math.max(9, Math.min(20, +(YAZI_BOYUTU + delta).toFixed(1)));
       yaziBoyutuUygula();
       try { localStorage.setItem("kelime_tablo_fs", YAZI_BOYUTU); } catch (e) {}
       if (typeof tercihleriKaydet === "function") tercihleriKaydet();
