@@ -1573,6 +1573,55 @@
     #sheet1View .sheet-table th:nth-child(9) { width:calc(var(--fs) * 8.6); }
     @media(min-width:601px) { #sheet1View .sheet-table { width:max(100%,calc(var(--fs) * 74)); } }
     @media(max-width:600px) { .main-content { padding-top:12px; } .page-heading h1 { font-size:21px; } .page-heading { margin-bottom:10px; } .overview-grid { gap:7px; } .overview-card { min-height:43px; padding:8px 10px; } .overview-card > strong { font-size:21px; } .practice-banner { flex-wrap:nowrap; padding:6px 9px; } .practice-banner > div { flex:1; flex-basis:auto; } .practice-start { margin-left:auto; padding:0 8px; font-size:10px; } .practice-banner p { font-size:10px; } .practice-icon { display:none; } .collection-heading { gap:8px; flex-wrap:wrap; } .collection-heading .collection-tools { margin-left:auto; } #sheet1View .sheet-table { width:calc(var(--fs) * 50); min-width:calc(var(--fs) * 50); } }
+    /* Dense study views. Important text rules also normalize legacy inline feedback styles. */
+    .workspace-panel.study-panel { max-width:920px; border-radius:7px; }
+    .study-layout .page-heading { max-width:920px; }
+    .study-layout #workspaceTitle,.study-panel .collection-heading h2 { font-weight:400; }
+    .study-panel .collection-heading *,.study-panel .toolbar * { color:#171717; font-weight:400; }
+    #flashcardView,#flashcardView * { color:#171717 !important; font-weight:400 !important; }
+    #flashcardView .fc-wrap { max-width:none; padding:10px 12px; margin:0; }
+    #flashcardView .fc-top { padding:7px 9px; gap:6px; margin-bottom:7px; border-radius:5px; font-size:12px; line-height:1.35; }
+    #flashcardView .fc-top > div { gap:5px !important; }
+    #flashcardView .fc-progress-track { height:3px; margin-bottom:8px; }
+    #flashcardView .study-box { padding:10px; border-width:1px; border-radius:6px; box-shadow:none; }
+    #flashcardView .fc-badges,#flashcardView .fc-badge-group { gap:5px; }
+    #flashcardView .fc-lvl-badge,#flashcardView .fc-type-badge,#flashcardView .srs-badge { padding:2px 6px; font-size:11px; border-radius:4px; }
+    #flashcardView .fc-lvl-badge { background:#e5edde !important; border:1px solid #cbd9c0; }
+    #flashcardView .study-question { text-align:center; padding:8px 4px; }
+    #flashcardView .study-prompt { font-size:calc(var(--fs) + 6px) !important; line-height:1.35; }
+    #flashcardView .choice-grid { gap:6px; margin-top:8px; }
+    #flashcardView .choice-btn { min-height:32px; padding:6px 9px; border-radius:5px; font-size:var(--fs); line-height:1.35; box-shadow:none; }
+    #flashcardView .choice-btn:hover { transform:none; box-shadow:none; }
+    #flashcardView .choice-btn.correct { color:#171717 !important; box-shadow:none !important; }
+    #flashcardView .choice-btn.wrong { color:#171717 !important; }
+    #flashcardView .type-row { gap:6px; margin-top:8px; }
+    #flashcardView .type-inp { min-width:0; height:30px; padding:0 9px; border-width:1px; border-radius:5px; font-size:var(--fs); }
+    #flashcardView .type-inp::placeholder { color:#505050; opacity:1; }
+    #flashcardView .fc-btn,#flashcardView .btn { height:30px; min-height:28px; padding:0 9px; border-radius:5px; font-size:12px; box-shadow:none; }
+    #flashcardView .fc-btn-known,#flashcardView .btn-green,#flashcardView .btn.active-mode { background:#e3efdc; border-color:#aabd9b; }
+    #flashcardView .fc-btn-known:hover,#flashcardView .btn-green:hover { background:#d6e6cc; }
+    #flashcardView .listen-play-button { height:32px; padding:0 12px; border-radius:5px; font-size:13px; }
+    #flashcardView #listenRevealWord { margin-top:6px !important; font-size:12px !important; }
+    #flashcardView .fc-controls { gap:6px; margin-top:8px; }
+    #flashcardView .cloze-sentence { margin:8px 0; font-size:calc(var(--fs) + 3px); line-height:1.4; }
+    #flashcardView .cloze-hint { margin-bottom:7px; padding:6px 8px; font-size:var(--fs); border-radius:5px; }
+    #flashcardView .twin-cluster-banner { margin-top:7px; padding:6px 8px; gap:5px; border-width:1px; border-radius:5px; }
+    #flashcardView .twin-pill { padding:3px 7px; border-width:1px; border-radius:5px; box-shadow:none; }
+    #flashcardView .twin-compare-box { margin-top:8px; padding:7px 9px; border-width:1px; border-radius:5px; }
+    #flashcardView .twin-compare-title { margin-bottom:6px; letter-spacing:0; }
+    #flashcardView .twin-compare-grid { gap:6px; }
+    #flashcardView .twin-compare-item { padding:6px 8px; border-width:1px; border-radius:4px; line-height:1.35; }
+    #flashcardView .fc-example { padding:7px 9px; margin-top:8px !important; font-size:var(--fs); line-height:1.4; border-width:1px !important; border-radius:5px; }
+    #flashcardView .fc-below-card { padding:9px; margin-top:8px; border-width:1px; border-radius:5px; }
+    #flashcardView .match-grid { gap:7px; margin-top:7px; }
+    #flashcardView .match-col { gap:5px; }
+    #flashcardView .match-item { padding:6px 8px; min-height:32px; border-width:1px; border-radius:5px; font-size:var(--fs); line-height:1.35; box-shadow:none; }
+    #flashcardView .match-item.matched { opacity:1; }
+    #flashcardView .fc-scene { height:220px; }
+    #flashcardView .fc-face { padding:10px 12px; border-radius:7px; box-shadow:none; }
+    #flashcardView .fc-word { font-size:calc(var(--fs) + 12px); }
+    #flashcardView .fc-meaning { font-size:calc(var(--fs) + 5px); }
+    @media(max-width:600px) { #flashcardView .fc-wrap { padding:8px; } #flashcardView .fc-top { padding:7px; } #flashcardView .study-box { padding:8px; } #flashcardView .fc-top > span { line-height:1.35; } #flashcardView .fc-controls .fc-btn { min-height:30px; } #flashcardView .type-row { flex-direction:row; } #flashcardView .type-row .type-inp { width:auto; flex:1; } #flashcardView .type-row .fc-btn { width:auto; height:30px; } #flashcardView .fc-scene { height:210px; } }
     @media(prefers-reduced-motion:reduce) { *,*::before,*::after { transition:none !important; animation:none !important; scroll-behavior:auto !important; } }
   </style>
 </head>
@@ -4374,9 +4423,9 @@
             '</div>' +
             '<span style="font-size:11px;color:#64748b;font-weight:600;">' + (enTr ? 'Select or type the Turkish meaning' : 'Find or type the English word') + '</span>' +
           '</div>' +
-          '<div style="text-align:center;padding:12px 6px;">' +
+          '<div class="study-question">' +
             '<div style="font-size:11px;text-transform:uppercase;letter-spacing:0.6px;color:#64748b;margin-bottom:6px;font-weight:700;">' + (enTr ? 'English Word' : 'Turkish Meaning') + '</div>' +
-            '<div style="font-size:calc(var(--fs) + 11px);font-weight:800;color:' + (enTr ? '#0f172a' : '#135c37') + ';">' + escHtml(enTr ? card.kelime : card.anlam) + '</div>' +
+            '<div class="study-prompt" style="font-size:calc(var(--fs) + 11px);font-weight:800;color:' + (enTr ? '#0f172a' : '#135c37') + ';">' + escHtml(enTr ? card.kelime : card.anlam) + '</div>' +
           '</div>' +
           '<div class="choice-grid">' + btnHtml.join("") + '</div>' +
           '<div class="type-row">' +
@@ -4623,7 +4672,7 @@
             '<div style="font-size:11px;text-transform:uppercase;letter-spacing:0.6px;color:#9a3412;margin-bottom:5px;font-weight:800;">' +
               (enTr ? 'What is the correct meaning of this English word?' : 'Which of these similar English words matches this meaning?') +
             '</div>' +
-            '<div style="font-size:calc(var(--fs) + 11px);font-weight:800;color:' + (enTr ? '#0f172a' : '#135c37') + ';">' +
+            '<div class="study-prompt" style="font-size:calc(var(--fs) + 11px);font-weight:800;color:' + (enTr ? '#0f172a' : '#135c37') + ';">' +
               escHtml(enTr ? card.kelime : card.anlam) +
             '</div>' +
             (!enTr && gizliCumle
@@ -4683,8 +4732,8 @@
             '</div>' +
             '<span style="font-size:11px;color:#64748b;font-weight:600;">Audio-First Ear Training</span>' +
           '</div>' +
-          '<div style="text-align:center;padding:12px 0;">' +
-            '<button class="fc-btn fc-btn-known" style="font-size:16px;padding:12px 26px;border-radius:999px;" onclick="kelimeOku(\'' + escJs(card.kelime) + '\')">🔊 Click to Listen Again</button>' +
+          '<div class="study-question">' +
+            '<button class="fc-btn fc-btn-known listen-play-button" onclick="kelimeOku(\'' + escJs(card.kelime) + '\')">🔊 Click to Listen Again</button>' +
             '<div id="listenRevealWord" style="margin-top:8px;font-size:13px;color:#64748b;font-weight:600;">Listen to the pronunciation and select its meaning or spell it below:</div>' +
           '</div>' +
           '<div class="choice-grid">' + btnHtml.join("") + '</div>' +
@@ -5818,6 +5867,8 @@
     /** Keep page context and navigation accessible across library and study views. */
     function updateWorkspaceHeading() {
       document.querySelector(".workspace-panel").classList.toggle("words-panel", AKTIF_SEKME === "sheet1");
+      document.querySelector(".workspace-panel").classList.toggle("study-panel", AKTIF_SEKME === "flashcards");
+      document.querySelector(".main-content").classList.toggle("study-layout", AKTIF_SEKME === "flashcards");
       var views = {
         sheet1: ["My vocabulary", "A home for the words you’re learning. Make each one stick.", "Your word collection", "Words"],
         sheetHavuz: ["Word pool", "Discover your next words and add them to your collection.", "Words to explore", "Word pool"],
