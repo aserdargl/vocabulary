@@ -1542,7 +1542,7 @@
     .overview-card { display:grid; grid-template-columns:minmax(0,1fr) auto; align-items:center; gap:5px 8px; padding:10px 12px; min-height:57px; border-radius:6px; }
     .overview-card .card-top { grid-column:1; grid-row:1; min-height:0; color:#394a35; font-size:11px; }
     .overview-card .stat-icon,.overview-card .stat-caption,.progress-card .card-top > .icon { display:none; }
-    .overview-card > strong { grid-column:2; grid-row:1; margin:0; font-size:23px; letter-spacing:-.5px; color:#162a1b; }
+    .overview-card > strong { grid-column:2; grid-row:1; margin:0; font-size:23px; font-weight:400; letter-spacing:-.5px; color:#162a1b; }
     .progress-card strong > span { font-size:13px; color:#394a35; }
     .mastery-track { grid-column:1 / -1; margin:0; height:3px; }
     .practice-banner { max-width:1080px; gap:9px; margin-bottom:12px; padding:7px 12px; border-radius:6px; }
@@ -1559,10 +1559,10 @@
     .collection-tools .font-val { color:#171717; font-size:11px; min-width:42px; }
     .toolbar,.words-panel .toolbar { padding:0 12px 9px; }
     table.sheet-table td,
-    table.sheet-table td:is(.col-row,.col-date,.col-lvl,.col-type,.col-word,.col-meaning,.col-example) { color:var(--table-ink); font-size:var(--fs); font-weight:500; }
-    table.sheet-table td.col-word { font-weight:700; }
-    table.sheet-table th,#sheet1View .sheet-table th { color:#172313; font-size:calc(var(--fs) - 1px); font-weight:650; }
-    table.sheet-table .status-pill { color:#252525; font-size:calc(var(--fs) - 2px); font-weight:600; }
+    table.sheet-table td:is(.col-row,.col-date,.col-lvl,.col-type,.col-word,.col-meaning,.col-example) { color:var(--table-ink); font-size:var(--fs); font-weight:400; }
+    table.sheet-table td.col-word { font-weight:400; }
+    table.sheet-table th,#sheet1View .sheet-table th { color:#172313; font-size:calc(var(--fs) - 1px); font-weight:400; }
+    table.sheet-table .status-pill { color:#252525; font-size:calc(var(--fs) - 2px); font-weight:400; }
     #sheet1View .sheet-table .status-pill { font-size:calc(var(--fs) - 2px); }
     #sheet1View .sheet-table th:nth-child(1) { width:calc(var(--fs) * 2.2); }
     #sheet1View .sheet-table th:nth-child(2) { width:calc(var(--fs) * 6.3); }
