@@ -1743,6 +1743,23 @@
       #statsView .stats-actions > :is(.btn,.stats-mastery) { width:100%; }
     }
     @media(prefers-reduced-motion:reduce) { *,*::before,*::after { transition:none !important; animation:none !important; scroll-behavior:auto !important; } }
+
+    /* Keep per-word progress compact beside the current exercise. */
+    #flashcardView.word-stats-layout .word-study-content { display:flex; align-items:flex-start; gap:12px; }
+    #flashcardView.word-stats-layout .fc-wrap { flex:1; min-width:0; }
+    .word-study-stats { flex:0 0 190px; margin:10px 12px 10px 0; padding:12px; border:1px solid #d9dfd3; border-radius:6px; background:#f7f9f4; font-size:12px; line-height:1.4; }
+    .word-study-stats[hidden] { display:none; }
+    .word-study-stats h3 { font-size:13px; margin-bottom:10px; font-weight:500; }
+    .word-study-stats dl { display:grid; gap:10px; }
+    .word-study-stats dt { color:#596451; font-size:11px; }
+    .word-study-stats dd { margin:2px 0 0; font-size:14px; font-variant-numeric:tabular-nums; }
+    .word-study-stats p { margin-top:10px; font-size:11px; color:#596451; }
+    @media(max-width:760px) {
+      #flashcardView.word-stats-layout .word-study-content { flex-direction:column; gap:0; }
+      #flashcardView.word-stats-layout .fc-wrap { width:100%; }
+      .word-study-stats { flex:auto; width:calc(100% - 16px); margin:0 8px 8px; }
+      .word-study-stats dl { grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; }
+    }
   </style>
 </head>
 <body>
@@ -2074,7 +2091,10 @@
       </div>
 
       <div id="flashcardView" style="display:none;">
+        <div class="word-study-content">
         <div class="fc-wrap" id="fcContainer"></div>
+        <aside id="wordStudyStats" class="word-study-stats" aria-label="Current word statistics" aria-live="polite" hidden></aside>
+        </div>
       </div>
         <div class="collection-footer"><span>ENGLISH <span class="footer-dot">•</span> TURKISH</span><span>One word at a time.</span></div>
       </section>
@@ -2804,6 +2824,49 @@
       return kelimeIlerlemeSayisiAl(st);
     }
 
+    var MASTERED_REVIEW_DAYS = [7, 14, 30];
+    var REVIEW_LEARNING_BATCH = 3;
+    var REVIEW_DAY_MS = 24 * 60 * 60 * 1000;
+
+    /** Keep advanced mastered words in a recurring retention schedule. */
+    function isRetentionWord(word) {
+      return !!word && ["B2", "C1", "C2"].indexOf((word.seviye || "").trim().toUpperCase()) !== -1;
+    }
+
+    function scheduleMasteredReview(entry, now, advance) {
+      var index = MASTERED_REVIEW_DAYS.indexOf(entry.reviewIntervalDays);
+      if (advance) index = Math.min(index + 1, MASTERED_REVIEW_DAYS.length - 1);
+      else index = 0;
+      entry.reviewIntervalDays = MASTERED_REVIEW_DAYS[Math.max(0, index)];
+      entry.nextReviewAt = now + entry.reviewIntervalDays * REVIEW_DAY_MS;
+    }
+
+    function isMasteredReviewDue(word, stats, now) {
+      if (!isRetentionWord(word) || word.durum !== "biliyorum") return false;
+      var entry = stats[(word.kelime || "").trim().toLowerCase()];
+      return !entry || !Number(entry.nextReviewAt) || Number(entry.nextReviewAt) <= now;
+    }
+
+    /** Mix overdue mastered words with learning words, oldest reviews first. */
+    function interleaveMasteredReviews(deck) {
+      var stats = istatistikMapAl();
+      var reviews = deck.filter(function(w) { return w.durum === "biliyorum"; });
+      var learning = deck.filter(function(w) { return w.durum !== "biliyorum"; });
+      reviews.sort(function(a, b) {
+        var aStats = stats[a.kelime.trim().toLowerCase()] || {};
+        var bStats = stats[b.kelime.trim().toLowerCase()] || {};
+        return (Number(aStats.nextReviewAt) || 0) - (Number(bStats.nextReviewAt) || 0);
+      });
+      var result = [];
+      var cursor = 0;
+      reviews.forEach(function(word) {
+        result.push(word);
+        result = result.concat(learning.slice(cursor, cursor + REVIEW_LEARNING_BATCH));
+        cursor += REVIEW_LEARNING_BATCH;
+      });
+      return result.concat(learning.slice(cursor));
+    }
+
     function kelimeDortHaftaUstalaMi(w) {
       if (!w || !w.kelime) return false;
       var hedefSayi = hedefSayiAl();
@@ -2833,6 +2896,7 @@
         if (ilerleme >= hedefSayi) {
           if (st && !st.mastered4w) {
             st.mastered4w = true;
+            if (isRetentionWord(w) && w.durum !== "biliyorum") scheduleMasteredReview(st, Date.now(), false);
             if (w.durum !== "biliyorum") st.autoMasteredByStreak = true;
             mapDegisti = true;
           }
@@ -3024,6 +3088,7 @@
           break;
         }
       }
+      var wasMastered = hedef && hedef.durum === "biliyorum";
       var map = istatistikMapAl();
       var kayit = map[key] || {
         kelime: hedef ? hedef.kelime : temiz,
@@ -3045,6 +3110,7 @@
       var pad = function(n) { return n < 10 ? "0" + n : "" + n; };
       var bugunIso = simdi.getFullYear() + "-" + pad(simdi.getMonth() + 1) + "-" + pad(simdi.getDate());
       var buHafta = haftaAnahtariAl(simdi);
+      if (!kayit.firstPracticedOn && !(Number(kayit.correct) || Number(kayit.mistakes))) kayit.firstPracticedOn = bugunIso;
 
       if (dogruMu) {
         kayit.correct = (Number(kayit.correct) || 0) + 1;
@@ -3080,19 +3146,36 @@
       var hedefSayi = hedefSayiAl();
       var birimEtiket = hedefBirimEtiketAl();
       var ilerlemeSayisi = kelimeIlerlemeSayisiAl(kayit);
+      var statusChange = "";
+      if (dogruMu && wasMastered && isRetentionWord(hedef)) {
+        if (isMasteredReviewDue(hedef, map, simdi.getTime())) {
+          scheduleMasteredReview(kayit, simdi.getTime(), true);
+        }
+      }
       if (dogruMu && ilerlemeSayisi >= hedefSayi) {
         kayit.mastered4w = true;
         if (hedef && hedef.durum !== "biliyorum") {
           kayit.autoMasteredByStreak = true;
-          kutucukDegisti(hedef.row, "biliyorum", true, false);
+          statusChange = "biliyorum";
+          if (isRetentionWord(hedef)) scheduleMasteredReview(kayit, simdi.getTime(), false);
           bildirimGoster("🏆 Mastered (" + ilerlemeSayisi + "/" + hedefSayi + " " + birimEtiket + "): " + kayit.kelime + " → Moved to Known!");
         }
       } else {
         kayit.mastered4w = false;
       }
 
+      if (!dogruMu && isRetentionWord(hedef)) {
+        kayit.manualKnown = false;
+        kayit.autoMasteredByStreak = false;
+        delete kayit.nextReviewAt;
+        delete kayit.reviewIntervalDays;
+        if (wasMastered) statusChange = "bilmiyorum";
+      }
       map[key] = kayit;
       istatistikMapKaydet(map);
+      if (statusChange) kutucukDegisti(hedef.row, statusChange, true, false, true);
+      var studyPanel = document.getElementById("wordStudyStats");
+      if (studyPanel && studyPanel.dataset && studyPanel.dataset.wordKey === key) updateWordStudyStats(hedef);
       // Instantaneous UI update (0ms)
       istatistikTablosuCiz();
 
@@ -3320,12 +3403,14 @@
     }
 
     function srsEtiketGetir(kelime) {
+      var card = kelimeKartiniBul(-1, kelime);
+      if (card && card.durum === "biliyorum" && isRetentionWord(card)) return "Retention review";
       return srsGetir(kelime) + " / " + hedefSayiAl() + " " + hedefBirimEtiketAl();
     }
 
     function srsArtir(card) {
       if (!card || !card.kelime) return false;
-      var mezun = kelimeDortHaftaUstalaMi(card);
+      var mezun = card.durum === "biliyorum" || kelimeDortHaftaUstalaMi(card);
       if (!mezun) {
         bildirimGoster("📅 Progress (" + srsEtiketGetir(card.kelime) + "): " + card.kelime);
       }
@@ -3542,6 +3627,8 @@
         setTimeout(function() {
           var poolList = aktifHavuzuGetir();
           var deck = fcDestesiniGetir(poolList);
+      var currentIndex = deck.length ? ((FC_INDEX % deck.length) + deck.length) % deck.length : 0;
+      updateWordStudyStats(deck[currentIndex]);
           if (deck.length) {
             var card = deck[FC_INDEX % deck.length];
             if (card) kelimeOku(card.kelime);
@@ -3553,9 +3640,11 @@
     function aktifHavuzuGetir() {
       var q = (document.getElementById("searchInput").value || "").toLowerCase().trim();
       var lvl = document.getElementById("levelFilter").value;
+      var stats = istatistikMapAl();
+      var now = Date.now();
       return TUM_KELIMELER.filter(function(w){
-        if (w.durum !== "bilmiyorum") return false;
-        if (kelimeDortHaftaUstalaMi(w)) return false;
+        var learning = w.durum === "bilmiyorum" && !kelimeDortHaftaUstalaMi(w);
+        if (!learning && !isMasteredReviewDue(w, stats, now)) return false;
         if (lvl !== "ALL" && w.seviye !== lvl) return false;
         if (q && (w.kelime + " " + w.anlam + " " + w.ornek).toLowerCase().indexOf(q) === -1) return false;
         return true;
@@ -3563,10 +3652,12 @@
     }
 
     function fcDestesiniGetir(poolList) {
+      var stats = istatistikMapAl();
+      var now = Date.now();
       var sadeceBilinmeyenler = (poolList || []).filter(function(w) {
-        return w && w.durum === "bilmiyorum" && !kelimeDortHaftaUstalaMi(w);
+        return w && ((w.durum === "bilmiyorum" && !kelimeDortHaftaUstalaMi(w)) || isMasteredReviewDue(w, stats, now));
       });
-      if (!FC_SHUFFLED_KEYS || !FC_SHUFFLED_KEYS.length) return sadeceBilinmeyenler;
+      if (!FC_SHUFFLED_KEYS || !FC_SHUFFLED_KEYS.length) return interleaveMasteredReviews(sadeceBilinmeyenler);
       var byKey = {};
       for (var i = 0; i < sadeceBilinmeyenler.length; i++) {
         byKey[sadeceBilinmeyenler[i].kelime.toLowerCase()] = sadeceBilinmeyenler[i];
@@ -3584,7 +3675,7 @@
         var km = sadeceBilinmeyenler[m].kelime.toLowerCase();
         if (!used[km]) result.push(sadeceBilinmeyenler[m]);
       }
-      return result;
+      return interleaveMasteredReviews(result);
     }
 
     function modCubuguHtml() {
@@ -4148,13 +4239,13 @@
       }
 
       var havuzAdaylar = (tumHavuz || []).filter(function(w) {
-        if (!w || w.durum !== "bilmiyorum") return false;
-        if (kelimeDortHaftaUstalaMi(w)) return false;
+        if (!w || (w.durum !== "bilmiyorum" && dogruCard.durum !== "biliyorum")) return false;
+        if (dogruCard.durum !== "biliyorum" && kelimeDortHaftaUstalaMi(w)) return false;
         return (w.kelime || "").toLowerCase().trim() !== dogruKey;
       });
       var tumBilinmeyenAdaylar = TUM_KELIMELER.filter(function(w) {
-        if (!w || w.durum !== "bilmiyorum") return false;
-        if (kelimeDortHaftaUstalaMi(w)) return false;
+        if (!w || (w.durum !== "bilmiyorum" && dogruCard.durum !== "biliyorum")) return false;
+        if (dogruCard.durum !== "biliyorum" && kelimeDortHaftaUstalaMi(w)) return false;
         return (w.kelime || "").toLowerCase().trim() !== dogruKey;
       });
 
@@ -4219,6 +4310,66 @@
         return guvenli.replace(rgx, '<span class="cloze-blank" id="clozeBlankEl">_______</span>');
       }
       return guvenli + ' (<span class="cloze-blank" id="clozeBlankEl">_______</span>)';
+    }
+
+
+    /** Return calendar-day numbers without daylight-saving time offsets. */
+    function studyCalendarDay(date) {
+      return Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()) / REVIEW_DAY_MS;
+    }
+
+    /** Calculate progress using the same distinct-day/week goal as mastery. */
+    function wordStudySummary(card, entry, now) {
+      var stats = JSON.parse(JSON.stringify(entry || {}));
+      var mistakes = Math.max(0, Number(stats.mistakes) || 0);
+      var correct = Math.max(0, Number(stats.correct) || 0);
+      var total = mistakes + correct;
+      var progress = kelimeIlerlemeSayisiAl(stats);
+      var remaining = Math.max(0, hedefSayiAl() - progress);
+      var mastered = card.durum === "biliyorum";
+      var today = studyCalendarDay(now);
+      var exactStart = stats.firstPracticedOn;
+      var candidates = [exactStart, stats.cleanSince, stats.lastMistakeDate].concat(stats.cleanDays || []);
+      var lastDate = (stats.lastPractice || "").match(/\d{4}-\d{2}-\d{2}/);
+      if (lastDate) candidates.push(lastDate[0]);
+      var days = candidates.filter(function(value) { return /^\d{4}-\d{2}-\d{2}$/.test(value || ""); })
+        .map(function(value) { return Date.parse(value) / REVIEW_DAY_MS; })
+        .filter(function(value) { return Number.isFinite(value) && value <= today; });
+      var elapsed = days.length ? today - Math.min.apply(null, days) + 1 : 0;
+      var remainingDays = remaining;
+      if (hedefBirimAl() === "hafta" && remaining) {
+        var monday = today - ((now.getDay() + 6) % 7);
+        var weekUsed = stats.cleanWeeks.indexOf(haftaAnahtariAl(now)) !== -1 || stats.lastMistakeWeek === haftaAnahtariAl(now);
+        remainingDays = Math.max(0, monday + (remaining - (weekUsed ? 0 : 1)) * 7 - today);
+      }
+      return { elapsed: elapsed, exactStart: !!exactStart, remainingDays: mastered ? 0 : remainingDays,
+        mastered: mastered, progress: progress, mistakes: mistakes, correct: correct, total: total,
+        errorRate: total ? Math.round(mistakes / total * 1000) / 10 : null };
+    }
+
+    /** Refresh only the sidebar so answer feedback and card state remain intact. */
+    function updateWordStudyStats(card) {
+      var panel = document.getElementById("wordStudyStats");
+      if (!panel || !panel.dataset) return;
+      if (!card || (AKTIF_MOD !== "quiz" && AKTIF_MOD !== "flashcards")) {
+        panel.hidden = true;
+        document.getElementById("flashcardView").classList.remove("word-stats-layout");
+        return;
+      }
+      var key = (card.kelime || "").trim().toLowerCase();
+      var stats = wordStudySummary(card, istatistikMapAl()[key], new Date());
+      var metric = function(label, value) { return '<div><dt>' + label + '</dt><dd>' + value + '</dd></div>'; };
+      panel.hidden = false;
+      panel.dataset.wordKey = key;
+      document.getElementById("flashcardView").classList.add("word-stats-layout");
+      panel.innerHTML = '<h3>Word progress</h3><dl>' +
+        metric('Learning for', stats.elapsed ? (stats.exactStart ? '' : 'At least ') + stats.elapsed + ' days' : (stats.total ? 'Not recorded' : 'Not started')) +
+        metric('Until mastered', stats.mastered ? 'Mastered' : stats.remainingDays + (hedefBirimAl() === 'hafta' ? ' days minimum' : ' practice days')) +
+        metric('Error rate', stats.errorRate === null ? 'No answers yet' : stats.errorRate + '%') +
+        metric('Answers', stats.correct + ' correct / ' + stats.mistakes + ' wrong') +
+        metric('Goal progress', Math.min(stats.progress, hedefSayiAl()) + ' / ' + hedefSayiAl() + (hedefBirimAl() === 'hafta' ? ' weeks' : ' days')) +
+        '</dl><p>Mastery needs correct answers on distinct, mistake-free ' + (hedefBirimAl() === 'hafta' ? 'weeks' : 'days') +
+        '. Mistakes reset progress.' + (!stats.exactStart && stats.elapsed ? ' Duration uses the earliest available record.' : '') + '</p>';
     }
 
     function fcCiz(poolList) {
@@ -5183,10 +5334,15 @@
 
     function fcBiliyorumIsaretle(row) {
       var card = TUM_KELIMELER.filter(function(w){ return w.row === row; })[0];
+      var wasMastered = card && card.durum === "biliyorum";
       if (card) {
         alistirmaSonucuKaydet(card.kelime, true, "Flashcards");
       }
       FC_FLIPPED = false;
+      if (wasMastered) {
+        tabloyuCiz();
+        return;
+      }
       kutucukDegisti(row, "biliyorum", true);
     }
 
@@ -5355,7 +5511,7 @@
       var kpBody = document.getElementById("knownPoolBody");
       if (kpBody) kpBody.innerHTML = kpRows.join("") || '<tr><td colspan="7" class="center" style="padding:14px;">No words in known pool.</td></tr>';
 
-      fcCiz(poolList);
+      fcCiz(aktifHavuzuGetir());
       istatistikTablosuCiz();
       havuzTablosuCiz();
       updateVisibleResultCount();
@@ -5882,7 +6038,7 @@
       kutucukDegisti(row, tip, true, true);
     }
 
-    function kutucukDegisti(row, tip, isChecked, manuelMi) {
+    function kutucukDegisti(row, tip, isChecked, manuelMi, deferRender) {
       var hedef = null;
       for (var i = 0; i < TUM_KELIMELER.length; i++) {
         if (TUM_KELIMELER[i].row === row) { hedef = TUM_KELIMELER[i]; break; }
@@ -5908,19 +6064,28 @@
           stKayit.word = hedef.kelime;
           stKayit.manualKnown = true;
           stKayit.autoMasteredByStreak = false;
+          if (isRetentionWord(hedef)) scheduleMasteredReview(stKayit, Date.now(), false);
           ist[key] = stKayit;
           istatistikMapKaydet(ist);
         } else if (yeniDurum === "bilmiyorum" && ist[key]) {
           var stKayit2 = istatistikKaydiNormalizeEt(ist[key]);
           stKayit2.manualKnown = false;
           stKayit2.autoMasteredByStreak = false;
+          if (isRetentionWord(hedef)) {
+            stKayit2.cleanDays = [];
+            stKayit2.cleanWeeks = [];
+            stKayit2.cleanSince = "";
+            stKayit2.mastered4w = false;
+            delete stKayit2.nextReviewAt;
+            delete stKayit2.reviewIntervalDays;
+          }
           ist[key] = stKayit2;
           istatistikMapKaydet(ist);
         }
       }
       kisiselDurumKaydet(hedef.kelime, yeniDurum);
       kisiselKnownSiraGuncelle(hedef.kelime, yeniDurum);
-      tabloyuCiz();
+      if (!deferRender) tabloyuCiz();
       var durumEtiket = yeniDurum === "biliyorum" ? "✓ Known (Moved to bottom)" : (yeniDurum === "bilmiyorum" ? "✕ Unknown" : "○ Pending");
       bildirimGoster(durumEtiket + ": " + hedef.kelime);
 
@@ -6072,7 +6237,7 @@
         sheet1: ["My vocabulary", "A home for the words you’re learning. Make each one stick.", "My vocabulary", "Words"],
         sheetHavuz: ["Word pool", "Discover your next words and add them to your collection.", "Words to explore", "Word pool"],
         pool: ["Still learning", "Give these words a little more time and practice.", "Words in progress", "Still learning"],
-        knownPool: ["Words mastered", "The words you’ve made your own. Revisit them anytime.", "Your mastered words", "Mastered"],
+        knownPool: ["Words mastered", "B2, C1 and C2 words return for spaced reviews. One mistake moves them back to Still learning.", "Your mastered words", "Mastered"],
         stats: ["Your statistics", "Follow your practice, accuracy, and progress over time.", "Practice insights", "Statistics"]
       };
       var modes = {flashcards:"Flashcards", cloze:"Fill in the blank", quiz:"Quiz", confusables:"Similar words", listen:"Listening", match:"Word match"};
