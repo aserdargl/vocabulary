@@ -1691,6 +1691,57 @@
       #sheetHavuzView .pool-random { width:100%; }
       #sheetHavuzView #havuzRandomTransferBtn { flex:1; }
     }
+    /* Compact collection and statistics tables share the Word Pool card treatment. */
+    .modern-table-view { padding:16px; min-width:0; overflow:visible; }
+    .modern-table-view .pool-layout { grid-template-columns:minmax(0,180px) minmax(0,1fr); gap:16px; }
+    .modern-table-view .pool-card { min-width:0; border:1px solid var(--line); border-radius:10px; background:white; overflow:hidden; }
+    .modern-table-view .pool-card h3 { padding:12px 14px; color:var(--ink); font-size:13px; font-weight:600; }
+    .modern-table-view .pool-table-scroll { max-width:100%; overflow-x:auto; scrollbar-width:thin; }
+    .modern-table-view .pool-table-scroll:focus-visible { outline:2px solid var(--accent); outline-offset:-2px; }
+    .modern-table-view table.sheet-table { table-layout:fixed; }
+    .modern-table-view table.sheet-table th { padding:9px 10px; font-size:11px; letter-spacing:0; text-transform:none; white-space:normal; overflow-wrap:anywhere; }
+    .modern-table-view table.sheet-table td { padding:8px 10px; line-height:1.4; overflow-wrap:anywhere; }
+    .modern-table-view .level-summary { min-width:150px; }
+    .modern-table-view .level-summary th:first-child { width:40%; }
+    .modern-table-view .level-summary td:first-child { color:var(--accent); }
+    .modern-table-view .collection-words { min-width:calc(var(--fs) * 68); }
+    .modern-table-view .collection-words th:nth-child(1) { width:calc(var(--fs) * 4.5); }
+    .modern-table-view .collection-words th:nth-child(2) { width:calc(var(--fs) * 6); }
+    .modern-table-view .collection-words th:nth-child(3) { width:calc(var(--fs) * 5); }
+    .modern-table-view .collection-words th:nth-child(4) { width:calc(var(--fs) * 12); }
+    .modern-table-view .collection-words th:nth-child(5) { width:calc(var(--fs) * 15); }
+    .modern-table-view .collection-words th:nth-child(7) { width:calc(var(--fs) * 8); }
+    .modern-table-view .collection-words :is(.col-word,.col-type,.col-date) { white-space:normal; }
+    .modern-table-view .collection-words :is(.col-meaning,.col-example) { min-width:0 !important; max-width:none; }
+    .modern-table-view .collection-words td.col-mark { min-width:0; padding:5px 8px; }
+    .modern-table-view .mark-split { margin:auto; }
+    #statsView.modern-table-view { overflow:visible; }
+    #statsView .stats-kpi-bar { padding:0 0 14px; gap:12px; max-width:none; background:transparent; }
+    #statsView .stats-kpis { gap:8px; }
+    #statsView .stats-actions { display:flex; align-items:center; flex-wrap:wrap; gap:8px; }
+    #statsView .stats-actions :is(.inp,.btn) { height:auto; min-height:32px; }
+    #statsView .stats-mastery { display:flex; align-items:center; flex-wrap:wrap; gap:6px; padding:5px; border:1px solid var(--line); border-radius:8px; background:#f6f8f4; }
+    #statsView .stats-mastery label { padding-left:5px; font-size:12px; color:var(--muted); }
+    #statsView.modern-table-view table.sheet-table { min-width:calc(var(--fs) * 84); max-width:none; }
+    #statsView.modern-table-view table.sheet-table :is(th,td) { overflow:visible; text-overflow:clip; white-space:normal; }
+    #statsView.modern-table-view table.sheet-table th { width:auto; }
+    #statsView.modern-table-view table.sheet-table th:nth-child(1) { width:calc(var(--fs) * 3.2); }
+    #statsView.modern-table-view table.sheet-table th:nth-child(2) { width:calc(var(--fs) * 4.5); }
+    #statsView.modern-table-view table.sheet-table th:nth-child(3) { width:calc(var(--fs) * 9); }
+    #statsView.modern-table-view table.sheet-table th:nth-child(4) { width:calc(var(--fs) * 13); }
+    #statsView.modern-table-view table.sheet-table th:nth-child(n+5):nth-child(-n+8) { width:calc(var(--fs) * 5); }
+    #statsView.modern-table-view table.sheet-table th:nth-child(9) { width:calc(var(--fs) * 10); }
+    #statsView.modern-table-view table.sheet-table th:nth-child(10) { width:calc(var(--fs) * 10); }
+    #statsView .streak-pill { max-width:100%; white-space:normal; border-radius:8px; font-weight:500; }
+    #statsView .err-bar-track { min-width:0; height:6px; border:0; }
+    #statsView :is(.err-count-pill,.corr-count-pill) { font-weight:500; padding:3px 7px; }
+    @media(max-width:1250px) { .modern-table-view .pool-layout { grid-template-columns:minmax(0,1fr); } }
+    @media(max-width:600px) {
+      .modern-table-view { padding:10px; }
+      .modern-table-view .pool-layout { gap:12px; }
+      #statsView .stats-actions { width:100%; }
+      #statsView .stats-actions > :is(.btn,.stats-mastery) { width:100%; }
+    }
     @media(prefers-reduced-motion:reduce) { *,*::before,*::after { transition:none !important; animation:none !important; scroll-behavior:auto !important; } }
   </style>
 </head>
@@ -1899,9 +1950,12 @@
         </div>
       </div>
 
-      <div class="table-wrap" id="poolView" style="display:none;">
+      <div class="table-wrap modern-table-view" id="poolView" style="display:none;">
         <div class="pool-layout">
-          <table class="sheet-table">
+          <section class="pool-card" aria-labelledby="poolViewLevelsTitle">
+          <h3 id="poolViewLevelsTitle">Levels overview</h3>
+          <div class="pool-table-scroll" role="region" aria-label="Learning words by level" tabindex="0">
+          <table class="sheet-table level-summary">
             <thead>
               <tr>
                 <th>Level</th>
@@ -1910,7 +1964,12 @@
             </thead>
             <tbody id="poolSummaryBody"></tbody>
           </table>
-          <table class="sheet-table">
+          </div>
+          </section>
+          <section class="pool-card" aria-labelledby="poolViewWordsTitle">
+          <h3 id="poolViewWordsTitle">Still learning</h3>
+          <div class="pool-table-scroll" role="region" aria-label="Still learning table" tabindex="0">
+          <table class="sheet-table collection-words">
             <thead>
               <tr>
                 <th class="center">Level</th>
@@ -1924,12 +1983,17 @@
             </thead>
             <tbody id="poolBody"></tbody>
           </table>
+          </div>
+          </section>
         </div>
       </div>
 
-      <div class="table-wrap" id="knownPoolView" style="display:none;">
+      <div class="table-wrap modern-table-view" id="knownPoolView" style="display:none;">
         <div class="pool-layout">
-          <table class="sheet-table">
+          <section class="pool-card" aria-labelledby="knownPoolViewLevelsTitle">
+          <h3 id="knownPoolViewLevelsTitle">Levels overview</h3>
+          <div class="pool-table-scroll" role="region" aria-label="Mastered words by level" tabindex="0">
+          <table class="sheet-table level-summary">
             <thead>
               <tr>
                 <th>Level</th>
@@ -1938,7 +2002,12 @@
             </thead>
             <tbody id="knownPoolSummaryBody"></tbody>
           </table>
-          <table class="sheet-table">
+          </div>
+          </section>
+          <section class="pool-card" aria-labelledby="knownPoolViewWordsTitle">
+          <h3 id="knownPoolViewWordsTitle">Mastered words</h3>
+          <div class="pool-table-scroll" role="region" aria-label="Mastered words table" tabindex="0">
+          <table class="sheet-table collection-words">
             <thead>
               <tr>
                 <th class="center">Level</th>
@@ -1952,10 +2021,12 @@
             </thead>
             <tbody id="knownPoolBody"></tbody>
           </table>
+          </div>
+          </section>
         </div>
       </div>
 
-      <div class="table-wrap" id="statsView" style="display:none;">
+      <div class="table-wrap modern-table-view" id="statsView" style="display:none;">
         <div class="stats-kpi-bar">
           <div class="stats-kpis">
             <span class="stats-kpi" id="kpiTotalAttempts">Total Exercises: 0</span>
@@ -1963,36 +2034,43 @@
             <span class="stats-kpi ok" id="kpiTotalCorrect">✅ Total Correct: 0</span>
             <span class="stats-kpi" id="kpiAccuracy">🎯 Accuracy: -</span>
           </div>
-          <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
-            <label for="statsMasteryCount" style="font-size:11px;font-weight:700;color:#334155;white-space:nowrap;">🎯 Mastery Goal:</label>
+          <div class="stats-actions">
+            <div class="stats-mastery">
+            <label for="statsMasteryCount">Mastery goal</label>
             <input type="number" id="statsMasteryCount" class="inp" min="1" max="365" value="5" style="width:52px;font-weight:700;color:#135c37;border-color:#86efac;background:#f0fdf4;text-align:center;" onchange="ogrenmeHedefiDegistir(this.value, null)" title="Minimum number of distinct days/weeks with correct answers required for a word to be marked as Known">
             <select id="statsMasteryUnit" class="inp" style="font-weight:700;color:#135c37;border-color:#86efac;background:#f0fdf4;" onchange="ogrenmeHedefiDegistir(null, this.value)" title="Track progress by Days or Weeks">
               <option value="gun" selected>Days</option>
               <option value="hafta">Weeks</option>
             </select>
+            </div>
             <button class="btn" style="background:#fffbeb;border-color:#fcd34d;color:#92400e;" onclick="erkenBilinenleriHavuzaGeriAl()" title="Move words back to the Unknown Pool">↩️ Reset All to Unknown</button>
             <button class="btn" onclick="istatistikleriSunucuyaSenkronizeEt(true)" title="Sync all historical stats to 'Mistake Stats' tab in Google Sheets">🔄 Sync Stats to Sheet</button>
             <a href="https://docs.google.com/spreadsheets/d/1cUYfuFg7OSsWjCtLA7jiB77bGJITR6V0jF2ZUnyrXtc/edit" target="_blank" class="btn btn-green" title="View 'Mistake Stats' sheet tab in Google Sheets">📊 Open in Google Sheets</a>
           </div>
         </div>
+        <section class="pool-card" aria-labelledby="practiceStatsTitle">
+        <h3 id="practiceStatsTitle">Practice statistics</h3>
+        <div class="pool-table-scroll" role="region" aria-label="Practice statistics table" tabindex="0">
         <table class="sheet-table">
           <thead>
             <tr>
-              <th style="width:28px;" class="center">#</th>
-              <th style="width:44px;" class="center">Level</th>
-              <th style="width:115px;">Word</th>
-              <th style="width:170px;">Meaning</th>
-              <th style="width:66px;" class="center">Mistakes</th>
-              <th style="width:62px;" class="center">Correct</th>
-              <th style="width:50px;" class="center">Total</th>
-              <th style="width:72px;" class="center">Error Rate</th>
-              <th style="width:140px;">Mistake Bar</th>
-              <th id="thStreakCol" style="width:72px;" class="center" title="Consecutive Zero-Mistake Streak = Auto Known">Streak</th>
-              <th style="width:115px;">Last Practice</th>
+              <th class="center">#</th>
+              <th class="center">Level</th>
+              <th>Word</th>
+              <th>Meaning</th>
+              <th class="center">Mistakes</th>
+              <th class="center">Correct</th>
+              <th class="center">Total</th>
+              <th class="center">Error Rate</th>
+              <th>Mistake Bar</th>
+              <th id="thStreakCol" class="center" title="Consecutive Zero-Mistake Streak = Auto Known">Streak</th>
+              <th>Last Practice</th>
             </tr>
           </thead>
           <tbody id="statsBody"></tbody>
         </table>
+        </div>
+        </section>
       </div>
 
       <div id="flashcardView" style="display:none;">
