@@ -1744,21 +1744,29 @@
     }
     @media(prefers-reduced-motion:reduce) { *,*::before,*::after { transition:none !important; animation:none !important; scroll-behavior:auto !important; } }
 
-    /* Keep per-word progress compact beside the current exercise. */
-    #flashcardView.word-stats-layout .word-study-content { display:flex; align-items:flex-start; gap:12px; }
-    #flashcardView.word-stats-layout .fc-wrap { flex:1; min-width:0; }
-    .word-study-stats { flex:0 0 190px; margin:10px 12px 10px 0; padding:12px; border:1px solid #d9dfd3; border-radius:6px; background:#f7f9f4; font-size:12px; line-height:1.4; }
-    .word-study-stats[hidden] { display:none; }
-    .word-study-stats h3 { font-size:13px; margin-bottom:10px; font-weight:500; }
-    .word-study-stats dl { display:grid; gap:10px; }
-    .word-study-stats dt { color:#596451; font-size:11px; }
-    .word-study-stats dd { margin:2px 0 0; font-size:14px; font-variant-numeric:tabular-nums; }
-    .word-study-stats p { margin-top:10px; font-size:11px; color:#596451; }
-    @media(max-width:760px) {
-      #flashcardView.word-stats-layout .word-study-content { flex-direction:column; gap:0; }
-      #flashcardView.word-stats-layout .fc-wrap { width:100%; }
-      .word-study-stats { flex:auto; width:calc(100% - 16px); margin:0 8px 8px; }
-      .word-study-stats dl { grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; }
+    /* Independent progress cluster, separated from the exercise surface. */
+    .study-layout:has(> .word-study-stats:not([hidden])) { display:grid; grid-template-columns:minmax(0,1fr) 220px; column-gap:clamp(32px,4vw,64px); align-items:start; align-content:start; }
+    .study-layout:has(> .word-study-stats:not([hidden])) > .page-heading { grid-column:1 / -1; max-width:none; }
+    .study-layout > .workspace-panel { grid-column:1; grid-row:2; width:100%; }
+    .word-study-stats { grid-column:2; grid-row:2; padding:14px; border:1px solid #dce0ef; border-radius:14px; background:#fff; box-shadow:0 5px 20px #27355a08; font-size:12px; line-height:1.4; }
+    .word-study-stats[hidden],.main-content:not(.study-layout) > .word-study-stats { display:none; }
+    .word-study-stats h3 { display:flex; align-items:center; gap:8px; margin-bottom:3px; color:#373879; font-size:14px; font-weight:600; }
+    .word-study-stats h3::before { content:'↗'; display:grid; place-items:center; width:25px; height:25px; border-radius:8px; background:#e8e8ff; color:#5556b9; font-size:17px; }
+    .word-study-stats .stats-caption { margin:0 0 13px; color:#73798a; font-size:11px; }
+    .word-study-stats dl { display:grid; gap:9px; }
+    .word-study-stats dl > div { padding:10px 12px; border-radius:9px; border:1px solid var(--metric-line); background:var(--metric-bg); color:var(--metric-color); }
+    .word-study-stats dl > div:nth-child(1) { --metric-bg:#eef5ff; --metric-line:#dce9fb; --metric-color:#285a94; }
+    .word-study-stats dl > div:nth-child(2) { --metric-bg:#fff7e8; --metric-line:#f4e6c8; --metric-color:#946219; }
+    .word-study-stats dl > div:nth-child(3) { --metric-bg:#fff0f2; --metric-line:#f6dce2; --metric-color:#a14359; }
+    .word-study-stats dl > div:nth-child(4) { --metric-bg:#edf8f2; --metric-line:#d8ecdf; --metric-color:#317151; }
+    .word-study-stats dl > div:nth-child(5) { --metric-bg:#f2f0fd; --metric-line:#e4dff7; --metric-color:#635099; }
+    .word-study-stats dt { font-size:11px; }
+    .word-study-stats dd { margin:4px 0 0; font-size:16px; font-weight:600; font-variant-numeric:tabular-nums; }
+    .word-study-stats p { margin-top:12px; color:#73798a; font-size:10px; line-height:1.6; }
+    @media(max-width:1000px) {
+      .study-layout:has(> .word-study-stats:not([hidden])) { grid-template-columns:minmax(0,1fr); gap:0; }
+      .word-study-stats { grid-column:1; grid-row:3; margin-top:24px; width:100%; }
+      .word-study-stats dl { grid-template-columns:repeat(2,minmax(0,1fr)); }
     }
   </style>
 </head>
@@ -2093,11 +2101,11 @@
       <div id="flashcardView" style="display:none;">
         <div class="word-study-content">
         <div class="fc-wrap" id="fcContainer"></div>
-        <aside id="wordStudyStats" class="word-study-stats" aria-label="Current word statistics" aria-live="polite" hidden></aside>
         </div>
       </div>
         <div class="collection-footer"><span>ENGLISH <span class="footer-dot">•</span> TURKISH</span><span>One word at a time.</span></div>
       </section>
+        <aside id="wordStudyStats" class="word-study-stats" aria-label="Current word statistics" aria-live="polite" hidden></aside>
     </main>
   </div>
 
@@ -4360,7 +4368,7 @@
       panel.hidden = false;
       panel.dataset.wordKey = key;
       document.getElementById("flashcardView").classList.add("word-stats-layout");
-      panel.innerHTML = '<h3>Word progress</h3><dl>' +
+      panel.innerHTML = '<h3>Word progress</h3><p class="stats-caption">Your current word at a glance</p><dl>' +
         metric('Learning for', stats.elapsed ? (stats.exactStart ? '' : 'At least ') + stats.elapsed + ' days' : (stats.total ? 'Not recorded' : 'Not started')) +
         metric('Until mastered', stats.mastered ? 'Mastered' : stats.remainingDays + (hedefBirimAl() === 'hafta' ? ' days minimum' : ' practice days')) +
         metric('Error rate', stats.errorRate === null ? 'No answers yet' : stats.errorRate + '%') +
