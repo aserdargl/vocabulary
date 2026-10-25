@@ -1647,6 +1647,50 @@
       .library-layout .collection-tools { order:3; }
       .library-layout #sheet1View .sheet-table { min-width:calc(var(--fs) * 50); width:max(100%,calc(var(--fs) * 50)); }
     }
+    /* Word Pool: keep each table inside its own shrinkable, scrollable card. */
+    #sheetHavuzView { padding:16px; overflow:visible; min-width:0; }
+    #sheetHavuzView .stats-kpi-bar { padding:0 0 16px; background:transparent; gap:14px; }
+    #sheetHavuzView .stats-kpis { gap:8px; }
+    #sheetHavuzView .pool-note { flex-basis:100%; color:var(--muted); font-size:12px; line-height:1.5; }
+    #sheetHavuzView .pool-actions { display:flex; align-items:center; flex-wrap:wrap; gap:8px; width:100%; }
+    #sheetHavuzView .pool-actions .inp,
+    #sheetHavuzView .pool-actions .btn { min-height:34px; height:auto; }
+    #sheetHavuzView .pool-random { display:flex; align-items:center; flex-wrap:wrap; gap:6px; padding:5px; border:1px solid var(--line); border-radius:8px; background:#f6f8f4; }
+    #sheetHavuzView .pool-random label { padding-left:5px; color:var(--muted); font-size:12px; }
+    #sheetHavuzView #havuzRandomCount { width:54px; text-align:center; background:white; }
+    #sheetHavuzView #havuzRandomTransferBtn { background:var(--accent); border-color:var(--accent); color:white; }
+    #sheetHavuzView .pool-layout { grid-template-columns:minmax(0,320px) minmax(0,1fr); gap:16px; }
+    #sheetHavuzView .pool-card { min-width:0; border:1px solid var(--line); border-radius:10px; background:white; overflow:hidden; }
+    #sheetHavuzView .pool-card h3 { padding:13px 14px; font-size:13px; font-weight:600; color:var(--ink); }
+    #sheetHavuzView .pool-table-scroll { max-width:100%; overflow-x:auto; scrollbar-width:thin; }
+    #sheetHavuzView .sheet-table { table-layout:fixed; }
+    #sheetHavuzView .sheet-table th { padding:10px; font-size:11px; letter-spacing:0; text-transform:none; white-space:normal; overflow-wrap:anywhere; }
+    #sheetHavuzView .sheet-table td { padding:11px 10px; overflow-wrap:anywhere; }
+    #sheetHavuzView .pool-summary { min-width:290px; }
+    #sheetHavuzView .pool-summary th:first-child { width:27%; }
+    #sheetHavuzView .pool-words { min-width:660px; }
+    #sheetHavuzView .pool-words th:nth-child(1) { width:36px; }
+    #sheetHavuzView .pool-words th:nth-child(2) { width:42px; }
+    #sheetHavuzView .pool-words th:nth-child(3) { width:60px; }
+    #sheetHavuzView .pool-words th:nth-child(5) { width:125px; }
+    #sheetHavuzView .pool-words th:nth-child(6) { width:170px; }
+    #sheetHavuzView .col-word { white-space:normal; cursor:pointer; }
+    #sheetHavuzView .havuz-badge-wait,
+    #sheetHavuzView .havuz-badge-done { border:0; border-radius:20px; padding:4px 9px; white-space:nowrap; font-size:11px; font-weight:500; }
+    #sheetHavuzView .pool-words .btn { min-height:30px; height:auto; white-space:normal; line-height:1.4; }
+    #sheetHavuzView input[type="checkbox"] { width:15px; height:15px; accent-color:var(--accent); cursor:pointer; }
+    #sheetHavuzView .havuz-sum-row.active-lvl td { background:var(--accent-soft) !important; color:var(--accent); }
+    #sheetHavuzView .havuz-sum-row:hover td { background:#f2f6ef !important; }
+    #sheetHavuzView :is(button,input,select):focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
+    @media(max-width:1250px) { #sheetHavuzView .pool-layout { grid-template-columns:minmax(0,1fr); } }
+    @media(max-width:600px) {
+      #sheetHavuzView { padding:10px; }
+      #sheetHavuzView .pool-layout { gap:12px; }
+      #sheetHavuzView .pool-actions > select,
+      #sheetHavuzView .pool-actions > .btn { width:100%; }
+      #sheetHavuzView .pool-random { width:100%; }
+      #sheetHavuzView #havuzRandomTransferBtn { flex:1; }
+    }
     @media(prefers-reduced-motion:reduce) { *,*::before,*::after { transition:none !important; animation:none !important; scroll-behavior:auto !important; } }
   </style>
 </head>
@@ -1801,24 +1845,27 @@
             <span class="stats-kpi" id="kpiHavuzTotal">📦 Total Pool: 0</span>
             <span class="stats-kpi" style="background:#fef3c7;border-color:#fcd34d;color:#92400e;" id="kpiHavuzWaiting">⏳ Waiting: 0</span>
             <span class="stats-kpi ok" id="kpiHavuzTransferred">✅ Transferred to Words: 0</span>
-            <span style="font-size:11px;color:#475569;font-weight:600;">ℹ️ Words in the Pool remain hidden from quizzes and the main table until transferred to <b>Words</b>.</span>
+            <span class="pool-note">Words in the pool appear in your collection and quizzes after you transfer them to <b>Words</b>.</span>
           </div>
-          <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
+          <div class="pool-actions">
             <select id="havuzDurumFilter" class="inp" onchange="havuzTablosuCiz()" title="Filter by transfer status">
               <option value="all" selected>📋 All (Waiting First)</option>
               <option value="bekliyor">⏳ Waiting Only</option>
               <option value="aktarildi">✅ Transferred Only</option>
             </select>
-            <div style="display:inline-flex;align-items:center;gap:4px;background:#eef2ff;border:1.5px solid #818cf8;border-radius:7px;padding:2px 6px;">
-              <span style="font-size:11.5px;font-weight:800;color:#312e81;">🎲 Count:</span>
-              <input type="number" id="havuzRandomCount" class="inp" min="1" max="50" value="5" style="width:46px;height:26px;text-align:center;font-weight:800;border-color:#818cf8;color:#312e81;">
-              <button class="btn" id="havuzRandomTransferBtn" style="height:26px;background:#4338ca;border-color:#3730a3;color:#fff;" onclick="havuzdanRastgeleAktar()" title="Pick N random waiting words from the selected level and transfer them to Words with auto-generated meaning, pronunciation, and example sentence">🎲 Transfer Random</button>
+            <div class="pool-random">
+              <label for="havuzRandomCount">Count</label>
+              <input type="number" id="havuzRandomCount" class="inp" min="1" max="50" value="5">
+              <button class="btn" id="havuzRandomTransferBtn" onclick="havuzdanRastgeleAktar()" title="Pick N random waiting words from the selected level and transfer them to Words with auto-generated meaning, pronunciation, and example sentence">🎲 Transfer Random</button>
             </div>
             <button class="btn btn-green" id="havuzSelectedTransferBtn" onclick="havuzSecilenleriAktar()" title="Transfer selected words to Words with auto-generated meaning, pronunciation, and example sentence">➕ Transfer Selected to Words (0)</button>
           </div>
         </div>
-        <div class="pool-layout" style="grid-template-columns: 260px 1fr;">
-          <table class="sheet-table">
+        <div class="pool-layout">
+          <section class="pool-card" aria-labelledby="poolLevelsTitle">
+          <h3 id="poolLevelsTitle">Levels overview</h3>
+          <div class="pool-table-scroll" role="region" aria-label="Word pool level summary" tabindex="0">
+          <table class="sheet-table pool-summary">
             <thead>
               <tr>
                 <th>Level</th>
@@ -1829,19 +1876,26 @@
             </thead>
             <tbody id="sheetHavuzSummaryBody"></tbody>
           </table>
-          <table class="sheet-table">
+          </div>
+          </section>
+          <section class="pool-card" aria-labelledby="poolWordsTitle">
+          <h3 id="poolWordsTitle">Pool words</h3>
+          <div class="pool-table-scroll" role="region" aria-label="Word pool words and transfer actions" tabindex="0">
+          <table class="sheet-table pool-words">
             <thead>
               <tr>
-                <th style="width:32px;" class="center"><input type="checkbox" id="havuzSelectAllCb" onchange="havuzTumunuSecDegistir(this.checked)" title="Select / deselect all visible waiting words"></th>
+                <th class="center"><input type="checkbox" id="havuzSelectAllCb" onchange="havuzTumunuSecDegistir(this.checked)" aria-label="Select all visible waiting words" title="Select / deselect all visible waiting words"></th>
                 <th class="col-row">#</th>
-                <th style="width:60px;" class="center">Level</th>
-                <th style="width:220px;">Word (Click to Listen)</th>
-                <th style="width:120px;" class="center">Status</th>
-                <th>Action (Transfer to Words)</th>
+                <th class="center">Level</th>
+                <th>Word · click to listen</th>
+                <th class="center">Status</th>
+                <th>Transfer to Words</th>
               </tr>
             </thead>
             <tbody id="sheetHavuzBody"></tbody>
           </table>
+          </div>
+          </section>
         </div>
       </div>
 
