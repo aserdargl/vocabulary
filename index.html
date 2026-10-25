@@ -3627,8 +3627,6 @@
         setTimeout(function() {
           var poolList = aktifHavuzuGetir();
           var deck = fcDestesiniGetir(poolList);
-      var currentIndex = deck.length ? ((FC_INDEX % deck.length) + deck.length) % deck.length : 0;
-      updateWordStudyStats(deck[currentIndex]);
           if (deck.length) {
             var card = deck[FC_INDEX % deck.length];
             if (card) kelimeOku(card.kelime);
@@ -4376,6 +4374,8 @@
       var box = document.getElementById("fcContainer");
       if (!box) return;
       var deck = fcDestesiniGetir(poolList);
+      var currentIndex = FC_INDEX >= deck.length ? 0 : (FC_INDEX < 0 ? deck.length - 1 : FC_INDEX);
+      updateWordStudyStats(deck[currentIndex]);
       if (AKTIF_MOD === "confusables") {
         confusablesModuCiz(box, deck);
         return;

@@ -332,3 +332,30 @@ test('sidebar follows the current word, updates answers immediately and hides in
   app.updateWordStudyStats(undefined);
   assert.equal(panel.hidden, true);
 });
+
+for (const mode of ['quiz', 'flashcards']) {
+  test(`${mode}: real study render shows sidebar on entry and follows navigation`, () => {
+    const app = createApp();
+    const first = addWord(app, 'B2', 'bilmiyorum', 'First');
+    const second = addWord(app, 'B2', 'bilmiyorum', 'Second');
+    const panel = app.document.getElementById('wordStudyStats');
+    panel.dataset = {};
+    app.AKTIF_MOD = mode;
+    app.FC_FLIPPED = false;
+    app.srsEtiketGetir = () => '0 / 5';
+    app.modCubuguHtml = () => '';
+    app.quizModuCiz = box => { box.innerHTML = 'quiz'; };
+    app.fcCiz([first, second]);
+    assert.equal(panel.hidden, false);
+    assert.equal(panel.dataset.wordKey, 'first');
+    assert.match(panel.innerHTML, /Word progress/);
+    app.FC_INDEX = 1;
+    app.fcCiz([first, second]);
+    assert.equal(panel.dataset.wordKey, 'second');
+    app.FC_INDEX = 11;
+    app.fcCiz([first, second]);
+    assert.equal(panel.dataset.wordKey, 'first');
+    app.fcCiz([]);
+    assert.equal(panel.hidden, true);
+  });
+}
