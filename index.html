@@ -5421,6 +5421,10 @@
           var ao = knownOrderMap[ak] || a.row || 0;
           var bo = knownOrderMap[bk] || b.row || 0;
           if (ao !== bo) return ao - bo;
+        } else {
+          var aDate = String(a.tarih || "").trim();
+          var bDate = String(b.tarih || "").trim();
+          if (aDate !== bDate) return bDate.localeCompare(aDate);
         }
         return (a.row || 0) - (b.row || 0);
       });
