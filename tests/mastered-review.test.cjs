@@ -27,7 +27,8 @@ function createApp(storage = new Map()) {
     TUM_KELIMELER: [], SHEET_KELIMELER: [], SON_YEREL_DEGISIM: {},
     MASTERED_REVIEW_DAYS: [7, 14, 30], REVIEW_LEARNING_BATCH: 3,
     REVIEW_DAY_MS: day, HEDEF_SAYI: 5, HEDEF_BIRIM: 'gun',
-    FC_SHUFFLED_KEYS: null, FC_INDEX: 0, AKTIF_MOD: 'quiz',
+    FC_SHUFFLED_KEYS: null, FC_INDEX: 0, FC_FLIPPED: false, AKTIF_MOD: 'quiz',
+    SECENEKLER_CACHE: { key: '', list: [] },
     APPS_SCRIPT_URL: '', QUIZ_GECIS_TIMER: null, QUIZ_CORRECT_DELAY_MS: 1000
   });
   vm.runInContext(functions, app);
@@ -235,54 +236,6 @@ test('Apps Script serves exactly the updated HTML; both scripts parse', () => {
   assert.equal(context.uygulamaHtmlGetir(), html);
 });
 
-test('word sidebar uses exact first practice, lifetime errors and configured daily goal', () => {
-  const app = createApp();
-  const word = addWord(app, 'B2', 'bilmiyorum');
-  const result = app.wordStudySummary(word, { firstPracticedOn: '2026-10-20',
-    correct: 8, mistakes: 2, cleanDays: ['2026-10-24', '2026-10-25'] }, new Date(2026, 9, 25, 12));
-  assert.equal(result.elapsed, 6);
-  assert.equal(result.exactStart, true);
-  assert.equal(result.remainingDays, 3);
-  assert.equal(result.errorRate, 20);
-});
-
-test('word sidebar distinguishes unstarted words and incomplete historical dates', () => {
-  const app = createApp();
-  const word = addWord(app, 'B2', 'bilmiyorum');
-  const fresh = app.wordStudySummary(word, {}, new Date(2026, 9, 25));
-  assert.equal(fresh.elapsed, 0);
-  assert.equal(fresh.errorRate, null);
-  const history = app.wordStudySummary(word, { correct: 2, mistakes: 1,
-    lastPractice: 'QUIZ (2026-10-22 12:00)' }, new Date(2026, 9, 25));
-  assert.equal(history.elapsed, 4);
-  assert.equal(history.exactStart, false);
-  assert.equal(history.errorRate, 33.3);
-});
-
-test('weekly sidebar countdown follows ISO weeks including year boundaries', () => {
-  const app = createApp();
-  app.HEDEF_BIRIM = 'hafta';
-  app.HEDEF_SAYI = 2;
-  const word = addWord(app, 'B2', 'bilmiyorum');
-  const sunday = new Date(2027, 0, 3, 12);
-  const week = app.haftaAnahtariAl(sunday);
-  const result = app.wordStudySummary(word, { cleanWeeks: [week], correct: 1 }, sunday);
-  assert.equal(result.remainingDays, 1);
-  const reset = app.wordStudySummary(word, { lastMistakeWeek: week, mistakes: 1 }, sunday);
-  assert.equal(reset.remainingDays, 8);
-});
-
-test('mastered sidebar has no remaining learning days and does not mutate history', () => {
-  const app = createApp();
-  const word = addWord(app);
-  const entry = { correct: 1, lastPractice: 'QUIZ (2026-10-25 12:00)' };
-  const original = JSON.stringify(entry);
-  const result = app.wordStudySummary(word, entry, new Date(2026, 9, 25));
-  assert.equal(result.remainingDays, 0);
-  assert.equal(result.mastered, true);
-  assert.equal(JSON.stringify(entry), original);
-});
-
 test('first practice date persists through mistakes and reload without inventing old start dates', () => {
   const storage = new Map();
   let app = createApp(storage);
@@ -306,55 +259,16 @@ test('Apps Script serves the same updated interface as index.html', () => {
   new vm.Script(script);
 });
 
-test('sidebar follows the current word, updates answers immediately and hides in other modes', () => {
-  const app = createApp();
-  const word = addWord(app, 'B2', 'bilmiyorum', 'SecretAnswer');
-  const panel = app.document.getElementById('wordStudyStats');
-  panel.dataset = {};
-  app.updateWordStudyStats(word);
-  assert.equal(panel.hidden, false);
-  assert.match(panel.innerHTML, /No answers yet/);
-  assert.doesNotMatch(panel.innerHTML, /SecretAnswer/);
-  app.alistirmaSonucuKaydet(word.kelime, false, 'Quiz');
-  assert.match(panel.innerHTML, /100%/);
-  assert.match(panel.innerHTML, /0 correct \/ 1 wrong/);
-  const next = addWord(app, 'B2', 'bilmiyorum', 'Next');
-  app.updateWordStudyStats(next);
-  assert.match(panel.innerHTML, /No answers yet/);
-  assert.equal(panel.dataset.wordKey, 'next');
-  app.AKTIF_MOD = 'match';
-  app.updateWordStudyStats(next);
-  assert.equal(panel.hidden, true);
-  app.AKTIF_MOD = 'flashcards';
-  app.updateWordStudyStats(word);
-  assert.equal(panel.hidden, false);
-  app.updateWordStudyStats(undefined);
-  assert.equal(panel.hidden, true);
-});
-
 for (const mode of ['quiz', 'flashcards']) {
-  test(`${mode}: real study render shows sidebar on entry and follows navigation`, () => {
+  test(mode + ' shows level and type without review or progress labels', () => {
     const app = createApp();
-    const first = addWord(app, 'B2', 'bilmiyorum', 'First');
-    const second = addWord(app, 'B2', 'bilmiyorum', 'Second');
-    const panel = app.document.getElementById('wordStudyStats');
-    panel.dataset = {};
+    const word = addWord(app, 'B2', 'biliyorum', 'Recall');
+    word.tur = 'Verb';
     app.AKTIF_MOD = mode;
-    app.FC_FLIPPED = false;
-    app.srsEtiketGetir = () => '0 / 5';
-    app.modCubuguHtml = () => '';
-    app.quizModuCiz = box => { box.innerHTML = 'quiz'; };
-    app.fcCiz([first, second]);
-    assert.equal(panel.hidden, false);
-    assert.equal(panel.dataset.wordKey, 'first');
-    assert.match(panel.innerHTML, /Goal progress/);
-    app.FC_INDEX = 1;
-    app.fcCiz([first, second]);
-    assert.equal(panel.dataset.wordKey, 'second');
-    app.FC_INDEX = 11;
-    app.fcCiz([first, second]);
-    assert.equal(panel.dataset.wordKey, 'first');
-    app.fcCiz([]);
-    assert.equal(panel.hidden, true);
+    app.fcCiz(app.aktifHavuzuGetir());
+    const rendered = app.document.getElementById('fcContainer').innerHTML;
+    assert.match(rendered, /class="fc-lvl-badge">B2</);
+    assert.match(rendered, /class="fc-type-badge">Verb</);
+    assert.doesNotMatch(rendered, /Retention review|srs-badge|Word progress/);
   });
 }
