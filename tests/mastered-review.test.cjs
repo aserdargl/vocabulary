@@ -48,16 +48,15 @@ function addWord(app, level = 'B2', status = 'biliyorum', name = 'Recall') {
   return word;
 }
 
-test('only due B2/C1/C2 mastered words enter practice; filters still apply', () => {
+test('only due B2/C1/C2 mastered words enter practice; library filters do not affect practice', () => {
   const app = createApp();
   for (const level of ['B1', 'B2', 'C1', 'C2']) addWord(app, level, 'biliyorum', level);
   assert.deepEqual(Array.from(app.aktifHavuzuGetir(), w => w.kelime), ['B2', 'C1', 'C2']);
   app.istatistikMapKaydet({ b2: { nextReviewAt: Date.now() + day } });
   assert.deepEqual(Array.from(app.aktifHavuzuGetir(), w => w.kelime), ['C1', 'C2']);
   app.document.getElementById('levelFilter').value = 'C2';
-  assert.equal(app.aktifHavuzuGetir()[0].kelime, 'C2');
   app.document.getElementById('searchInput').value = 'absent';
-  assert.equal(app.aktifHavuzuGetir().length, 0);
+  assert.deepEqual(Array.from(app.aktifHavuzuGetir(), w => w.kelime), ['C1', 'C2']);
 });
 
 test('correct reviews schedule 7, 14, then recurring 30 days and survive reload', () => {
@@ -348,7 +347,7 @@ for (const mode of ['quiz', 'flashcards']) {
     app.fcCiz([first, second]);
     assert.equal(panel.hidden, false);
     assert.equal(panel.dataset.wordKey, 'first');
-    assert.match(panel.innerHTML, /Word progress/);
+    assert.match(panel.innerHTML, /Goal progress/);
     app.FC_INDEX = 1;
     app.fcCiz([first, second]);
     assert.equal(panel.dataset.wordKey, 'second');

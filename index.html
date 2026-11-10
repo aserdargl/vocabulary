@@ -1624,7 +1624,6 @@
     @media(max-width:600px) { #flashcardView .fc-wrap { padding:8px; } #flashcardView .fc-top { padding:7px; } #flashcardView .study-box { padding:8px; } #flashcardView .fc-top > span { line-height:1.35; } #flashcardView .fc-controls .fc-btn { min-height:30px; } #flashcardView .type-row { flex-direction:row; } #flashcardView .type-row .type-inp { width:auto; flex:1; } #flashcardView .type-row .fc-btn { width:auto; height:30px; } #flashcardView .fc-scene { height:210px; } }
     /* Let library rows grow with the page instead of creating a nested vertical scroller. */
     .main-content.library-layout { display:flex; flex-direction:column; min-height:calc(100dvh - var(--header-height)); padding:12px 16px; overflow:visible; }
-    .library-layout > .page-heading,.library-layout .collection-heading,.library-layout .collection-footer { display:none; }
     .library-layout .workspace-panel.words-panel { display:flex; flex-direction:column; flex:1; min-height:0; max-width:none; border:0; border-radius:0; background:transparent; }
     .library-layout .toolbar { flex:none; justify-content:flex-start; padding:0 0 10px; gap:8px; }
     .library-layout .toolbar > .collection-label { display:flex; align-items:center; gap:8px; margin-right:4px; }
@@ -1744,30 +1743,20 @@
     }
     @media(prefers-reduced-motion:reduce) { *,*::before,*::after { transition:none !important; animation:none !important; scroll-behavior:auto !important; } }
 
-    /* Independent progress cluster, separated from the exercise surface. */
-    .study-layout:has(> .word-study-stats:not([hidden])) { display:grid; grid-template-columns:minmax(0,1fr) 220px; column-gap:clamp(32px,4vw,64px); align-items:start; align-content:start; }
-    .study-layout:has(> .word-study-stats:not([hidden])) > .page-heading { grid-column:1 / -1; max-width:none; }
-    .study-layout > .workspace-panel { grid-column:1; grid-row:2; width:100%; }
-    .word-study-stats { grid-column:2; grid-row:2; padding:14px; border:1px solid #dce0ef; border-radius:14px; background:#fff; box-shadow:0 5px 20px #27355a08; font-size:12px; line-height:1.4; }
-    .word-study-stats[hidden],.main-content:not(.study-layout) > .word-study-stats { display:none; }
-    .word-study-stats h3 { display:flex; align-items:center; gap:8px; margin-bottom:3px; color:#373879; font-size:14px; font-weight:600; }
-    .word-study-stats h3::before { content:'↗'; display:grid; place-items:center; width:25px; height:25px; border-radius:8px; background:#e8e8ff; color:#5556b9; font-size:17px; }
-    .word-study-stats .stats-caption { margin:0 0 13px; color:#73798a; font-size:11px; }
-    .word-study-stats dl { display:grid; gap:9px; }
-    .word-study-stats dl > div { padding:10px 12px; border-radius:9px; border:1px solid var(--metric-line); background:var(--metric-bg); color:var(--metric-color); }
-    .word-study-stats dl > div:nth-child(1) { --metric-bg:#eef5ff; --metric-line:#dce9fb; --metric-color:#285a94; }
-    .word-study-stats dl > div:nth-child(2) { --metric-bg:#fff7e8; --metric-line:#f4e6c8; --metric-color:#946219; }
-    .word-study-stats dl > div:nth-child(3) { --metric-bg:#fff0f2; --metric-line:#f6dce2; --metric-color:#a14359; }
-    .word-study-stats dl > div:nth-child(4) { --metric-bg:#edf8f2; --metric-line:#d8ecdf; --metric-color:#317151; }
-    .word-study-stats dl > div:nth-child(5) { --metric-bg:#f2f0fd; --metric-line:#e4dff7; --metric-color:#635099; }
-    .word-study-stats dt { font-size:11px; }
-    .word-study-stats dd { margin:4px 0 0; font-size:16px; font-weight:600; font-variant-numeric:tabular-nums; }
-    .word-study-stats p { margin-top:12px; color:#73798a; font-size:10px; line-height:1.6; }
-    @media(max-width:1000px) {
-      .study-layout:has(> .word-study-stats:not([hidden])) { grid-template-columns:minmax(0,1fr); gap:0; }
-      .word-study-stats { grid-column:1; grid-row:3; margin-top:24px; width:100%; }
-      .word-study-stats dl { grid-template-columns:repeat(2,minmax(0,1fr)); }
-    }
+    .page-heading { margin-bottom:12px; }
+    .workspace-panel > .toolbar { padding:12px; }
+    .study-panel > .toolbar, #addWordToggleBtn[hidden], #clearFiltersBtn[hidden], .main-content:not(.library-layout) #addBar { display:none; }
+    .study-progress { max-width:920px; margin-top:10px; border:1px solid var(--line); border-radius:7px; background:white; }
+    .study-progress:not(:has(#wordStudyStats:not([hidden]))), .main-content:not(.study-layout) > .study-progress { display:none; }
+    .study-progress summary, .level-summary summary { padding:10px 12px; cursor:pointer; font-size:13px; }
+    .word-study-stats { padding:0 12px 12px; font-size:12px; }
+    .word-study-stats dl { display:grid; grid-template-columns:repeat(auto-fit,minmax(120px,1fr)); gap:8px; }
+    .word-study-stats dd { margin:2px 0 0; font-weight:600; }
+    .word-study-stats p { margin-top:8px; }
+    #sheetHavuzView .pool-layout, .modern-table-view .pool-layout { grid-template-columns:minmax(0,1fr); }
+    #statsView > .overview-grid { margin-bottom:10px; }
+    #statsView .overview-card { min-height:0; }
+    #resultCount { white-space:nowrap; }
   </style>
 </head>
 <body>
@@ -1790,7 +1779,7 @@
           <option value="gun" selected>Days</option>
           <option value="hafta">Weeks</option>
         </select>
-      </div><hr><button class="btn" style="background:#fff7ed;border-color:#fb923c;color:#9a3412;" onclick="tumKelimeleriBilinmeyenYap(true)" title="Move all words in Words back to Unknown status and reset streak progress">↩️ Reset All</button></div>
+      </div><p>Table font size</p><div class="font-ctrl" role="group" aria-label="Table font size" title="Table font size"><button class="font-btn" aria-label="Decrease table font size" onclick="yaziBoyutuDegistir(-1)">A−</button><span class="font-val" id="fontValLabel" aria-live="polite">13px</span><button class="font-btn" aria-label="Increase table font size" onclick="yaziBoyutuDegistir(1)">A+</button></div><hr><button class="btn" style="background:#fff7ed;border-color:#fb923c;color:#9a3412;" onclick="tumKelimeleriBilinmeyenYap(true)" title="Move all words in Words back to Unknown status and reset streak progress">↩️ Reset All</button></div>
       </details>
       <button class="mobile-menu-btn" id="mobileMenuBtn" onclick="mobilMenuAcKapat()" aria-controls="leftSidebar" aria-expanded="false" aria-label="Open navigation">☰</button>
     </div>
@@ -1852,16 +1841,8 @@
     </aside>
 
     <main class="main-content library-layout" id="mainContent" tabindex="-1">
-      <div class="page-heading"><div><div class="eyebrow">A LITTLE EVERY DAY</div><h1 id="workspaceTitle">My vocabulary</h1><p id="workspaceDescription">A home for the words you’re learning. Make each one stick.</p></div><button class="btn btn-green" id="addWordToggleBtn" onclick="ekleBarAcKapat()"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg> Add word</button></div>
-      <section class="overview-grid" id="learningOverview" aria-label="Learning overview" hidden>
-        <button class="overview-card" onclick="sekmeDegistir('sheet1')"><span class="card-top"><span>Total words</span><span class="stat-icon"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20M6.5 3H20v19H6.5A2.5 2.5 0 0 1 4 19.5v-14A2.5 2.5 0 0 1 6.5 3Z"/><path d="M8 7h8M8 11h6"/></svg></span></span><strong id="stTotal">0</strong><span class="stat-caption">In your collection</span></button>
-        <button class="overview-card" onclick="sekmeDegistir('pool')"><span class="card-top"><span>Still learning</span><span class="stat-icon amber"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span></span><strong id="stUnk">0</strong><span class="stat-caption">A little more practice</span></button>
-        <button class="overview-card" onclick="sekmeDegistir('knownPool')"><span class="card-top"><span>Words mastered</span><span class="stat-icon green"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/></svg></span></span><strong id="stKnw">0</strong><span class="stat-caption">Look how far you’ve come</span></button>
-        <div class="overview-card progress-card"><span class="card-top"><span>Your progress</span><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 3v17h17M9 15v-4m5 4V7m5 8v-5"/></svg></span><strong id="masteryPercent">0<span>%</span></strong><div class="mastery-track" role="progressbar" aria-label="Words mastered" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="masteryProgress"><span id="masteryFill"></span></div><span class="stat-caption" id="masteryCaption">Your next word is a step forward.</span></div>
-      </section>
-      <section class="practice-banner" aria-label="Quick practice"><span class="practice-icon"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="7" y="5" width="14" height="16" rx="2"/><path d="M3 17V5a2 2 0 0 1 2-2h12M11 11h6m-6 4h4"/></svg></span><div><strong>Small sessions. Lasting progress.</strong><p id="practiceDescription">Review your words with a quick flashcard session.</p></div><button class="btn practice-start" onclick="calismaModuAc('flashcards')">Let’s practice <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h16m-6-6 6 6-6 6"/></svg></button></section>
-      <section class="workspace-panel words-panel" aria-labelledby="collectionTitle">
-        <div class="collection-heading"><div class="collection-label"><h2 id="collectionTitle">Your word collection</h2><span id="resultCount" aria-live="polite"></span></div><div class="collection-tools"><div class="font-ctrl" role="group" aria-label="Table font size" title="Table font size"><button class="font-btn" aria-label="Decrease table font size" onclick="yaziBoyutuDegistir(-1)">A−</button><span class="font-val" id="fontValLabel" aria-live="polite">13px</span><button class="font-btn" aria-label="Increase table font size" onclick="yaziBoyutuDegistir(1)">A+</button></div><span class="table-hint">Click a word to hear it <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 14v-3a9 9 0 0 1 18 0v3"/><rect x="3" y="12" width="4" height="8" rx="2"/><rect x="17" y="12" width="4" height="8" rx="2"/></svg></span></div></div>
+      <div class="page-heading"><div><h1 id="workspaceTitle">Words</h1></div><button class="btn btn-green" id="addWordToggleBtn" onclick="ekleBarAcKapat()"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg> Add word</button></div>
+      <section class="workspace-panel words-panel" aria-labelledby="workspaceTitle">
         <div class="toolbar"><label class="search-field"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></svg><input type="search" id="searchInput" class="inp" placeholder="Search words, meanings, or examples…" aria-label="Search vocabulary" oninput="tercihleriKaydet(); tabloyuCiz();"><kbd>/</kbd></label><div class="filter-actions"><select id="levelFilter" class="inp" aria-label="Filter by level" onchange="tercihleriKaydet(); tabloyuCiz();">
         <option value="ALL">All levels</option>
         <option value="A1">A1</option>
@@ -1870,11 +1851,7 @@
         <option value="B2">B2</option>
         <option value="C1">C1</option>
         <option value="C2">C2</option>
-      </select><button class="btn" onclick="clearVocabularyFilters()" title="Clear search and level filter">Clear filters</button><button class="btn sync-button" onclick="verileriYukle(true)" title="Refresh from Google Sheets"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 7v5h-5M4 17v-5h5"/><path d="M6 6a8 8 0 0 1 13 2M5 16a8 8 0 0 0 13 2"/></svg><span>Sync</span></button></div></div>
-      <div id="libraryControls" hidden>
-        <button class="btn library-only" id="overviewToggle" aria-expanded="false" aria-controls="learningOverview" onclick="toggleLearningOverview()">Statistics</button>
-        <button class="btn library-only" id="libraryPractice" onclick="calismaModuAc('flashcards')">Practice</button>
-      </div>
+      </select><button class="btn" id="clearFiltersBtn" onclick="clearVocabularyFilters()" hidden>Clear</button><button class="btn sync-button" onclick="verileriYukle(true)" title="Refresh from Google Sheets"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 7v5h-5M4 17v-5h5"/><path d="M6 6a8 8 0 0 1 13 2M5 16a8 8 0 0 0 13 2"/></svg><span>Sync</span></button></div><span id="resultCount" aria-live="polite"></span></div>
       <div class="add-bar" id="addBar" role="group" aria-label="Add a vocabulary word">
         <select id="inSeviye" aria-label="Word level" class="inp" onchange="tercihleriKaydet()">
           <option value="A2">A2</option>
@@ -1921,7 +1898,6 @@
             <span class="stats-kpi" id="kpiHavuzTotal">📦 Total Pool: 0</span>
             <span class="stats-kpi" style="background:#fef3c7;border-color:#fcd34d;color:#92400e;" id="kpiHavuzWaiting">⏳ Waiting: 0</span>
             <span class="stats-kpi ok" id="kpiHavuzTransferred">✅ Transferred to Words: 0</span>
-            <span class="pool-note">Words in the pool appear in your collection and quizzes after you transfer them to <b>Words</b>.</span>
           </div>
           <div class="pool-actions">
             <select id="havuzDurumFilter" class="inp" onchange="havuzTablosuCiz()" title="Filter by transfer status">
@@ -1929,17 +1905,16 @@
               <option value="bekliyor">⏳ Waiting Only</option>
               <option value="aktarildi">✅ Transferred Only</option>
             </select>
-            <div class="pool-random">
+            <details><summary>Random transfer</summary><div class="pool-random">
               <label for="havuzRandomCount">Count</label>
               <input type="number" id="havuzRandomCount" class="inp" min="1" max="50" value="5">
               <button class="btn" id="havuzRandomTransferBtn" onclick="havuzdanRastgeleAktar()" title="Pick N random waiting words from the selected level and transfer them to Words with auto-generated meaning, pronunciation, and example sentence">🎲 Transfer Random</button>
-            </div>
+            </div></details>
             <button class="btn btn-green" id="havuzSelectedTransferBtn" onclick="havuzSecilenleriAktar()" title="Transfer selected words to Words with auto-generated meaning, pronunciation, and example sentence">➕ Transfer Selected to Words (0)</button>
           </div>
         </div>
         <div class="pool-layout">
-          <section class="pool-card" aria-labelledby="poolLevelsTitle">
-          <h3 id="poolLevelsTitle">Levels overview</h3>
+          <details class="pool-card level-summary"><summary>Levels overview</summary>
           <div class="pool-table-scroll" role="region" aria-label="Word pool level summary" tabindex="0">
           <table class="sheet-table pool-summary">
             <thead>
@@ -1953,7 +1928,7 @@
             <tbody id="sheetHavuzSummaryBody"></tbody>
           </table>
           </div>
-          </section>
+          </details>
           <section class="pool-card" aria-labelledby="poolWordsTitle">
           <h3 id="poolWordsTitle">Pool words</h3>
           <div class="pool-table-scroll" role="region" aria-label="Word pool words and transfer actions" tabindex="0">
@@ -1977,8 +1952,7 @@
 
       <div class="table-wrap modern-table-view" id="poolView" style="display:none;">
         <div class="pool-layout">
-          <section class="pool-card" aria-labelledby="poolViewLevelsTitle">
-          <h3 id="poolViewLevelsTitle">Levels overview</h3>
+          <details class="pool-card level-summary"><summary>Levels overview</summary>
           <div class="pool-table-scroll" role="region" aria-label="Learning words by level" tabindex="0">
           <table class="sheet-table level-summary">
             <thead>
@@ -1990,7 +1964,7 @@
             <tbody id="poolSummaryBody"></tbody>
           </table>
           </div>
-          </section>
+          </details>
           <section class="pool-card" aria-labelledby="poolViewWordsTitle">
           <h3 id="poolViewWordsTitle">Still learning</h3>
           <div class="pool-table-scroll" role="region" aria-label="Still learning table" tabindex="0">
@@ -2015,8 +1989,7 @@
 
       <div class="table-wrap modern-table-view" id="knownPoolView" style="display:none;">
         <div class="pool-layout">
-          <section class="pool-card" aria-labelledby="knownPoolViewLevelsTitle">
-          <h3 id="knownPoolViewLevelsTitle">Levels overview</h3>
+          <details class="pool-card level-summary"><summary>Levels overview</summary>
           <div class="pool-table-scroll" role="region" aria-label="Mastered words by level" tabindex="0">
           <table class="sheet-table level-summary">
             <thead>
@@ -2028,7 +2001,7 @@
             <tbody id="knownPoolSummaryBody"></tbody>
           </table>
           </div>
-          </section>
+          </details>
           <section class="pool-card" aria-labelledby="knownPoolViewWordsTitle">
           <h3 id="knownPoolViewWordsTitle">Mastered words</h3>
           <div class="pool-table-scroll" role="region" aria-label="Mastered words table" tabindex="0">
@@ -2052,6 +2025,12 @@
       </div>
 
       <div class="table-wrap modern-table-view" id="statsView" style="display:none;">
+      <section class="overview-grid" id="learningOverview" aria-label="Learning overview">
+        <button class="overview-card" onclick="sekmeDegistir('sheet1')"><span class="card-top"><span>Total words</span><span class="stat-icon"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20M6.5 3H20v19H6.5A2.5 2.5 0 0 1 4 19.5v-14A2.5 2.5 0 0 1 6.5 3Z"/><path d="M8 7h8M8 11h6"/></svg></span></span><strong id="stTotal">0</strong></button>
+        <button class="overview-card" onclick="sekmeDegistir('pool')"><span class="card-top"><span>Still learning</span><span class="stat-icon amber"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span></span><strong id="stUnk">0</strong></button>
+        <button class="overview-card" onclick="sekmeDegistir('knownPool')"><span class="card-top"><span>Words mastered</span><span class="stat-icon green"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/></svg></span></span><strong id="stKnw">0</strong></button>
+        <div class="overview-card progress-card"><span class="card-top"><span>Your progress</span><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 3v17h17M9 15v-4m5 4V7m5 8v-5"/></svg></span><strong id="masteryPercent">0<span>%</span></strong><div class="mastery-track" role="progressbar" aria-label="Words mastered" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="masteryProgress"><span id="masteryFill"></span></div><span class="stat-caption" id="masteryCaption">Your next word is a step forward.</span></div>
+      </section>
         <div class="stats-kpi-bar">
           <div class="stats-kpis">
             <span class="stats-kpi" id="kpiTotalAttempts">Total Exercises: 0</span>
@@ -2060,15 +2039,6 @@
             <span class="stats-kpi" id="kpiAccuracy">🎯 Accuracy: -</span>
           </div>
           <div class="stats-actions">
-            <div class="stats-mastery">
-            <label for="statsMasteryCount">Mastery goal</label>
-            <input type="number" id="statsMasteryCount" class="inp" min="1" max="365" value="5" style="width:52px;font-weight:700;color:#135c37;border-color:#86efac;background:#f0fdf4;text-align:center;" onchange="ogrenmeHedefiDegistir(this.value, null)" title="Minimum number of distinct days/weeks with correct answers required for a word to be marked as Known">
-            <select id="statsMasteryUnit" class="inp" style="font-weight:700;color:#135c37;border-color:#86efac;background:#f0fdf4;" onchange="ogrenmeHedefiDegistir(null, this.value)" title="Track progress by Days or Weeks">
-              <option value="gun" selected>Days</option>
-              <option value="hafta">Weeks</option>
-            </select>
-            </div>
-            <button class="btn" style="background:#fffbeb;border-color:#fcd34d;color:#92400e;" onclick="erkenBilinenleriHavuzaGeriAl()" title="Move words back to the Unknown Pool">↩️ Reset All to Unknown</button>
             <button class="btn" onclick="istatistikleriSunucuyaSenkronizeEt(true)" title="Sync all historical stats to 'Mistake Stats' tab in Google Sheets">🔄 Sync Stats to Sheet</button>
             <a href="https://docs.google.com/spreadsheets/d/1cUYfuFg7OSsWjCtLA7jiB77bGJITR6V0jF2ZUnyrXtc/edit" target="_blank" class="btn btn-green" title="View 'Mistake Stats' sheet tab in Google Sheets">📊 Open in Google Sheets</a>
           </div>
@@ -2103,9 +2073,8 @@
         <div class="fc-wrap" id="fcContainer"></div>
         </div>
       </div>
-        <div class="collection-footer"><span>ENGLISH <span class="footer-dot">•</span> TURKISH</span><span>One word at a time.</span></div>
       </section>
-        <aside id="wordStudyStats" class="word-study-stats" aria-label="Current word statistics" aria-live="polite" hidden></aside>
+        <details class="study-progress"><summary>Word progress</summary><div id="wordStudyStats" class="word-study-stats" aria-label="Current word statistics" aria-live="polite" hidden></div></details>
     </main>
   </div>
 
@@ -3442,8 +3411,6 @@
           aktifMod: AKTIF_MOD,
           fcIndex: FC_INDEX,
           fcShuffledKeys: FC_SHUFFLED_KEYS,
-          fcAltKartAcik: !!window.FC_ALT_KART_ACIK,
-          fcHoverOrnekAcik: window.FC_HOVER_ORNEK_ACIK !== false,
           quizYon: window.QUIZ_YON || "tr-en",
           yaziBoyutu: YAZI_BOYUTU,
           sesAcik: SES_ACIK,
@@ -3482,12 +3449,6 @@
           HEDEF_BIRIM = p.hedefBirim;
         }
         hedefHaftaSecicileriGuncelle();
-        if (typeof p.fcAltKartAcik === "boolean") {
-          window.FC_ALT_KART_ACIK = p.fcAltKartAcik;
-        }
-        if (typeof p.fcHoverOrnekAcik === "boolean") {
-          window.FC_HOVER_ORNEK_ACIK = p.fcHoverOrnekAcik;
-        }
         if (p.quizYon === "en-tr" || p.quizYon === "tr-en") {
           window.QUIZ_YON = p.quizYon;
         }
@@ -3649,15 +3610,11 @@
     }
 
     function aktifHavuzuGetir() {
-      var q = (document.getElementById("searchInput").value || "").toLowerCase().trim();
-      var lvl = document.getElementById("levelFilter").value;
       var stats = istatistikMapAl();
       var now = Date.now();
       return TUM_KELIMELER.filter(function(w){
         var learning = w.durum === "bilmiyorum" && !kelimeDortHaftaUstalaMi(w);
         if (!learning && !isMasteredReviewDue(w, stats, now)) return false;
-        if (lvl !== "ALL" && w.seviye !== lvl) return false;
-        if (q && (w.kelime + " " + w.anlam + " " + w.ornek).toLowerCase().indexOf(q) === -1) return false;
         return true;
       }).sort(function(a, b){ return (a.seviye || "").localeCompare(b.seviye || ""); });
     }
@@ -3687,70 +3644,6 @@
         if (!used[km]) result.push(sadeceBilinmeyenler[m]);
       }
       return interleaveMasteredReviews(result);
-    }
-
-    function modCubuguHtml() {
-      var modes = [
-        { id: "flashcards", label: "🃏 Flashcards" },
-        { id: "cloze", label: "📝 Cloze" },
-        { id: "quiz", label: "🎯 Quiz" },
-        { id: "confusables", label: "🔀 Confusables" },
-        { id: "listen", label: "🎧 Listen" },
-        { id: "match", label: "🧩 Match" }
-      ];
-      var hs = hedefSayiAl();
-      var hb = hedefBirimAl();
-      var html = ['<div class="study-modes-bar" style="align-items:center;">'];
-      html.push(
-        '<button class="mode-btn" onclick="sekmeDegistir(\'sheet1\')" title="Return to Main Vocabulary Table (Words)">' +
-          '📋 Words' +
-        '</button>'
-      );
-      html.push(
-        '<button class="mode-btn" onclick="sekmeDegistir(\'sheetHavuz\')" title="Google Sheets \'Havuz\' (Word Pool) Tab — Candidate words to transfer into Words">' +
-          '📦 Pool' +
-        '</button>'
-      );
-      html.push(
-        '<button class="mode-btn" onclick="sekmeDegistir(\'pool\')" title="Unknown Words in Words Table">' +
-          '📕 Unknown' +
-        '</button>'
-      );
-      html.push(
-        '<button class="mode-btn" onclick="sekmeDegistir(\'knownPool\')" title="Known Words in Words Table">' +
-          '📗 Known' +
-        '</button>'
-      );
-      for (var i = 0; i < modes.length; i++) {
-        var m = modes[i];
-        html.push(
-          '<button class="mode-btn' + (AKTIF_MOD === m.id ? ' active' : '') + '" onclick="calismaModuAc(\'' + m.id + '\')">' +
-            m.label +
-          '</button>'
-        );
-      }
-      html.push(
-        '<button class="mode-btn" onclick="sekmeDegistir(\'stats\')" title="View Mistake & Practice Statistics">' +
-          '📊 Stats' +
-        '</button>'
-      );
-      html.push(
-        '<div style="display:inline-flex;align-items:center;gap:4px;background:#fff;border:1px solid #cbd5e1;border-radius:6px;padding:2px 7px;font-size:11px;font-weight:700;color:#1e293b;margin-left:auto;" title="Set the minimum number of distinct days or weeks with correct answers required to auto-master a word (Known)">' +
-          '<span>🎯 Goal:</span>' +
-          '<input type="number" id="studyMasteryCount" min="1" max="365" value="' + hs + '" onchange="ogrenmeHedefiDegistir(this.value, null)" style="width:42px;height:20px;border:1px solid #cbd5e1;border-radius:4px;text-align:center;font-size:11px;font-weight:800;color:#0f172a;padding:0 2px;">' +
-          '<select id="studyMasteryUnit" onchange="ogrenmeHedefiDegistir(null, this.value)" style="height:20px;border:1px solid #cbd5e1;border-radius:4px;font-size:11px;font-weight:700;color:#0f172a;background:#f8fafc;padding:0 3px;cursor:pointer;">' +
-            '<option value="gun"' + (hb === "gun" ? " selected" : "") + '>Days</option>' +
-            '<option value="hafta"' + (hb === "hafta" ? " selected" : "") + '>Weeks</option>' +
-          '</select>' +
-        '</div>'
-      );
-      html.push(
-        '<button class="mode-btn" style="background:#fff7ed;border-color:#fdba74;color:#9a3412;" onclick="erkenBilinenleriHavuzaGeriAl()" title="Move all words back to the Unknown Pool">' +
-          '↩️ Reset All to Unknown' +
-        '</button>'
-      );
-      html.push('</div>');
-      return html.join("");
     }
 
     // =========================================================================
@@ -3925,24 +3818,6 @@
       window.CONFUSABLES_KAPSAM = "all";
     }
 
-    try {
-      var kayitliConfKart = localStorage.getItem("kelime_confusables_kart_acik");
-      window.CONFUSABLES_KART_ACIK = kayitliConfKart === null ? true : kayitliConfKart === "1";
-    } catch (e) {
-      window.CONFUSABLES_KART_ACIK = true;
-    }
-
-    function akilliBenzerSiklariAcKapat() {
-      window.AKILLI_BENZER_SIKLAR = window.AKILLI_BENZER_SIKLAR === false ? true : false;
-      try { localStorage.setItem("kelime_akilli_benzer_siklar", window.AKILLI_BENZER_SIKLAR ? "1" : "0"); } catch (e) {}
-      SECENEKLER_CACHE = { key: "", list: [] };
-      tercihleriKaydet();
-      tabloyuCiz();
-      bildirimGoster(window.AKILLI_BENZER_SIKLAR
-        ? "🧬 Smart Similar Choices: ON (Distractors picked from look-alike / sound-alike words)"
-        : "🎲 Smart Similar Choices: OFF (Distractors picked randomly)");
-    }
-
     function confusablesKapsamDegistir(yeniKapsam) {
       window.CONFUSABLES_KAPSAM = (yeniKapsam === "pool" || yeniKapsam === "all")
         ? yeniKapsam
@@ -3955,16 +3830,6 @@
       bildirimGoster(window.CONFUSABLES_KAPSAM === "all"
         ? "📚 Scope: All Words in Words Table (Unknown + Known)"
         : "📌 Scope: Unknown Words Only");
-    }
-
-    function confusablesKartAcKapat() {
-      window.CONFUSABLES_KART_ACIK = window.CONFUSABLES_KART_ACIK === false ? true : false;
-      try { localStorage.setItem("kelime_confusables_kart_acik", window.CONFUSABLES_KART_ACIK ? "1" : "0"); } catch (e) {}
-      tercihleriKaydet();
-      tabloyuCiz();
-      bildirimGoster(window.CONFUSABLES_KART_ACIK
-        ? "📖 Similar Words Comparison Card: ON"
-        : "📖 Similar Words Comparison Card: OFF (Shown after answering)");
     }
 
     function levenshteinMesafesi(a, b) {
@@ -4373,7 +4238,7 @@
       panel.hidden = false;
       panel.dataset.wordKey = key;
       document.getElementById("flashcardView").classList.add("word-stats-layout");
-      panel.innerHTML = '<h3>Word progress</h3><p class="stats-caption">Your current word at a glance</p><dl>' +
+      panel.innerHTML = '<dl>' +
         metric('Learning for', stats.elapsed ? (stats.exactStart ? '' : 'At least ') + stats.elapsed + ' days' : (stats.total ? 'Not recorded' : 'Not started')) +
         metric('Until mastered', stats.mastered ? 'Mastered' : stats.remainingDays + (hedefBirimAl() === 'hafta' ? ' days minimum' : ' practice days')) +
         metric('Error rate', stats.errorRate === null ? 'No answers yet' : stats.errorRate + '%') +
@@ -4395,15 +4260,11 @@
       }
       if (!deck.length) {
         box.innerHTML =
-          modCubuguHtml() +
           '<div class="fc-empty">' +
             '<div style="font-size:28px;margin-bottom:8px;">🎉</div>' +
-            '<div style="font-weight:700;color:#1e293b;margin-bottom:6px;">No Unknown Words in Pool</div>' +
-            '<div style="font-size:12px;margin-bottom:14px;">Mark words as <b>Unknown</b> in Words, transfer new words from <b>📦 Pool</b>, or open <b>🔀 Confusables</b> to practice similar word pairs.</div>' +
+            '<div style="font-weight:700;color:#1e293b;margin-bottom:6px;">No words to practice</div>' +
             '<div style="display:flex;gap:8px;justify-content:center;">' +
               '<button class="fc-btn" onclick="sekmeDegistir(\'sheet1\')">📋 Go to Words</button>' +
-              '<button class="fc-btn" onclick="sekmeDegistir(\'sheetHavuz\')">📦 Open Word Pool</button>' +
-              '<button class="fc-btn fc-btn-known" onclick="calismaModuAc(\'confusables\')">🔀 Open Confusables</button>' +
             '</div>' +
           '</div>';
         return;
@@ -4432,23 +4293,10 @@
       var card = deck[FC_INDEX];
       var pct = Math.round(((FC_INDEX + 1) / deck.length) * 100);
       var srsEtiket = srsEtiketGetir(card.kelime);
-      var altAcik = !!window.FC_ALT_KART_ACIK;
-      var hoverAcik = window.FC_HOVER_ORNEK_ACIK !== false;
 
       box.innerHTML =
-        modCubuguHtml() +
         '<div class="fc-top">' +
-          '<span>Unknown Pool Flashcards — <b>' + (FC_INDEX + 1) + ' / ' + deck.length + '</b></span>' +
-          '<div style="display:flex;gap:6px;align-items:center;">' +
-            '<span class="srs-badge" title="Mastery Progress: Automatically marked as Known upon reaching your Day/Week goal">📅 ' + srsEtiket + '</span>' +
-            '<button class="fc-btn' + (hoverAcik ? ' fc-btn-toggle-on' : '') + '" style="height:26px;font-size:11px;padding:0 9px;" onclick="fcHoverOrnekAcKapat()" title="Show/hide example sentence when hovering over the word on Flashcards">' +
-              (hoverAcik ? '💬 Hover Example: ON' : '💬 Hover Example: OFF') +
-            '</button>' +
-            '<button class="fc-btn' + (altAcik ? ' fc-btn-toggle-on' : '') + '" style="height:26px;font-size:11px;padding:0 9px;" onclick="fcAltKartAcKapat()" title="Show meaning & example in a second card below without flipping">' +
-              (altAcik ? '📖 Bottom Card: ON' : '📖 Bottom Card: OFF') +
-            '</button>' +
-            '<button class="btn" onclick="fcKaristir()" title="Shuffle cards">🔀 Shuffle</button>' +
-          '</div>' +
+          '<span>Card <b>' + (FC_INDEX + 1) + ' / ' + deck.length + '</b></span>' +
         '</div>' +
         '<div class="fc-progress-track"><div class="fc-progress-bar" style="width:' + pct + '%;"></div></div>' +
         '<div class="fc-scene" onclick="fcCevir()">' +
@@ -4463,12 +4311,9 @@
                 '<button class="btn" onclick="event.stopPropagation(); kelimeOku(\'' + escJs(card.kelime) + '\')" title="Listen pronunciation">🔊 Listen</button>' +
               '</div>' +
               '<div class="fc-center">' +
-                '<div class="fc-word-box' + (hoverAcik ? '' : ' no-hover-ex') + '">' +
-                  '<div class="fc-word">' + escHtml(card.kelime) + '</div>' +
-                  (hoverAcik && card.ornek ? '<div class="fc-hover-example" onclick="event.stopPropagation(); ornekOku(\'' + escJs(card.ornek) + '\', this)" title="Click to listen to the example sentence">' + ornekBicimlendir(card.ornek) + '</div>' : '') +
-                '</div>' +
+                '<div class="fc-word">' + escHtml(card.kelime) + '</div>' +
               '</div>' +
-              '<div class="fc-hint">' + (hoverAcik ? 'Hover over word for example sentence • Click card or Space to flip ↻' : 'Click card or Space to flip ↻') + '</div>' +
+              '<div class="fc-hint">Click or press Space to flip</div>' +
             '</div>' +
             '<div class="fc-face fc-back">' +
               '<div class="fc-badges">' +
@@ -4487,56 +4332,14 @@
             '</div>' +
           '</div>' +
         '</div>' +
-        (altAcik
-          ? '<div class="fc-below-card">' +
-              '<div class="fc-below-title">📖 Meaning & Example Sentence (' + escHtml(card.kelime) + ')</div>' +
-              '<div class="fc-meaning">' + escHtml(card.anlam) + '</div>' +
-              (card.ornek ? '<div class="fc-example" onclick="ornekOku(\'' + escJs(card.ornek) + '\', this)" title="Click to listen to the example sentence">' + ornekBicimlendir(card.ornek) + '</div>' : '') +
-            '</div>'
-          : '') +
         '<div class="fc-controls">' +
-          '<button class="fc-btn" onclick="fcDegistir(-1)">◀ Prev</button>' +
+          '<button class="fc-btn" onclick="fcDegistir(-1)">← Previous</button>' +
           '<button class="fc-btn" onclick="fcCevir()">↻ Flip</button>' +
-          '<button class="fc-btn' + (hoverAcik ? ' fc-btn-toggle-on' : '') + '" onclick="fcHoverOrnekAcKapat()" title="Show/hide example sentence when hovering over the word">' +
-            (hoverAcik ? '💬 Hover Example: ON' : '💬 Hover Example: OFF') +
-          '</button>' +
-          '<button class="fc-btn' + (altAcik ? ' fc-btn-toggle-on' : '') + '" onclick="fcAltKartAcKapat()" title="Show meaning in a separate card below without flipping">' +
-            (altAcik ? '📖 Bottom Card: ON' : '📖 Bottom Card: OFF') +
-          '</button>' +
-          '<button class="fc-btn" style="background:#fef2f2;border-color:#fecaca;color:#b91c1c;" onclick="fcHataIsaretle(' + card.row + ')" title="Record a mistake for this word & advance">❌ Mistake</button>' +
-          '<button class="fc-btn" style="background:#fffbeb;border-color:#fde68a;color:#b45309;" onclick="fcSrsArtir(' + card.row + ')" title="Record a correct answer for today/this week (Auto-Known upon reaching goal)">📅 +1 Correct (' + srsEtiket + ')</button>' +
-          '<button class="fc-btn fc-btn-known" onclick="fcBiliyorumIsaretle(' + card.row + ')">✅ Known (Instant)</button>' +
+          '<button class="fc-btn" style="background:#fef2f2;border-color:#fecaca;color:#b91c1c;" onclick="fcHataIsaretle(' + card.row + ')" title="Record a mistake and advance">Forgot</button>' +
+          '<button class="fc-btn" style="background:#fffbeb;border-color:#fde68a;color:#b45309;" onclick="fcSrsArtir(' + card.row + ')" title="Record a correct answer for today/this week (Auto-Known upon reaching goal)">Remembered</button>' +
+          '<button class="fc-btn fc-btn-known" onclick="fcBiliyorumIsaretle(' + card.row + ')">Mark mastered</button>' +
           '<button class="fc-btn" onclick="fcDegistir(1)">Next ▶</button>' +
         '</div>';
-    }
-
-    try {
-      window.FC_ALT_KART_ACIK = localStorage.getItem("kelime_fc_alt_kart") === "1";
-    } catch (e) {
-      window.FC_ALT_KART_ACIK = false;
-    }
-
-    try {
-      var kayitliHoverOrnek = localStorage.getItem("kelime_fc_hover_ornek");
-      window.FC_HOVER_ORNEK_ACIK = kayitliHoverOrnek === null ? true : kayitliHoverOrnek === "1";
-    } catch (e) {
-      window.FC_HOVER_ORNEK_ACIK = true;
-    }
-
-    function fcHoverOrnekAcKapat() {
-      window.FC_HOVER_ORNEK_ACIK = window.FC_HOVER_ORNEK_ACIK === false ? true : false;
-      try { localStorage.setItem("kelime_fc_hover_ornek", window.FC_HOVER_ORNEK_ACIK ? "1" : "0"); } catch (e) {}
-      tercihleriKaydet();
-      tabloyuCiz();
-      bildirimGoster(window.FC_HOVER_ORNEK_ACIK ? "💬 Hover Example Sentence: ON" : "💬 Hover Example Sentence: OFF");
-    }
-
-    function fcAltKartAcKapat() {
-      window.FC_ALT_KART_ACIK = !window.FC_ALT_KART_ACIK;
-      try { localStorage.setItem("kelime_fc_alt_kart", window.FC_ALT_KART_ACIK ? "1" : "0"); } catch (e) {}
-      tercihleriKaydet();
-      tabloyuCiz();
-      bildirimGoster(window.FC_ALT_KART_ACIK ? "📖 Bottom Explanation Card: ON" : "📖 Bottom Explanation Card: OFF");
     }
 
     function clozeModuCiz(box, deck) {
@@ -4546,7 +4349,6 @@
       var ayrilmis = ornekCumleyiAyir(card.ornek);
       var gizliCumle = cumledeKelimeyiGizle(ayrilmis.en, card.kelime);
       var secenekler = secenekleriUret(card, deck);
-      var akilliAcik = window.AKILLI_BENZER_SIKLAR !== false;
 
       var btnHtml = [];
       for (var i = 0; i < secenekler.length; i++) {
@@ -4559,16 +4361,8 @@
       }
 
       box.innerHTML =
-        modCubuguHtml() +
         '<div class="fc-top">' +
-          '<span>📝 Cloze (Fill in the Blank) — <b>' + (FC_INDEX + 1) + ' / ' + deck.length + '</b></span>' +
-          '<div style="display:flex;gap:6px;align-items:center;">' +
-            '<button class="fc-btn' + (akilliAcik ? ' fc-btn-toggle-on' : '') + '" style="height:26px;font-size:11px;padding:0 9px;" onclick="akilliBenzerSiklariAcKapat()" title="Pick choices from look-alike / sound-alike words (e.g. Ambiguous / Ambitious)">' +
-              (akilliAcik ? '🧬 Similar Choices: ON' : '🎲 Similar Choices: OFF') +
-            '</button>' +
-            '<span class="srs-badge">📅 ' + srsEtiket + '</span>' +
-            '<button class="btn" onclick="fcKaristir()">🔀 Shuffle</button>' +
-          '</div>' +
+          '<span>Question <b>' + (FC_INDEX + 1) + ' / ' + deck.length + '</b></span>' +
         '</div>' +
         '<div class="fc-progress-track"><div class="fc-progress-bar" style="width:' + pct + '%;"></div></div>' +
         '<div class="study-box">' +
@@ -4594,8 +4388,8 @@
           '<div id="clozeTwinCompareArea" style="display:none;"></div>' +
         '</div>' +
         '<div class="fc-controls">' +
-          '<button class="fc-btn" onclick="fcDegistir(-1)">◀ Prev</button>' +
-          '<button class="fc-btn" onclick="fcDegistir(1)">Skip / Next ▶</button>' +
+          '<button class="fc-btn" onclick="fcDegistir(-1)">← Previous</button>' +
+          '<button class="fc-btn" onclick="fcDegistir(1)">Skip →</button>' +
         '</div>';
     }
 
@@ -4710,7 +4504,6 @@
       var srsEtiket = srsEtiketGetir(card.kelime);
       var secenekler = secenekleriUret(card, deck);
       var enTr = window.QUIZ_YON === "en-tr";
-      var akilliAcik = window.AKILLI_BENZER_SIKLAR !== false;
 
       var btnHtml = [];
       for (var i = 0; i < secenekler.length; i++) {
@@ -4724,18 +4517,8 @@
       }
 
       box.innerHTML =
-        modCubuguHtml() +
         '<div class="fc-top">' +
-          '<span>🎯 Active Recall (' + (enTr ? 'English → Turkish' : 'Turkish → English') + ') — <b>' + (FC_INDEX + 1) + ' / ' + deck.length + '</b></span>' +
-          '<div style="display:flex;gap:6px;align-items:center;">' +
-            '<button class="fc-btn' + (akilliAcik ? ' fc-btn-toggle-on' : '') + '" style="height:26px;font-size:11px;padding:0 9px;" onclick="akilliBenzerSiklariAcKapat()" title="Pick choices from look-alike / sound-alike words (e.g. Ambiguous / Ambitious)">' +
-              (akilliAcik ? '🧬 Similar Choices: ON' : '🎲 Similar Choices: OFF') +
-            '</button>' +
-            '<button class="fc-btn' + (!enTr ? ' fc-btn-toggle-on' : '') + '" style="height:26px;font-size:11px;padding:0 9px;" onclick="quizYonuDegistir(\'tr-en\')" title="Show Turkish meaning and ask for English word (Turkish → English)">🇹🇷 Turkish → English</button>' +
-            '<button class="fc-btn' + (enTr ? ' fc-btn-toggle-on' : '') + '" style="height:26px;font-size:11px;padding:0 9px;" onclick="quizYonuDegistir(\'en-tr\')" title="Show English word and ask for Turkish meaning (English → Turkish)">🇬🇧 English → Turkish</button>' +
-            '<span class="srs-badge">📅 ' + srsEtiket + '</span>' +
-            '<button class="btn" onclick="fcKaristir()">🔀 Shuffle</button>' +
-          '</div>' +
+          '<span>Question <b>' + (FC_INDEX + 1) + ' / ' + deck.length + '</b></span>' +
         '</div>' +
         '<div class="fc-progress-track"><div class="fc-progress-bar" style="width:' + pct + '%;"></div></div>' +
         '<div class="study-box">' +
@@ -4761,9 +4544,9 @@
           '<div id="quizTwinCompareArea" style="display:none;"></div>' +
         '</div>' +
         '<div class="fc-controls">' +
-          '<button class="fc-btn" onclick="fcDegistir(-1)">◀ Prev</button>' +
-          '<button class="fc-btn" onclick="quizYonuDegistir()" title="Toggle Quiz Direction (TR ↔ EN)">🔄 ' + (enTr ? 'Switch to TR → EN' : 'Switch to EN → TR') + '</button>' +
-          '<button class="fc-btn" onclick="fcDegistir(1)">Skip / Next ▶</button>' +
+          '<button class="fc-btn" onclick="fcDegistir(-1)">← Previous</button>' +
+          '<button class="fc-btn" onclick="quizYonuDegistir()" aria-label="Switch translation direction">' + (enTr ? 'EN → TR' : 'TR → EN') + '</button>' +
+          '<button class="fc-btn" onclick="fcDegistir(1)">Skip →</button>' +
         '</div>';
     }
 
@@ -4864,18 +4647,11 @@
     }
 
     function confusablesDestesiniGetir(poolDeck) {
-      var lvlEl = document.getElementById("levelFilter");
-      var qEl = document.getElementById("searchInput");
-      var lvl = lvlEl ? lvlEl.value : "ALL";
-      var q = qEl ? (qEl.value || "").toLowerCase().trim() : "";
-
       var tumKapsam = window.CONFUSABLES_KAPSAM === "all";
       var bazHavuz = (!tumKapsam && poolDeck && poolDeck.length) ? poolDeck : TUM_KELIMELER;
 
       var adayListe = bazHavuz.filter(function(item) {
         if (!item || !item.kelime) return false;
-        if (lvl !== "ALL" && item.seviye !== lvl) return false;
-        if (q && (item.kelime + " " + item.anlam + " " + (item.ornek || "")).toLowerCase().indexOf(q) === -1) return false;
         return true;
       });
 
@@ -4894,10 +4670,8 @@
           if (yk && !gorulen[yk]) {
             var mevcutKart = kelimeKartiniBul(-1, yakinlar[y].kelime);
             if (mevcutKart && (tumKapsam || mevcutKart.durum === "bilmiyorum")) {
-              if (lvl === "ALL" || mevcutKart.seviye === lvl) {
-                gorulen[yk] = true;
-                sonuc.push(mevcutKart);
-              }
+              gorulen[yk] = true;
+              sonuc.push(mevcutKart);
             }
           }
         }
@@ -4910,7 +4684,6 @@
       var confDeck = confusablesDestesiniGetir(poolDeck);
       if (!confDeck.length) {
         box.innerHTML =
-          modCubuguHtml() +
           '<div class="fc-empty">' +
             '<div style="font-size:28px;margin-bottom:8px;">🔀</div>' +
             '<div style="font-weight:700;color:#1e293b;margin-bottom:6px;">No Matching Words Found in Words Table</div>' +
@@ -4930,8 +4703,6 @@
       var srsEtiket = srsEtiketGetir(card.kelime);
       var secenekler = secenekleriUret(card, confDeck);
       var enTr = window.QUIZ_YON === "en-tr";
-      var tumKapsamMi = window.CONFUSABLES_KAPSAM === "all";
-      var kartAcikMi = window.CONFUSABLES_KART_ACIK !== false;
       var ayrilmis = ornekCumleyiAyir(card.ornek || "");
       var gizliCumle = ayrilmis.en ? cumledeKelimeyiGizle(ayrilmis.en, card.kelime) : "";
 
@@ -4961,22 +4732,8 @@
       }
 
       box.innerHTML =
-        modCubuguHtml() +
         '<div class="fc-top">' +
-          '<span>🔀 Confusable / Similar Words Quiz — <b>' + (FC_INDEX + 1) + ' / ' + confDeck.length + '</b></span>' +
-          '<div style="display:flex;gap:5px;align-items:center;flex-wrap:wrap;">' +
-            '<button class="fc-btn' + (!tumKapsamMi ? ' fc-btn-toggle-on' : '') + '" style="height:26px;font-size:11px;padding:0 8px;" onclick="confusablesKapsamDegistir(\'pool\')" title="Practice only Unknown words from your Words table">' +
-              '📕 Unknown (' + aktifHavuzuGetir().length + ')' +
-            '</button>' +
-            '<button class="fc-btn' + (tumKapsamMi ? ' fc-btn-toggle-on' : '') + '" style="height:26px;font-size:11px;padding:0 8px;" onclick="confusablesKapsamDegistir(\'all\')" title="Practice all words in your Words table (Unknown + Known)">' +
-              '📋 All Words (' + TUM_KELIMELER.length + ')' +
-            '</button>' +
-            '<button class="fc-btn' + (!enTr ? ' fc-btn-toggle-on' : '') + '" style="height:26px;font-size:11px;padding:0 8px;" onclick="quizYonuDegistir(\'tr-en\')">🇹🇷 TR → EN</button>' +
-            '<button class="fc-btn' + (enTr ? ' fc-btn-toggle-on' : '') + '" style="height:26px;font-size:11px;padding:0 8px;" onclick="quizYonuDegistir(\'en-tr\')">🇬🇧 EN → TR</button>' +
-            '<button class="fc-btn' + (kartAcikMi ? ' fc-btn-toggle-on' : '') + '" style="height:26px;font-size:11px;padding:0 8px;" onclick="confusablesKartAcKapat()" title="Always show/hide the side-by-side similar words comparison table below">' +
-              (kartAcikMi ? '📖 Compare Box: ON' : '📖 Compare Box: OFF') +
-            '</button>' +
-          '</div>' +
+          '<span>Question <b>' + (FC_INDEX + 1) + ' / ' + confDeck.length + '</b></span>' +
         '</div>' +
         '<div class="fc-progress-track"><div class="fc-progress-bar" style="width:' + pct + '%;background:#ea580c;"></div></div>' +
         '<div class="study-box" style="border-color:#fdba74;">' +
@@ -5010,14 +4767,11 @@
             '<button class="fc-btn fc-btn-known" onclick="quizYazKontrol(\'' + escJs(card.kelime) + '\', ' + (card.row || -1) + ')">Check ↵</button>' +
           '</div>' +
           '<div id="quizFeedbackBox" style="display:none;margin-top:12px;border:2px solid #22c55e;background:#f0fdf4;" class="fc-example" onclick="ornekOku(\'' + escJs(card.ornek) + '\', this)" title="Click to listen to the example sentence"></div>' +
-          '<div id="quizTwinCompareArea" style="display:' + (kartAcikMi ? 'block' : 'none') + ';">' +
-            (kartAcikMi ? ikizKarsilastirmaKutusuHtml(card, null, "📖 Side-by-Side Similar Words Comparison") : '') +
-          '</div>' +
+          '<div id="quizTwinCompareArea" style="display:none;"></div>' +
         '</div>' +
         '<div class="fc-controls">' +
-          '<button class="fc-btn" onclick="fcDegistir(-1)">◀ Prev</button>' +
-          '<button class="fc-btn" onclick="quizYonuDegistir()">🔄 ' + (enTr ? 'Switch to TR → EN' : 'Switch to EN → TR') + '</button>' +
-          '<button class="fc-btn" onclick="confusablesKartAcKapat()">' + (kartAcikMi ? '📖 Compare Box: ON' : '📖 Compare Box: OFF') + '</button>' +
+          '<button class="fc-btn" onclick="fcDegistir(-1)">← Previous</button>' +
+          '<button class="fc-btn" onclick="quizYonuDegistir()" aria-label="Switch translation direction">' + (enTr ? 'EN → TR' : 'TR → EN') + '</button>' +
           '<button class="fc-btn" onclick="fcDegistir(1)">Next ▶</button>' +
         '</div>';
     }
@@ -5039,13 +4793,8 @@
       }
 
       box.innerHTML =
-        modCubuguHtml() +
         '<div class="fc-top">' +
-          '<span>🎧 Listen & Find / Spell — <b>' + (FC_INDEX + 1) + ' / ' + deck.length + '</b></span>' +
-          '<div style="display:flex;gap:6px;align-items:center;">' +
-            '<span class="srs-badge">📅 ' + srsEtiket + '</span>' +
-            '<button class="btn" onclick="fcKaristir()">🔀 Shuffle</button>' +
-          '</div>' +
+          '<span>Question <b>' + (FC_INDEX + 1) + ' / ' + deck.length + '</b></span>' +
         '</div>' +
         '<div class="fc-progress-track"><div class="fc-progress-bar" style="width:' + pct + '%;"></div></div>' +
         '<div class="study-box">' +
@@ -5058,7 +4807,7 @@
             '<span style="font-size:11px;color:#64748b;font-weight:600;">Audio-First Ear Training</span>' +
           '</div>' +
           '<div class="study-question">' +
-            '<button class="fc-btn fc-btn-known listen-play-button" onclick="kelimeOku(\'' + escJs(card.kelime) + '\')">🔊 Click to Listen Again</button>' +
+            '<button class="fc-btn fc-btn-known listen-play-button" onclick="kelimeOku(\'' + escJs(card.kelime) + '\')">🔊 Play audio</button>' +
             '<div id="listenRevealWord" style="margin-top:8px;font-size:13px;color:#64748b;font-weight:600;">Listen to the pronunciation and select its meaning or spell it below:</div>' +
           '</div>' +
           '<div class="choice-grid">' + btnHtml.join("") + '</div>' +
@@ -5069,8 +4818,8 @@
           '<div id="listenFeedbackBox" style="display:none;margin-top:12px;border:2px solid #22c55e;background:#f0fdf4;" class="fc-example" onclick="ornekOku(\'' + escJs(card.ornek) + '\', this)" title="Click to listen to the example sentence"></div>' +
         '</div>' +
         '<div class="fc-controls">' +
-          '<button class="fc-btn" onclick="fcDegistir(-1)">◀ Prev</button>' +
-          '<button class="fc-btn" onclick="fcDegistir(1)">Skip / Next ▶</button>' +
+          '<button class="fc-btn" onclick="fcDegistir(-1)">← Previous</button>' +
+          '<button class="fc-btn" onclick="fcDegistir(1)">Skip →</button>' +
         '</div>';
     }
 
@@ -5212,13 +4961,12 @@
       var hepsiBitti = eslesenSayisi === altListe.length;
 
       box.innerHTML =
-        modCubuguHtml() +
         '<div class="fc-top">' +
-          '<span>🧩 5-Word Quick Match — <b>Matched: ' + eslesenSayisi + ' / ' + altListe.length + '</b></span>' +
-          '<button class="btn" onclick="matchYeniSet()">🔄 Next Set</button>' +
+          '<span>Matched <b>' + eslesenSayisi + ' / ' + altListe.length + '</b></span>' +
+          (hepsiBitti ? '' : '<button class="btn" onclick="matchYeniSet()">Skip set</button>') +
         '</div>' +
         '<div class="study-box">' +
-          '<div style="font-size:12px;color:#475569;font-weight:600;">Click an English word on the left (it will also read it aloud) and match it with its Turkish meaning on the right:</div>' +
+          '<div style="font-size:12px;color:#475569;font-weight:600;">Match each English word with its Turkish meaning.</div>' +
           '<div class="match-grid">' +
             '<div class="match-col">' + enHtml.join("") + '</div>' +
             '<div class="match-col">' + trHtml.join("") + '</div>' +
@@ -5226,7 +4974,7 @@
           (hepsiBitti
             ? '<div style="text-align:center;padding:10px;background:#dcfce7;border:1px solid #86efac;border-radius:8px;color:#166534;font-weight:700;">' +
                 '🎉 Great job! All ' + altListe.length + ' words matched! ' +
-                '<button class="fc-btn fc-btn-known" style="margin-left:10px;" onclick="matchYeniSet()">Next 5 Words ▶</button>' +
+                '<button class="fc-btn fc-btn-known" style="margin-left:10px;" onclick="matchYeniSet()">Next set →</button>' +
               '</div>'
             : '') +
         '</div>';
@@ -5326,25 +5074,6 @@
       }
     }
 
-    function fcKaristir() {
-      quizGecisZamanlayiciTemizle();
-      var unk = TUM_KELIMELER.filter(function(w){ return w.durum === "bilmiyorum" && !kelimeDortHaftaUstalaMi(w); }).map(function(w){ return w.kelime.toLowerCase(); });
-      for (var i = unk.length - 1; i > 0; i--) {
-        var r = Math.floor(Math.random() * (i + 1));
-        var tmp = unk[i];
-        unk[i] = unk[r];
-        unk[r] = tmp;
-      }
-      FC_SHUFFLED_KEYS = unk;
-      FC_INDEX = 0;
-      FC_FLIPPED = false;
-      SECENEKLER_CACHE = { key: "", list: [] };
-      MATCH_DURUM = { seciliEn: null, seciliTr: null, eslesenler: {}, trSira: [], keySet: "" };
-      tercihleriKaydet();
-      tabloyuCiz();
-      bildirimGoster("🔀 Shuffled");
-    }
-
     function fcBiliyorumIsaretle(row) {
       var card = TUM_KELIMELER.filter(function(w){ return w.row === row; })[0];
       var wasMastered = card && card.durum === "biliyorum";
@@ -5393,7 +5122,7 @@
       document.getElementById("stTotal").innerText = total;
       document.getElementById("stUnk").innerText = unk;
       document.getElementById("stKnw").innerText = knw;
-      updateWorkspaceOverview(total, unk, knw);
+      updateWorkspaceOverview(total, knw);
       var fcTabBtn = document.getElementById("tabBtn-flashcards");
       if (fcTabBtn) fcTabBtn.innerText = "🃏 Flashcards (" + unk + ")";
       var nbS1 = document.getElementById("navBadge-sheet1");
@@ -5528,7 +5257,8 @@
       var kpBody = document.getElementById("knownPoolBody");
       if (kpBody) kpBody.innerHTML = kpRows.join("") || '<tr><td colspan="7" class="center" style="padding:14px;">No words in known pool.</td></tr>';
 
-      fcCiz(aktifHavuzuGetir());
+      if (AKTIF_SEKME === "flashcards") fcCiz(aktifHavuzuGetir());
+      else updateWordStudyStats();
       istatistikTablosuCiz();
       havuzTablosuCiz();
       updateVisibleResultCount();
@@ -6197,52 +5927,13 @@
 
 
     /** Update the workspace from the same word counts used by the library. */
-    function updateWorkspaceOverview(total, learning, mastered) {
+    function updateWorkspaceOverview(total, mastered) {
       var percent = total ? Math.round(mastered / total * 100) : 0;
       document.getElementById("masteryPercent").innerHTML = percent + "<span>%</span>";
       document.getElementById("masteryFill").style.width = percent + "%";
       document.getElementById("masteryProgress").setAttribute("aria-valuenow", percent);
       document.getElementById("masteryCaption").textContent = mastered + " of " + total + " words mastered";
-      document.getElementById("practiceDescription").textContent = learning ? learning + " words to work on. Pick up where you left off." : "Explore your collection or add a new word to practice.";
       updateWorkspaceHeading();
-    }
-
-    /** Move existing controls while retaining their original position in other views. */
-    function placeLibraryControl(element, target, isLibrary, before) {
-      if (!element.libraryHome) {
-        element.libraryHome = document.createComment("Library control home");
-        element.before(element.libraryHome);
-      }
-      if (isLibrary) {
-        if (element.parentNode !== target) target.insertBefore(element, before || null);
-      } else {
-        element.libraryHome.before(element);
-      }
-    }
-
-    /** Keep the library focused on rows and restore the other workspace layouts. */
-    function updateLibraryLayout() {
-      var isLibrary = AKTIF_SEKME === "sheet1";
-      var panel = document.querySelector(".workspace-panel");
-      var toolbar = panel.querySelector(".toolbar");
-      document.getElementById("mainContent").classList.toggle("library-layout", isLibrary);
-      placeLibraryControl(document.querySelector(".collection-label"), toolbar, isLibrary, toolbar.firstChild);
-      ["overviewToggle", "libraryPractice", "addWordToggleBtn"].forEach(function(id) {
-        placeLibraryControl(document.getElementById(id), toolbar, isLibrary);
-      });
-      placeLibraryControl(document.querySelector(".collection-tools"), toolbar, isLibrary);
-      placeLibraryControl(document.getElementById("learningOverview"), panel, isLibrary, document.getElementById("libraryControls"));
-      if (!isLibrary) document.getElementById("overviewToggle").setAttribute("aria-expanded", "false");
-      document.getElementById("learningOverview").hidden = isLibrary ? document.getElementById("overviewToggle").getAttribute("aria-expanded") !== "true" : AKTIF_SEKME === "flashcards";
-      document.querySelector(".practice-banner").hidden = isLibrary || AKTIF_SEKME === "flashcards";
-    }
-
-    /** Expand optional library statistics without changing filters or table state. */
-    function toggleLearningOverview() {
-      var toggle = document.getElementById("overviewToggle");
-      var expanded = toggle.getAttribute("aria-expanded") !== "true";
-      toggle.setAttribute("aria-expanded", String(expanded));
-      document.getElementById("learningOverview").hidden = !expanded;
     }
 
     /** Keep page context and navigation accessible across library and study views. */
@@ -6250,21 +5941,17 @@
       document.querySelector(".workspace-panel").classList.toggle("words-panel", AKTIF_SEKME === "sheet1");
       document.querySelector(".workspace-panel").classList.toggle("study-panel", AKTIF_SEKME === "flashcards");
       document.querySelector(".main-content").classList.toggle("study-layout", AKTIF_SEKME === "flashcards");
-      var views = {
-        sheet1: ["My vocabulary", "A home for the words you’re learning. Make each one stick.", "My vocabulary", "Words"],
-        sheetHavuz: ["Word pool", "Discover your next words and add them to your collection.", "Words to explore", "Word pool"],
-        pool: ["Still learning", "Give these words a little more time and practice.", "Words in progress", "Still learning"],
-        knownPool: ["Words mastered", "B2, C1 and C2 words return for spaced reviews. One mistake moves them back to Still learning.", "Your mastered words", "Mastered"],
-        stats: ["Your statistics", "Follow your practice, accuracy, and progress over time.", "Practice insights", "Statistics"]
-      };
+      var views = {sheet1:"Words", sheetHavuz:"Word pool", pool:"Still learning", knownPool:"Mastered", stats:"Statistics"};
       var modes = {flashcards:"Flashcards", cloze:"Fill in the blank", quiz:"Quiz", confusables:"Similar words", listen:"Listening", match:"Word match"};
-      var view = views[AKTIF_SEKME] || [modes[AKTIF_MOD] || "Practice", "A little focus. A few words. Keep your learning moving.", "Your practice session", "Practice"];
-      ["workspaceTitle", "workspaceDescription", "collectionTitle", "breadcrumbLabel"].forEach(function(id, index) { document.getElementById(id).textContent = view[index]; });
+      var title = views[AKTIF_SEKME] || modes[AKTIF_MOD] || "Practice";
+      document.getElementById("workspaceTitle").textContent = title;
+      document.getElementById("breadcrumbLabel").textContent = title;
+      document.getElementById("addWordToggleBtn").hidden = AKTIF_SEKME !== "sheet1";
+      document.getElementById("mainContent").classList.toggle("library-layout", AKTIF_SEKME === "sheet1");
       document.querySelectorAll(".side-nav-btn").forEach(function(button) {
         if (button.classList.contains("active-mode")) button.setAttribute("aria-current", "page");
         else button.removeAttribute("aria-current");
       });
-      updateLibraryLayout();
     }
 
     /** Show the number of matching rows rather than the unfiltered collection size. */
@@ -6272,6 +5959,7 @@
       var bodies = {sheet1:"sheet1Body", sheetHavuz:"sheetHavuzBody", pool:"poolBody", knownPool:"knownPoolBody", stats:"statsBody"};
       var body = document.getElementById(bodies[AKTIF_SEKME]);
       var count = body ? body.querySelectorAll("tr > td:first-child:not([colspan])").length : 0;
+      document.getElementById("clearFiltersBtn").hidden = !document.getElementById("searchInput").value.trim() && document.getElementById("levelFilter").value === "ALL";
       var result = document.getElementById("resultCount");
       result.hidden = !body;
       result.textContent = count + (AKTIF_SEKME === "stats" ? (count === 1 ? " record" : " records") : (count === 1 ? " word" : " words"));
@@ -6287,7 +5975,7 @@
 
     document.addEventListener("keydown", function(event) {
       var isEditing = /^(INPUT|SELECT|TEXTAREA)$/.test(event.target.tagName) || event.target.isContentEditable;
-      if (event.key === "/" && !isEditing) { event.preventDefault(); document.getElementById("searchInput").focus(); }
+      if (event.key === "/" && !isEditing && AKTIF_SEKME !== "flashcards") { event.preventDefault(); document.getElementById("searchInput").focus(); }
       if (event.key === "Escape") { mobilMenuKapat(); document.getElementById("settingsMenu").open = false; }
     });
 
