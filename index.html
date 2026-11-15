@@ -426,6 +426,7 @@
     }
     .status-pill.bilmiyorum { background: #fce8e6; color: #c5221f; }
     .status-pill.biliyorum { background: #e6f4ea; color: #137333; }
+    .status-pill.ogrenildi { background:#dbeafe; color:#1d4ed8; }
     th.col-mark, td.col-mark {
       width: 40px;
       min-width: 40px;
@@ -1751,14 +1752,14 @@
       <span class="language-pair">EN <span>↔</span> TR</span>
       <details class="settings-menu" id="settingsMenu">
         <summary class="icon-button" aria-label="Learning settings" title="Learning settings"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M4 17h16"/><circle cx="9" cy="7" r="3"/><circle cx="16" cy="17" r="3"/></svg></summary>
-        <div class="settings-panel"><strong>Learning settings</strong><p>Pronunciation</p><div class="settings-row"><button class="spk-toggle on" id="audioToggleBtn" onclick="sesAcKapat()" title="Audio ON: Click any word to hear pronunciation (Click to mute)">🔊</button></div><p>Mastery goal</p><div class="font-ctrl" style="padding:0 6px;gap:4px;background:#f0fdf4;border-color:#4ade80;" title="Set the minimum number of distinct days or weeks with correct answers required to auto-master a word (Known)">
+        <div class="settings-panel"><strong>Learning settings</strong><p>Pronunciation</p><div class="settings-row"><button class="spk-toggle on" id="audioToggleBtn" onclick="sesAcKapat()" title="Audio ON: Click any word to hear pronunciation (Click to mute)">🔊</button></div><p>Mastery goal</p><div class="font-ctrl" style="padding:0 6px;gap:4px;background:#f0fdf4;border-color:#4ade80;" title="Minimum training duration from first display. Learn after the Goal ends: 5 correct during training, or 3 correct after the Goal.">
         <span style="font-size:11.5px;font-weight:800;color:#166534;">🎯 Goal:</span>
         <input type="number" id="topMasteryCount" aria-label="Mastery goal count" min="1" max="365" value="5" style="width:42px;height:22px;border:1.5px solid #86efac;border-radius:4px;text-align:center;font-size:11.5px;font-weight:800;color:#14532d;outline:none;background:#fff;" onchange="ogrenmeHedefiDegistir(this.value, null)">
         <select id="topMasteryUnit" aria-label="Mastery goal period" style="height:22px;border:none;background:transparent;font-size:11.5px;font-weight:800;color:#14532d;outline:none;cursor:pointer;" onchange="ogrenmeHedefiDegistir(null, this.value)">
           <option value="gun" selected>Days</option>
           <option value="hafta">Weeks</option>
         </select>
-      </div><p>Table font size</p><div class="font-ctrl" role="group" aria-label="Table font size" title="Table font size"><button class="font-btn" aria-label="Decrease table font size" onclick="yaziBoyutuDegistir(-1)">A−</button><span class="font-val" id="fontValLabel" aria-live="polite">13px</span><button class="font-btn" aria-label="Increase table font size" onclick="yaziBoyutuDegistir(1)">A+</button></div><hr><button class="btn" style="background:#fff7ed;border-color:#fb923c;color:#9a3412;" onclick="tumKelimeleriBilinmeyenYap(true)" title="Move all words in Words back to Unknown status and reset streak progress">↩️ Reset All</button></div>
+      </div><p>Words stay in training until the Goal ends. Learn with 5 correct answers during the Goal, or 3 correct answers after it ends.</p><p>Table font size</p><div class="font-ctrl" role="group" aria-label="Table font size" title="Table font size"><button class="font-btn" aria-label="Decrease table font size" onclick="yaziBoyutuDegistir(-1)">A−</button><span class="font-val" id="fontValLabel" aria-live="polite">13px</span><button class="font-btn" aria-label="Increase table font size" onclick="yaziBoyutuDegistir(1)">A+</button></div><hr><button class="btn" style="background:#fff7ed;border-color:#fb923c;color:#9a3412;" onclick="tumKelimeleriBilinmeyenYap(true)" title="Move all words in Words back to Unknown status and reset streak progress">↩️ Reset All</button></div>
       </details>
       <button class="mobile-menu-btn" id="mobileMenuBtn" onclick="mobilMenuAcKapat()" aria-controls="leftSidebar" aria-expanded="false" aria-label="Open navigation">☰</button>
     </div>
@@ -1788,8 +1789,12 @@
         <span class="side-nav-badge" id="navBadge-pool">-</span>
       </button>
       <button class="side-nav-btn" id="topBtn-knownPool" onclick="sekmeDegistir('knownPool')" title="Known Words in Words Table">
-        <span class="nav-label"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/></svg>Mastered</span>
+        <span class="nav-label"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/></svg>Already known</span>
         <span class="side-nav-badge" id="navBadge-knownPool">-</span>
+      </button>
+      <button class="side-nav-btn" id="topBtn-learnedPool" onclick="sekmeDegistir('learnedPool')" title="Words learned through practice; checked periodically">
+        <span class="nav-label"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/></svg>Learned</span>
+        <span class="side-nav-badge" id="navBadge-learnedPool">-</span>
       </button>
       <button class="side-nav-btn" id="topBtn-stats" onclick="sekmeDegistir('stats')" title="Mistake Statistics & Error Bars">
         <span class="nav-label"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 3v17h17M9 15v-4m5 4V7m5 8v-5"/></svg>Statistics</span>
@@ -1936,8 +1941,8 @@
       <div class="table-wrap modern-table-view" id="knownPoolView" style="display:none;">
         <div class="pool-layout">
           <section class="pool-card" aria-labelledby="knownPoolViewWordsTitle">
-          <h3 id="knownPoolViewWordsTitle">Mastered words</h3>
-          <div class="pool-table-scroll" role="region" aria-label="Mastered words table" tabindex="0">
+          <h3 id="knownPoolViewWordsTitle">Already known words</h3>
+          <div class="pool-table-scroll" role="region" aria-label="Already known words table" tabindex="0">
           <table class="sheet-table collection-words">
             <thead>
               <tr>
@@ -1957,11 +1962,36 @@
         </div>
       </div>
 
+      <div class="table-wrap modern-table-view" id="learnedPoolView" style="display:none;">
+        <div class="pool-layout">
+          <section class="pool-card" aria-labelledby="learnedPoolViewWordsTitle">
+          <h3 id="learnedPoolViewWordsTitle">Learned words</h3>
+          <p>These words return for retention checks. A wrong answer restarts training.</p>
+          <div class="pool-table-scroll" role="region" aria-label="Learned words table" tabindex="0">
+          <table class="sheet-table collection-words">
+            <thead>
+              <tr>
+                <th class="center">Level</th>
+                <th class="col-type">Type</th>
+                <th class="col-mark" title="Top (✓): Known | Bottom (✕): Unknown">✓/✕</th>
+                <th>Word</th>
+                <th>Meaning</th>
+                <th>Example Sentence</th>
+                <th class="col-date">Date</th>
+              </tr>
+            </thead>
+            <tbody id="learnedPoolBody"></tbody>
+          </table>
+          </div>
+          </section>
+        </div>
+      </div>
+
       <div class="table-wrap modern-table-view" id="statsView" style="display:none;">
       <section class="overview-grid" id="learningOverview" aria-label="Learning overview">
         <button class="overview-card" onclick="sekmeDegistir('sheet1')"><span class="card-top"><span>Total words</span><span class="stat-icon"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20M6.5 3H20v19H6.5A2.5 2.5 0 0 1 4 19.5v-14A2.5 2.5 0 0 1 6.5 3Z"/><path d="M8 7h8M8 11h6"/></svg></span></span><strong id="stTotal">0</strong></button>
         <button class="overview-card" onclick="sekmeDegistir('pool')"><span class="card-top"><span>Still learning</span><span class="stat-icon amber"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span></span><strong id="stUnk">0</strong></button>
-        <button class="overview-card" onclick="sekmeDegistir('knownPool')"><span class="card-top"><span>Words mastered</span><span class="stat-icon green"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/></svg></span></span><strong id="stKnw">0</strong></button>
+        <button class="overview-card" onclick="sekmeDegistir('knownPool')"><span class="card-top"><span>Known &amp; learned</span><span class="stat-icon green"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/></svg></span></span><strong id="stKnw">0</strong></button>
         <div class="overview-card progress-card"><span class="card-top"><span>Your progress</span><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 3v17h17M9 15v-4m5 4V7m5 8v-5"/></svg></span><strong id="masteryPercent">0<span>%</span></strong><div class="mastery-track" role="progressbar" aria-label="Words mastered" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="masteryProgress"><span id="masteryFill"></span></div><span class="stat-caption" id="masteryCaption">Your next word is a step forward.</span></div>
       </section>
         <div class="stats-kpi-bar">
@@ -1991,7 +2021,8 @@
               <th class="center">Total</th>
               <th class="center">Error Rate</th>
               <th>Mistake Bar</th>
-              <th id="thStreakCol" class="center" title="Consecutive Zero-Mistake Streak = Auto Known">Streak</th>
+              <th id="thStreakCol" class="center" title="Training duration and correct confirmations">Learning</th>
+              <th>First Seen</th>
               <th>Last Practice</th>
             </tr>
           </thead>
@@ -2016,6 +2047,7 @@
       <button class="sheet-tab" id="tabBtn-sheetHavuz" onclick="sekmeDegistir('sheetHavuz')">📦 Word Pool</button>
       <button class="sheet-tab" id="tabBtn-pool" onclick="sekmeDegistir('pool')">📕 Unknown Pool</button>
       <button class="sheet-tab" id="tabBtn-knownPool" onclick="sekmeDegistir('knownPool')">📗 Known Pool</button>
+      <button class="sheet-tab" id="tabBtn-learnedPool" onclick="sekmeDegistir('learnedPool')">📘 Learned</button>
       <button class="sheet-tab" id="tabBtn-stats" onclick="sekmeDegistir('stats')">📊 Mistake Stats</button>
       <button class="sheet-tab" id="tabBtn-flashcards" onclick="calismaModuAc('flashcards')">🃏 Flashcards</button>
       <button class="sheet-tab" id="tabBtn-cloze" onclick="calismaModuAc('cloze')">📝 Cloze</button>
@@ -2105,8 +2137,8 @@
       }
       var th = document.getElementById("thStreakCol");
       if (th) {
-        th.innerText = sayi + " " + birimEtiket;
-        th.title = "At least " + sayi + " distinct " + birimEtiket.toLowerCase() + " with zero mistakes = Auto Known";
+        th.innerText = "Learning";
+        th.title = "Goal: " + sayi + " " + birimEtiket + ". 5 correct during the Goal or 3 after it; the Goal must always finish.";
       }
     }
 
@@ -2127,7 +2159,7 @@
       hedefHaftaSecicileriGuncelle();
       if (typeof tercihleriKaydet === "function") tercihleriKaydet();
       tabloyuCiz();
-      bildirimGoster("🎯 Mastery Goal: At least " + HEDEF_SAYI + " distinct " + hedefBirimEtiketAl() + " with correct answers");
+      bildirimGoster("🎯 Minimum training duration: " + HEDEF_SAYI + " " + hedefBirimEtiketAl());
     }
 
     function hedefHaftaDegistir(val) {
@@ -2221,6 +2253,10 @@
         btn.innerText = "🔇";
         btn.title = "Audio OFF: Click to enable word pronunciation on click";
         document.body.classList.add("audio-muted");
+        if (AKTIF_SES) {
+          try { AKTIF_SES.pause(); } catch (e) {}
+          AKTIF_SES = null;
+        }
         if ("speechSynthesis" in window) window.speechSynthesis.cancel();
       }
     }
@@ -2231,6 +2267,8 @@
       try { localStorage.setItem("kelime_tablo_ses", SES_ACIK ? "1" : "0"); } catch (e) {}
       if (typeof tercihleriKaydet === "function") tercihleriKaydet();
       bildirimGoster(SES_ACIK ? "🔊 Audio On" : "🔇 Audio Off");
+      FC_OKUNAN_KART = "";
+      if (SES_ACIK && AKTIF_SEKME === "flashcards") fcCiz(aktifHavuzuGetir());
     }
 
     try {
@@ -2278,7 +2316,9 @@
       if ("speechSynthesis" in window) window.speechSynthesis.cancel();
       var ses = new Audio("https://ssl.gstatic.com/dictionary/static/sounds/20200429/" + encodeURIComponent(temiz.toLowerCase()) + "--_us_1.mp3");
       AKTIF_SES = ses;
-      ses.play().catch(function(){ tarayiciIleOku(temiz); });
+      ses.play().catch(function(){
+        if (AKTIF_SES === ses) tarayiciIleOku(temiz);
+      });
     }
 
     function ornekOku(ornek, cellEl) {
@@ -2327,8 +2367,18 @@
 
     function durumMetniGetir(durum) {
       if (durum === "bilmiyorum") return "In Pool (Unknown)";
-      if (durum === "biliyorum") return "Learned (Known)";
+      if (durum === "biliyorum") return "Already known";
+      if (durum === "ogrenildi") return "Learned";
       return "Pending";
+    }
+
+    function kayittanKelimeDurumuAl(durum, st) {
+      if (!st) return durum;
+      st = ogrenmeKaydiniHazirla(st);
+      if (st.manualKnown) return "biliyorum";
+      if (st.learned) return "ogrenildi";
+      if (durum === "ogrenildi" || durum === "biliyorum" && st.manualKnown === false) return "bilmiyorum";
+      return durum;
     }
 
     var SON_YEREL_DEGISIM = {};
@@ -2339,6 +2389,7 @@
       var birlesik = [];
       var gorulen = {};
       var simdi = Date.now();
+      var ogrenmeMap = istatistikMapAl();
 
       for (var i = 0; i < bazListe.length; i++) {
         var item = bazListe[i];
@@ -2356,6 +2407,7 @@
         } else {
           kisiselDurum = durumMap[key] || item.durum || "bilmiyorum";
         }
+        kisiselDurum = kayittanKelimeDurumuAl(kisiselDurum, ogrenmeMap[key]);
         birlesik.push({
           row: item.row || (i + 2),
           tarih: item.tarih || "",
@@ -2379,6 +2431,7 @@
         gorulen[ekKey] = true;
         kalanEklenenler.push(ek);
         var d = durumMap[ekKey] || ek.durum || "bilmiyorum";
+        d = kayittanKelimeDurumuAl(d, ogrenmeMap[ekKey]);
         birlesik.push({
           row: birlesik.length + 2,
           tarih: ek.tarih || "",
@@ -2397,7 +2450,22 @@
         kisiselEklenenKaydet(kalanEklenenler);
       }
 
+      if (JSON.stringify(TUM_KELIMELER) === JSON.stringify(birlesik)) {
+        if (dortHaftaHatasizKontrolEt()) tabloyuCiz();
+        return;
+      }
+      var aktifKart = null;
+      if (AKTIF_SEKME === "flashcards" && (AKTIF_MOD === "flashcards" || AKTIF_MOD === "quiz")) {
+        aktifKart = fcDestesiniGetir(aktifHavuzuGetir())[FC_INDEX];
+      }
       TUM_KELIMELER = birlesik;
+      SECENEKLER_CACHE = { key: "", list: [] };
+      if (aktifKart) {
+        var yeniDeste = fcDestesiniGetir(aktifHavuzuGetir());
+        var yeniIndex = yeniDeste.findIndex(function(w) { return w.kelime.toLowerCase() === aktifKart.kelime.toLowerCase(); });
+        if (yeniIndex !== -1) FC_INDEX = yeniIndex;
+        else quizGecisZamanlayiciTemizle();
+      }
       tabloyuCiz();
     }
 
@@ -2613,7 +2681,16 @@
       } catch (e) {}
     };
 
+    var CANLI_SENKRON_ARALIGI_MS = 60000;
+    var SON_CANLI_SENKRON = 0;
+
+    function canliVerileriGuncelle(zorla) {
+      if (document.hidden || (zorla !== true && Date.now() - SON_CANLI_SENKRON < CANLI_SENKRON_ARALIGI_MS)) return;
+      verileriYukle(false);
+    }
+
     function verileriYukle(bildirimli) {
+      SON_CANLI_SENKRON = Date.now();
       document.getElementById("syncDot").className = "sync-dot loading";
       document.getElementById("syncText").innerText = "Syncing...";
 
@@ -2653,6 +2730,7 @@
             if (res.havuz && res.havuz.length > 0) {
               HAVUZ_KELIMELER = res.havuz;
               yerelOnbellekKaydet("kelime_son_havuz_v1", HAVUZ_KELIMELER);
+              havuzTablosuCiz();
             }
             if (res.words && res.words.length > 0) {
               SHEET_KELIMELER = res.words;
@@ -2725,13 +2803,82 @@
       return st;
     }
 
-    function kelimeIlerlemeSayisiAl(st) {
-      if (!st) return 0;
-      istatistikKaydiNormalizeEt(st);
-      if (hedefBirimAl() === "hafta") {
-        return Array.isArray(st.cleanWeeks) ? st.cleanWeeks.length : 0;
+    function yerelGunAnahtari(d) {
+      var tarih = d || new Date();
+      var pad = function(n) { return String(n).padStart(2, "0"); };
+      return tarih.getFullYear() + "-" + pad(tarih.getMonth() + 1) + "-" + pad(tarih.getDate());
+    }
+
+    function takvimGunuAl(iso) {
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(iso || "")) return null;
+      var n = iso.split("-").map(Number);
+      return Date.UTC(n[0], n[1] - 1, n[2]) / 86400000;
+    }
+
+    function ogrenmeKaydiniHazirla(st) {
+      st = istatistikKaydiNormalizeEt(st);
+      if (st.learningVersion !== 2) {
+        st.firstSeenOn = st.firstSeenOn || st.firstPracticedOn || "";
+        st.trainingStartedOn = st.trainingStartedOn || st.firstSeenOn;
+        st.correctDuringGoal = Number(st.correctDuringGoal) || 0;
+        st.correctAfterGoal = Number(st.correctAfterGoal) || 0;
+        st.learned = !!st.learned || (!!st.autoMasteredByStreak && !st.manualKnown);
+        st.learningVersion = 2;
       }
-      return Array.isArray(st.cleanDays) ? st.cleanDays.length : 0;
+      return st;
+    }
+
+    function ogrenmeKaydiDegisti(st) {
+      st.learningUpdatedAt = Math.max(Date.now(), (Number(st.learningUpdatedAt) || 0) + 1);
+    }
+
+    function ogrenmeDurumuAl(st, now) {
+      st = ogrenmeKaydiniHazirla(st);
+      var baslangic = takvimGunuAl(st.trainingStartedOn);
+      var bugun = takvimGunuAl(yerelGunAnahtari(now ? new Date(now) : new Date()));
+      var hedefGun = hedefSayiAl() * (hedefBirimAl() === "hafta" ? 7 : 1);
+      var gecen = baslangic === null ? 0 : Math.max(0, bugun - baslangic);
+      var doldu = baslangic !== null && gecen >= hedefGun;
+      return {
+        elapsedDays: gecen, goalDays: hedefGun, expired: doldu,
+        ready: doldu && st.lastAnswerCorrect !== false && ((Number(st.correctDuringGoal) || 0) >= 5 || (Number(st.correctAfterGoal) || 0) >= 3)
+      };
+    }
+
+    function kelimeIlerlemeSayisiAl(st) {
+      return st ? (Number(st.correctDuringGoal) || 0) + (Number(st.correctAfterGoal) || 0) : 0;
+    }
+
+    function kelimeOgrenildiMi(word, stats) {
+      if (!word || word.durum === "biliyorum") return false;
+      var st = (stats || istatistikMapAl())[(word.kelime || "").trim().toLowerCase()];
+      return word.durum === "ogrenildi" || !!(st && !st.manualKnown && ogrenmeKaydiniHazirla(st).learned);
+    }
+
+    var OGRENME_SENKRON_TIMER = null;
+    var CALISMA_CEVAPLARI = {};
+
+    function ogrenmeSenkronunuPlanla() {
+      if (!APPS_SCRIPT_URL || OGRENME_SENKRON_TIMER) return;
+      OGRENME_SENKRON_TIMER = setTimeout(function() {
+        OGRENME_SENKRON_TIMER = null;
+        istatistikleriSunucuyaSenkronizeEt(false);
+      }, 300);
+    }
+
+    function kelimeGosteriminiKaydet(word) {
+      if (!word || !word.kelime || word.durum === "biliyorum") return;
+      var key = word.kelime.toLowerCase().trim();
+      var map = istatistikMapAl();
+      var st = ogrenmeKaydiniHazirla(map[key]);
+      if (st.firstSeenOn && st.trainingStartedOn) return;
+      st.kelime = word.kelime;
+      st.firstSeenOn = st.firstSeenOn || yerelGunAnahtari();
+      st.trainingStartedOn = st.trainingStartedOn || st.firstSeenOn;
+      ogrenmeKaydiDegisti(st);
+      map[key] = st;
+      istatistikMapKaydet(map);
+      ogrenmeSenkronunuPlanla();
     }
 
     function kelimeHatasizHaftaSayisiAl(st, refWord) {
@@ -2742,9 +2889,9 @@
     var REVIEW_LEARNING_BATCH = 3;
     var REVIEW_DAY_MS = 24 * 60 * 60 * 1000;
 
-    /** Keep advanced mastered words in a recurring retention schedule. */
+    /** Learned words of every level receive retention checks; manual Known words do not. */
     function isRetentionWord(word) {
-      return !!word && ["B2", "C1", "C2"].indexOf((word.seviye || "").trim().toUpperCase()) !== -1;
+      return !!word && !!word.kelime;
     }
 
     function scheduleMasteredReview(entry, now, advance) {
@@ -2756,7 +2903,7 @@
     }
 
     function isMasteredReviewDue(word, stats, now) {
-      if (!isRetentionWord(word) || word.durum !== "biliyorum") return false;
+      if (!kelimeOgrenildiMi(word, stats)) return false;
       var entry = stats[(word.kelime || "").trim().toLowerCase()];
       return !entry || !Number(entry.nextReviewAt) || Number(entry.nextReviewAt) <= now;
     }
@@ -2764,8 +2911,8 @@
     /** Mix overdue mastered words with learning words, oldest reviews first. */
     function interleaveMasteredReviews(deck) {
       var stats = istatistikMapAl();
-      var reviews = deck.filter(function(w) { return w.durum === "biliyorum"; });
-      var learning = deck.filter(function(w) { return w.durum !== "biliyorum"; });
+      var reviews = deck.filter(function(w) { return kelimeOgrenildiMi(w, stats); });
+      var learning = deck.filter(function(w) { return !kelimeOgrenildiMi(w, stats); });
       reviews.sort(function(a, b) {
         var aStats = stats[a.kelime.trim().toLowerCase()] || {};
         var bStats = stats[b.kelime.trim().toLowerCase()] || {};
@@ -2782,62 +2929,31 @@
     }
 
     function kelimeDortHaftaUstalaMi(w) {
-      if (!w || !w.kelime) return false;
-      var hedefSayi = hedefSayiAl();
-      var map = istatistikMapAl();
-      var k = w.kelime.toString().trim().toLowerCase();
-      var st = map[k];
-      if (!st) return false;
-      var ilerleme = kelimeIlerlemeSayisiAl(st);
-      return ilerleme >= hedefSayi;
+      return kelimeOgrenildiMi(w);
     }
 
     function dortHaftaHatasizKontrolEt() {
-      var hedefSayi = hedefSayiAl();
       var map = istatistikMapAl();
-      var srsMap = srsMapAl();
-      var mapDegisti = false;
-      var geriAlinanSayi = 0;
-
+      var degisenler = [];
       for (var i = 0; i < TUM_KELIMELER.length; i++) {
         var w = TUM_KELIMELER[i];
         var k = (w.kelime || "").toString().trim().toLowerCase();
-        if (!k) continue;
-        var st = map[k];
-        if (st) istatistikKaydiNormalizeEt(st);
-        var ilerleme = st ? kelimeIlerlemeSayisiAl(st) : 0;
-
-        if (ilerleme >= hedefSayi) {
-          if (st && !st.mastered4w) {
-            st.mastered4w = true;
-            if (isRetentionWord(w) && w.durum !== "biliyorum") scheduleMasteredReview(st, Date.now(), false);
-            if (w.durum !== "biliyorum") st.autoMasteredByStreak = true;
-            mapDegisti = true;
-          }
-          if (w.durum !== "biliyorum") {
-            w.durum = "biliyorum";
-            w.biliyorum = true;
-            w.bilmiyorum = false;
-            SON_YEREL_DEGISIM[k] = Date.now();
-            kisiselDurumKaydet(w.kelime, "biliyorum");
-            if (APPS_SCRIPT_URL) {
-              fetch(APPS_SCRIPT_URL, {
-                method: "POST",
-                headers: { "Content-Type": "text/plain;charset=utf-8" },
-                body: JSON.stringify({ action: "setStatus", row: w.row, status: "biliyorum" })
-              }).catch(function() {});
-            }
-          }
-        } else {
-          if (st && st.mastered4w) {
-            st.mastered4w = false;
-            mapDegisti = true;
-          }
+        if (!k || !map[k]) continue;
+        var st = ogrenmeKaydiniHazirla(map[k]);
+        if (st.manualKnown || w.durum === "biliyorum" && !st.learned) continue;
+        if (!st.learned && ogrenmeDurumuAl(st).ready) {
+          st.learned = true;
+          st.learnedOn = yerelGunAnahtari();
+          scheduleMasteredReview(st, Date.now(), false);
+          ogrenmeKaydiDegisti(st);
+          degisenler.push(w);
+        } else if (st.learned && w.durum !== "ogrenildi") {
+          degisenler.push(w);
         }
       }
-      if (mapDegisti) {
-        istatistikMapKaydet(map);
-      }
+      istatistikMapKaydet(map);
+      degisenler.forEach(function(w) { kutucukDegisti(w.row, "ogrenildi", true, false, true); });
+      return degisenler.length;
     }
 
     function tumKelimeleriBilinmeyenYap(manuelMi) {
@@ -2849,6 +2965,14 @@
         var k = (w.kelime || "").toString().trim().toLowerCase();
         var st = map[k];
         if (st) {
+          st = ogrenmeKaydiniHazirla(st);
+          st.learned = false;
+          st.trainingStartedOn = "";
+          st.correctDuringGoal = 0;
+          st.correctAfterGoal = 0;
+          delete st.nextReviewAt;
+          delete st.reviewIntervalDays;
+          ogrenmeKaydiDegisti(st);
           st.manualKnown = false;
           st.mastered4w = false;
           st.autoMasteredByStreak = false;
@@ -2880,6 +3004,7 @@
         }
       }
       istatistikMapKaydet(map);
+      ogrenmeSenkronunuPlanla();
       tabloyuCiz();
       if (manuelMi) {
         bildirimGoster("↩️ All words (" + TUM_KELIMELER.length + " words) moved back to Unknown Pool!");
@@ -2893,66 +3018,37 @@
     function sunucuIstatistikleriniBirlestir(serverStats) {
       if (!serverStats || typeof serverStats !== "object") return;
       var localMap = istatistikMapAl();
-      var degisti = false;
-      var yerelDahaIleri = false;
-
-      var sKeys = Object.keys(serverStats);
-      for (var i = 0; i < sKeys.length; i++) {
-        var k = sKeys[i].toLowerCase().trim();
-        var sv = serverStats[sKeys[i]];
-        if (!sv) continue;
-        var sWord = sv.kelime || sv.word || k;
-        var sLvl = sv.seviye || sv.level || "";
-        var sMean = sv.anlam || sv.meaning || "";
-        var sM = Number(sv.mistakes) || 0;
-        var sC = Number(sv.correct) || 0;
-        var lc = localMap[k];
-        if (!lc) {
-          localMap[k] = {
-            kelime: sWord,
-            seviye: sLvl,
-            anlam: sMean,
-            mistakes: sM,
-            correct: sC,
-            cleanSince: sv.cleanSince || "",
-            cleanWeeks: Array.isArray(sv.cleanWeeks) ? sv.cleanWeeks : [],
-            mastered4w: !!sv.mastered4w,
-            lastPractice: sv.lastPractice || "-"
-          };
-          degisti = true;
-        } else {
-          var lM = Number(lc.mistakes) || 0;
-          var lC = Number(lc.correct) || 0;
-          if (sM > lM || sC > lC) {
-            lc.mistakes = Math.max(lM, sM);
-            lc.correct = Math.max(lC, sC);
-            if (sv.lastPractice && sv.lastPractice !== "-" && (!lc.lastPractice || lc.lastPractice === "-")) {
-              lc.lastPractice = sv.lastPractice;
-            }
-            degisti = true;
-          } else if (lM > sM || lC > sC) {
-            yerelDahaIleri = true;
-          }
+      var pending = false;
+      Object.keys(serverStats).forEach(function(rawKey) {
+        var key = rawKey.toLowerCase().trim();
+        var sv = serverStats[rawKey];
+        if (!sv) return;
+        var lc = localMap[key] || {};
+        var localVersion = Number(lc.learningUpdatedAt) || 0;
+        var serverVersion = Number(sv.learningUpdatedAt) || 0;
+        var merged = Object.assign({}, sv, lc);
+        if (serverVersion > localVersion) Object.assign(merged, sv);
+        var latest = serverVersion > localVersion ? sv : lc;
+        if (latest.learningVersion === 2) {
+          ["learningVersion", "learningUpdatedAt", "trainingStartedOn", "correctDuringGoal", "correctAfterGoal", "lastAnswerCorrect", "learned", "learnedOn", "manualKnown", "autoMasteredByStreak", "nextReviewAt", "reviewIntervalDays"].forEach(function(field) {
+            if (latest[field] === undefined) delete merged[field];
+            else merged[field] = latest[field];
+          });
         }
-      }
-
-      var lKeys = Object.keys(localMap);
-      for (var j = 0; j < lKeys.length; j++) {
-        var lk = lKeys[j];
-        var lv = localMap[lk];
-        if (lv && ((Number(lv.mistakes) || 0) > 0 || (Number(lv.correct) || 0) > 0) && !serverStats[lk]) {
-          yerelDahaIleri = true;
-        }
-      }
-
-      if (degisti) {
-        istatistikMapKaydet(localMap);
-        dortHaftaHatasizKontrolEt();
-        istatistikTablosuCiz();
-      }
-      if (yerelDahaIleri) {
-        istatistikleriSunucuyaSenkronizeEt(false);
-      }
+        merged.kelime = sv.kelime || sv.word || lc.kelime || key;
+        merged.seviye = sv.seviye || sv.level || lc.seviye || "";
+        merged.anlam = sv.anlam || sv.meaning || lc.anlam || "";
+        merged.mistakes = Math.max(Number(lc.mistakes) || 0, Number(sv.mistakes) || 0);
+        merged.correct = Math.max(Number(lc.correct) || 0, Number(sv.correct) || 0);
+        var dates = [lc.firstSeenOn, sv.firstSeenOn].filter(function(d) { return takvimGunuAl(d) !== null; }).sort();
+        if (dates.length) merged.firstSeenOn = dates[0];
+        localMap[key] = ogrenmeKaydiniHazirla(merged);
+        if (localVersion > serverVersion || merged.correct > (Number(sv.correct) || 0) || merged.mistakes > (Number(sv.mistakes) || 0)) pending = true;
+      });
+      Object.keys(localMap).forEach(function(key) { if (!serverStats[key]) pending = true; });
+      istatistikMapKaydet(localMap);
+      istatistikTablosuCiz();
+      if (pending) ogrenmeSenkronunuPlanla();
     }
 
     function istatistikleriSunucuyaSenkronizeEt(bildirimli) {
@@ -3002,7 +3098,10 @@
           break;
         }
       }
-      var wasMastered = hedef && hedef.durum === "biliyorum";
+      if (hedef && hedef.durum === "biliyorum") return;
+      if (AKTIF_SEKME === "flashcards" && CALISMA_CEVAPLARI[key]) return;
+      if (AKTIF_SEKME === "flashcards") CALISMA_CEVAPLARI[key] = true;
+      if (hedef) kelimeGosteriminiKaydet(hedef);
       var map = istatistikMapAl();
       var kayit = map[key] || {
         kelime: hedef ? hedef.kelime : temiz,
@@ -3024,10 +3123,19 @@
       var pad = function(n) { return n < 10 ? "0" + n : "" + n; };
       var bugunIso = simdi.getFullYear() + "-" + pad(simdi.getMonth() + 1) + "-" + pad(simdi.getDate());
       var buHafta = haftaAnahtariAl(simdi);
+      kayit = ogrenmeKaydiniHazirla(kayit);
+      kayit.firstSeenOn = kayit.firstSeenOn || bugunIso;
+      kayit.trainingStartedOn = kayit.trainingStartedOn || kayit.firstSeenOn;
+      var wasLearned = !!kayit.learned || hedef && hedef.durum === "ogrenildi";
+      var goalExpired = ogrenmeDurumuAl(kayit, simdi.getTime()).expired;
       if (!kayit.firstPracticedOn && !(Number(kayit.correct) || Number(kayit.mistakes))) kayit.firstPracticedOn = bugunIso;
 
       if (dogruMu) {
         kayit.correct = (Number(kayit.correct) || 0) + 1;
+        if (!wasLearned) {
+          if (goalExpired) kayit.correctAfterGoal = (Number(kayit.correctAfterGoal) || 0) + 1;
+          else kayit.correctDuringGoal = (Number(kayit.correctDuringGoal) || 0) + 1;
+        }
         istatistikKaydiNormalizeEt(kayit);
         if (kayit.lastMistakeDate !== bugunIso) {
           if (kayit.cleanDays.indexOf(bugunIso) === -1) {
@@ -3053,38 +3161,41 @@
       }
 
       var modAdi = (mod || AKTIF_MOD || "Study").toString().toUpperCase();
+      kayit.lastAnswerCorrect = !!dogruMu;
       kayit.lastPractice =
         modAdi + " • " + (dogruMu ? "✅" : "❌") + " (" +
         bugunIso + " " + pad(simdi.getHours()) + ":" + pad(simdi.getMinutes()) + ")";
 
-      var hedefSayi = hedefSayiAl();
-      var birimEtiket = hedefBirimEtiketAl();
-      var ilerlemeSayisi = kelimeIlerlemeSayisiAl(kayit);
       var statusChange = "";
-      if (dogruMu && wasMastered && isRetentionWord(hedef)) {
+      if (dogruMu && wasLearned) {
         if (isMasteredReviewDue(hedef, map, simdi.getTime())) {
           scheduleMasteredReview(kayit, simdi.getTime(), true);
         }
       }
-      if (dogruMu && ilerlemeSayisi >= hedefSayi) {
-        kayit.mastered4w = true;
-        if (hedef && hedef.durum !== "biliyorum") {
-          kayit.autoMasteredByStreak = true;
-          statusChange = "biliyorum";
-          if (isRetentionWord(hedef)) scheduleMasteredReview(kayit, simdi.getTime(), false);
-          bildirimGoster("🏆 Mastered (" + ilerlemeSayisi + "/" + hedefSayi + " " + birimEtiket + "): " + kayit.kelime + " → Moved to Known!");
-        }
-      } else {
-        kayit.mastered4w = false;
+      if (dogruMu && !wasLearned && ogrenmeDurumuAl(kayit, simdi.getTime()).ready) {
+        kayit.learned = true;
+        kayit.manualKnown = false;
+        kayit.learnedOn = bugunIso;
+        statusChange = "ogrenildi";
+        scheduleMasteredReview(kayit, simdi.getTime(), false);
+        bildirimGoster("🏆 Learned: " + kayit.kelime + " — scheduled for retention checks");
       }
 
-      if (!dogruMu && isRetentionWord(hedef)) {
-        kayit.manualKnown = false;
-        kayit.autoMasteredByStreak = false;
-        delete kayit.nextReviewAt;
-        delete kayit.reviewIntervalDays;
-        if (wasMastered) statusChange = "bilmiyorum";
+      if (!dogruMu) {
+        kayit.correctAfterGoal = 0;
+        if (wasLearned) {
+          kayit.learned = false;
+          kayit.manualKnown = false;
+          kayit.autoMasteredByStreak = false;
+          kayit.trainingStartedOn = bugunIso;
+          kayit.correctDuringGoal = 0;
+          delete kayit.learnedOn;
+          delete kayit.nextReviewAt;
+          delete kayit.reviewIntervalDays;
+          statusChange = "bilmiyorum";
+        }
       }
+      ogrenmeKaydiDegisti(kayit);
       map[key] = kayit;
       istatistikMapKaydet(map);
       if (statusChange) kutucukDegisti(hedef.row, statusChange, true, false, true);
@@ -3092,7 +3203,7 @@
       istatistikTablosuCiz();
 
       if (APPS_SCRIPT_URL) {
-        var payloadEntry = {
+        var payloadEntry = Object.assign({}, kayit, {
           word: kayit.kelime,
           kelime: kayit.kelime,
           level: kayit.seviye,
@@ -3102,7 +3213,7 @@
           mistakes: kayit.mistakes,
           correct: kayit.correct,
           lastPractice: kayit.lastPractice
-        };
+        });
         fetch(APPS_SCRIPT_URL, {
           method: "POST",
           keepalive: true,
@@ -3131,10 +3242,26 @@
                 "&mode=" + encodeURIComponent(mod || AKTIF_MOD) +
                 "&mistakes=" + kayit.mistakes +
                 "&correct=" + kayit.correct +
+                "&entry=" + encodeURIComponent(JSON.stringify(payloadEntry)) +
                 "&_=" + Date.now()
             ).catch(function() {});
           });
       }
+    }
+
+    function ogrenmeIlerlemesiHtml(st, status) {
+      st = ogrenmeKaydiniHazirla(st);
+      if (status === "biliyorum" || st.manualKnown) return '<span class="status-pill biliyorum">Already known</span>';
+      if (status === "ogrenildi" || st.learned) {
+        var next = st.nextReviewAt ? yerelGunAnahtari(new Date(st.nextReviewAt)) : "Due now";
+        return '<span class="status-pill ogrenildi" title="Next check: ' + escHtml(formatDisplayDate(next)) + '">Learned</span>';
+      }
+      if (!st.trainingStartedOn) return "Not seen yet";
+      var progress = ogrenmeDurumuAl(st);
+      var label = progress.expired
+        ? 'Goal complete · ' + (Number(st.correctAfterGoal) || 0) + '/3 checks'
+        : progress.elapsedDays + '/' + progress.goalDays + ' days · ' + (Number(st.correctDuringGoal) || 0) + '/5 correct';
+      return '<span class="streak-pill">' + escHtml(label) + '</span>';
     }
 
     function istatistikTablosuCiz() {
@@ -3198,7 +3325,9 @@
           total: total,
           errRate: errRate,
           cleanWeeksCount: haftaSayi,
-          mastered4w: haftaSayi >= hedefHafta && m === 0,
+          learning: st,
+          status: ref ? ref.durum : "",
+          firstSeenOn: st.firstSeenOn || st.firstPracticedOn || "",
           lastPractice: st.lastPractice || "-"
         });
       }
@@ -3238,7 +3367,7 @@
 
       if (!liste.length) {
         tbody.innerHTML =
-          '<tr><td colspan="11" class="center" style="padding:20px;color:#64748b;">' +
+          '<tr><td colspan="12" class="center" style="padding:20px;color:#64748b;">' +
             'No statistics yet.' +
           '</td></tr>';
         return;
@@ -3251,11 +3380,7 @@
         var barColor = it.mistakes === 0
           ? "#22c55e"
           : (it.errRate >= 60 ? "linear-gradient(90deg, #ef4444, #b91c1c)" : "linear-gradient(90deg, #f97316, #ea580c)");
-        var gosterilenSt = Math.min(hedefHafta, it.cleanWeeksCount);
-        var bEtiket = hedefBirimEtiketAl();
-        var streakHtml = it.mastered4w
-          ? '<span class="streak-pill mastered" title="Answered correctly on at least ' + hedefHafta + ' distinct ' + bEtiket.toLowerCase() + ' — Mastered!">🏆 ' + gosterilenSt + '/' + hedefHafta + ' ' + bEtiket + '</span>'
-          : '<span class="streak-pill" title="Distinct zero-mistake ' + bEtiket.toLowerCase() + ' (' + gosterilenSt + '/' + hedefHafta + ')">📅 ' + gosterilenSt + '/' + hedefHafta + ' ' + bEtiket + '</span>';
+        var streakHtml = ogrenmeIlerlemesiHtml(it.learning, it.status);
 
         rowsHtml.push(
           '<tr>' +
@@ -3279,6 +3404,7 @@
               '</div>' +
             '</td>' +
             '<td class="center">' + streakHtml + '</td>' +
+            '<td class="col-date">' + escHtml(formatDisplayDate(it.firstSeenOn || "—")) + '</td>' +
             '<td class="col-date" title="' + escHtml(formatDisplayDate(it.lastPractice)) + '">' + escHtml(formatDisplayDate(it.lastPractice)) + '</td>' +
           '</tr>'
         );
@@ -3289,6 +3415,7 @@
     var FC_INDEX = 0;
     var FC_FLIPPED = false;
     var FC_SHUFFLED_KEYS = null;
+    var FC_OKUNAN_KART = "";
     var AKTIF_MOD = "flashcards";
     var SECENEKLER_CACHE = { key: "", list: [] };
     var MATCH_DURUM = { seciliEn: null, seciliTr: null, eslesenler: {}, trSira: [], keySet: "" };
@@ -3303,7 +3430,7 @@
 
     function srsArtir(card) {
       if (!card || !card.kelime) return false;
-      return card.durum === "biliyorum" || kelimeDortHaftaUstalaMi(card);
+      return !calismaKelimesiUygunMu(card, istatistikMapAl(), Date.now());
     }
 
     function tercihleriKaydet() {
@@ -3385,6 +3512,7 @@
         document.getElementById("poolView").style.display = AKTIF_SEKME === "pool" ? "block" : "none";
         var kpView = document.getElementById("knownPoolView");
         if (kpView) kpView.style.display = AKTIF_SEKME === "knownPool" ? "block" : "none";
+        document.getElementById("learnedPoolView").style.display = AKTIF_SEKME === "learnedPool" ? "block" : "none";
         document.getElementById("flashcardView").style.display = AKTIF_SEKME === "flashcards" ? "block" : "none";
         var stView = document.getElementById("statsView");
         if (stView) stView.style.display = AKTIF_SEKME === "stats" ? "block" : "none";
@@ -3401,6 +3529,8 @@
       document.getElementById("tabBtn-pool").classList.toggle("active", s === "pool");
       var tabKnw = document.getElementById("tabBtn-knownPool");
       if (tabKnw) tabKnw.classList.toggle("active", s === "knownPool");
+      document.getElementById("tabBtn-learnedPool").classList.toggle("active", s === "learnedPool");
+      document.getElementById("topBtn-learnedPool").classList.toggle("active-mode", s === "learnedPool");
       var topS1 = document.getElementById("topBtn-sheet1");
       if (topS1) topS1.classList.toggle("active-mode", s === "sheet1");
       var topShHavuz = document.getElementById("topBtn-sheetHavuz");
@@ -3465,6 +3595,7 @@
 
     function sekmeDegistir(s) {
       quizGecisZamanlayiciTemizle();
+      FC_OKUNAN_KART = "";
       AKTIF_SEKME = s;
       mobilMenuKapat();
       sekmeButonlariniGuncelle();
@@ -3474,6 +3605,7 @@
       document.getElementById("poolView").style.display = s === "pool" ? "block" : "none";
       var kpView = document.getElementById("knownPoolView");
       if (kpView) kpView.style.display = s === "knownPool" ? "block" : "none";
+      document.getElementById("learnedPoolView").style.display = s === "learnedPool" ? "block" : "none";
       document.getElementById("flashcardView").style.display = s === "flashcards" ? "block" : "none";
       var stView = document.getElementById("statsView");
       if (stView) stView.style.display = s === "stats" ? "block" : "none";
@@ -3484,6 +3616,7 @@
 
     function calismaModuAc(mod) {
       quizGecisZamanlayiciTemizle();
+      FC_OKUNAN_KART = "";
       AKTIF_MOD = mod || "flashcards";
       AKTIF_SEKME = "flashcards";
       mobilMenuKapat();
@@ -3499,30 +3632,27 @@
       document.getElementById("poolView").style.display = "none";
       var kpView = document.getElementById("knownPoolView");
       if (kpView) kpView.style.display = "none";
+      document.getElementById("learnedPoolView").style.display = "none";
       document.getElementById("flashcardView").style.display = "block";
       var stView = document.getElementById("statsView");
       if (stView) stView.style.display = "none";
       tercihleriKaydet();
       tabloyuCiz();
-      if (mod === "listen") {
-        setTimeout(function() {
-          var poolList = aktifHavuzuGetir();
-          var deck = fcDestesiniGetir(poolList);
-          if (deck.length) {
-            var card = deck[FC_INDEX % deck.length];
-            if (card) kelimeOku(card.kelime);
-          }
-        }, 120);
-      }
+      canliVerileriGuncelle(true);
+    }
+
+    function calismaKelimesiUygunMu(w, stats, now) {
+      if (!w || !w.kelime) return false;
+      if (w.durum === "biliyorum" || w.biliyorum) return false;
+      if (kelimeOgrenildiMi(w, stats)) return isMasteredReviewDue(w, stats, now);
+      return true;
     }
 
     function aktifHavuzuGetir() {
       var stats = istatistikMapAl();
       var now = Date.now();
       return TUM_KELIMELER.filter(function(w){
-        var learning = w.durum === "bilmiyorum" && !kelimeDortHaftaUstalaMi(w);
-        if (!learning && !isMasteredReviewDue(w, stats, now)) return false;
-        return true;
+        return calismaKelimesiUygunMu(w, stats, now);
       }).sort(function(a, b){ return (a.seviye || "").localeCompare(b.seviye || ""); });
     }
 
@@ -3530,7 +3660,7 @@
       var stats = istatistikMapAl();
       var now = Date.now();
       var sadeceBilinmeyenler = (poolList || []).filter(function(w) {
-        return w && ((w.durum === "bilmiyorum" && !kelimeDortHaftaUstalaMi(w)) || isMasteredReviewDue(w, stats, now));
+        return calismaKelimesiUygunMu(w, stats, now);
       });
       if (!FC_SHUFFLED_KEYS || !FC_SHUFFLED_KEYS.length) return interleaveMasteredReviews(sadeceBilinmeyenler);
       var byKey = {};
@@ -3977,9 +4107,12 @@
       var secenekler = [dogruCard];
       var kullanilan = {};
       kullanilan[dogruKey] = true;
+      var quizAdaylari = {};
+      aktifHavuzuGetir().forEach(function(w) { quizAdaylari[w.kelime.toLowerCase().trim()] = w; });
 
       if (akilliMi) {
         var benzerAdaylar = benzerKelimeleriBul(dogruCard, 5);
+        benzerAdaylar = benzerAdaylar.map(function(w) { return quizAdaylari[w.kelime.toLowerCase().trim()]; }).filter(Boolean);
         // İlk 2 en yakın ikizi doğrudan al, 3. çeldiriciyi ise en yakın 3.-5. aday arasından seç ki çeşitlilik de olsun
         for (var b = 0; b < benzerAdaylar.length && secenekler.length < 3; b++) {
           var bk = (benzerAdaylar[b].kelime || "").toLowerCase().trim();
@@ -4000,16 +4133,12 @@
         }
       }
 
-      var havuzAdaylar = (tumHavuz || []).filter(function(w) {
-        if (!w || (w.durum !== "bilmiyorum" && dogruCard.durum !== "biliyorum")) return false;
-        if (dogruCard.durum !== "biliyorum" && kelimeDortHaftaUstalaMi(w)) return false;
+      var adayUygunMu = function(w) {
+        if (!w || !calismaKelimesiUygunMu(w, istatistikMapAl(), Date.now())) return false;
         return (w.kelime || "").toLowerCase().trim() !== dogruKey;
-      });
-      var tumBilinmeyenAdaylar = TUM_KELIMELER.filter(function(w) {
-        if (!w || (w.durum !== "bilmiyorum" && dogruCard.durum !== "biliyorum")) return false;
-        if (dogruCard.durum !== "biliyorum" && kelimeDortHaftaUstalaMi(w)) return false;
-        return (w.kelime || "").toLowerCase().trim() !== dogruKey;
-      });
+      };
+      var havuzAdaylar = (tumHavuz || []).filter(adayUygunMu);
+      var tumBilinmeyenAdaylar = TUM_KELIMELER.filter(adayUygunMu);
 
       for (var i = havuzAdaylar.length - 1; i > 0; i--) {
         var r = Math.floor(Math.random() * (i + 1));
@@ -4075,7 +4204,23 @@
     }
 
 
-    /** Return calendar-day numbers without daylight-saving time offsets. */
+    /** Start pronunciation as soon as a new study word is rendered. */
+    function fcKelimeyiOtomatikOku(card) {
+      if (!SES_ACIK || !card || AKTIF_SEKME !== "flashcards") return;
+      var key = AKTIF_MOD + ":" + (AKTIF_MOD === "quiz" ? (window.QUIZ_YON || "tr-en") + ":" : "") + card.kelime.toLowerCase().trim();
+      if (FC_OKUNAN_KART === key) return;
+      FC_OKUNAN_KART = key;
+      if ("speechSynthesis" in window) {
+        if (AKTIF_SES) {
+          try { AKTIF_SES.pause(); } catch (e) {}
+          AKTIF_SES = null;
+        }
+        tarayiciIleOku(card.kelime);
+      } else {
+        kelimeOku(card.kelime);
+      }
+    }
+
     function fcCiz(poolList) {
       var box = document.getElementById("fcContainer");
       if (!box) return;
@@ -4085,6 +4230,7 @@
       }
       var deck = fcDestesiniGetir(poolList);
       if (!deck.length) {
+        FC_OKUNAN_KART = "";
         box.innerHTML =
           '<div class="fc-empty">' +
             '<div style="font-size:28px;margin-bottom:8px;">🎉</div>' +
@@ -4098,6 +4244,10 @@
 
       if (FC_INDEX >= deck.length) FC_INDEX = 0;
       if (FC_INDEX < 0) FC_INDEX = deck.length - 1;
+      if (AKTIF_MOD !== "match") {
+        CALISMA_CEVAPLARI = {};
+        kelimeGosteriminiKaydet(deck[FC_INDEX]);
+      }
 
       if (AKTIF_MOD === "cloze") {
         clozeModuCiz(box, deck);
@@ -4105,10 +4255,12 @@
       }
       if (AKTIF_MOD === "quiz") {
         quizModuCiz(box, deck);
+        fcKelimeyiOtomatikOku(deck[FC_INDEX]);
         return;
       }
       if (AKTIF_MOD === "listen") {
         listenModuCiz(box, deck);
+        fcKelimeyiOtomatikOku(deck[FC_INDEX]);
         return;
       }
       if (AKTIF_MOD === "match") {
@@ -4160,10 +4312,11 @@
           '<button class="fc-btn" onclick="fcDegistir(-1)">← Previous</button>' +
           '<button class="fc-btn" onclick="fcCevir()">↻ Flip</button>' +
           '<button class="fc-btn" style="background:#fef2f2;border-color:#fecaca;color:#b91c1c;" onclick="fcHataIsaretle(' + card.row + ')" title="Record a mistake and advance">Forgot</button>' +
-          '<button class="fc-btn" style="background:#fffbeb;border-color:#fde68a;color:#b45309;" onclick="fcSrsArtir(' + card.row + ')" title="Record a correct answer for today/this week (Auto-Known upon reaching goal)">Remembered</button>' +
-          '<button class="fc-btn fc-btn-known" onclick="fcBiliyorumIsaretle(' + card.row + ')">Mark mastered</button>' +
+          '<button class="fc-btn" style="background:#fffbeb;border-color:#fde68a;color:#b45309;" onclick="fcSrsArtir(' + card.row + ')" title="Record one correct encounter; learning still requires the full Goal duration">Remembered</button>' +
+          '<button class="fc-btn fc-btn-known" onclick="fcBiliyorumIsaretle(' + card.row + ')">I already know</button>' +
           '<button class="fc-btn" onclick="fcDegistir(1)">Next ▶</button>' +
         '</div>';
+      fcKelimeyiOtomatikOku(card);
     }
 
     function clozeModuCiz(box, deck) {
@@ -4469,8 +4622,7 @@
     function confusablesDestesiniGetir() {
 
       var adayListe = TUM_KELIMELER.filter(function(item) {
-        if (!item || !item.kelime) return false;
-        return true;
+        return calismaKelimesiUygunMu(item, istatistikMapAl(), Date.now());
       });
 
       var sonuc = [];
@@ -4487,7 +4639,7 @@
           var yk = (yakinlar[y].kelime || "").toLowerCase().trim();
           if (yk && !gorulen[yk]) {
             var mevcutKart = kelimeKartiniBul(-1, yakinlar[y].kelime);
-            if (mevcutKart) {
+            if (mevcutKart && calismaKelimesiUygunMu(mevcutKart, istatistikMapAl(), Date.now())) {
               gorulen[yk] = true;
               sonuc.push(mevcutKart);
             }
@@ -4516,6 +4668,8 @@
       if (FC_INDEX < 0) FC_INDEX = confDeck.length - 1;
 
       var card = confDeck[FC_INDEX];
+      CALISMA_CEVAPLARI = {};
+      kelimeGosteriminiKaydet(card);
       var pct = Math.round(((FC_INDEX + 1) / confDeck.length) * 100);
       var secenekler = secenekleriUret(card, confDeck);
       var enTr = window.QUIZ_YON === "en-tr";
@@ -4722,6 +4876,7 @@
       var grupKey = altListe.map(function(w){ return w.kelime.toLowerCase(); }).join("|");
 
       if (MATCH_DURUM.keySet !== grupKey) {
+        CALISMA_CEVAPLARI = {};
         var trIndisler = [];
         for (var i = 0; i < altListe.length; i++) trIndisler.push(i);
         for (var j = trIndisler.length - 1; j > 0; j--) {
@@ -4738,6 +4893,7 @@
           keySet: grupKey
         };
       }
+      altListe.forEach(kelimeGosteriminiKaydet);
 
       var enHtml = [];
       var trHtml = [];
@@ -4870,32 +5026,16 @@
 
     function fcDegistir(delta) {
       quizGecisZamanlayiciTemizle();
+      FC_OKUNAN_KART = "";
       FC_INDEX += delta;
       FC_FLIPPED = false;
       SECENEKLER_CACHE = { key: "", list: [] };
       tercihleriKaydet();
       tabloyuCiz();
-      if (AKTIF_MOD === "flashcards" || AKTIF_MOD === "listen") {
-        var poolList = aktifHavuzuGetir();
-        var deck = fcDestesiniGetir(poolList);
-        if (deck.length && SES_ACIK) {
-          var c = deck[FC_INDEX % deck.length];
-          if (c) kelimeOku(c.kelime);
-        }
-      }
     }
 
     function fcBiliyorumIsaretle(row) {
-      var card = TUM_KELIMELER.filter(function(w){ return w.row === row; })[0];
-      var wasMastered = card && card.durum === "biliyorum";
-      if (card) {
-        alistirmaSonucuKaydet(card.kelime, true, "Flashcards");
-      }
       FC_FLIPPED = false;
-      if (wasMastered) {
-        tabloyuCiz();
-        return;
-      }
       kutucukDegisti(row, "biliyorum", true);
     }
 
@@ -4917,29 +5057,34 @@
 
     function tabloyuCiz() {
       dortHaftaHatasizKontrolEt();
-      var total = TUM_KELIMELER.length, unk = 0, knw = 0;
+      var total = TUM_KELIMELER.length, unk = 0, knw = 0, learned = 0, calismaSayisi = 0;
+      var learningStats = istatistikMapAl();
       for (var i = 0; i < TUM_KELIMELER.length; i++) {
         var w = TUM_KELIMELER[i];
-        if (w.durum === "bilmiyorum") {
+        if (w.durum !== "biliyorum" && w.durum !== "ogrenildi") {
           unk++;
         } else if (w.durum === "biliyorum") {
           knw++;
+        } else if (w.durum === "ogrenildi") {
+          learned++;
         }
+        if (calismaKelimesiUygunMu(w, learningStats, Date.now())) calismaSayisi++;
       }
       document.getElementById("stTotal").innerText = total;
       document.getElementById("stUnk").innerText = unk;
-      document.getElementById("stKnw").innerText = knw;
-      updateWorkspaceOverview(total, knw);
+      document.getElementById("stKnw").innerText = knw + learned;
+      updateWorkspaceOverview(total, knw + learned);
       var fcTabBtn = document.getElementById("tabBtn-flashcards");
-      if (fcTabBtn) fcTabBtn.innerText = "🃏 Flashcards (" + unk + ")";
+      if (fcTabBtn) fcTabBtn.innerText = "🃏 Flashcards (" + calismaSayisi + ")";
       var nbS1 = document.getElementById("navBadge-sheet1");
       if (nbS1) nbS1.innerText = String(total);
       var nbPool = document.getElementById("navBadge-pool");
       if (nbPool) nbPool.innerText = String(unk);
       var nbKnw = document.getElementById("navBadge-knownPool");
       if (nbKnw) nbKnw.innerText = String(knw);
+      document.getElementById("navBadge-learnedPool").innerText = String(learned);
       var nbFc = document.getElementById("navBadge-flashcards");
-      if (nbFc) nbFc.innerText = String(unk);
+      if (nbFc) nbFc.innerText = String(calismaSayisi);
 
       var q = (document.getElementById("searchInput").value || "").toLowerCase().trim();
       var lvl = document.getElementById("levelFilter").value;
@@ -4993,9 +5138,7 @@
       document.getElementById("sheet1Body").innerHTML = s1Rows.join("") || '<tr><td colspan="9" class="center" style="padding:14px;"><div class="empty-state"><strong>No matching words</strong><p>Try another search or clear your filters.</p><button class="btn" onclick="clearVocabularyFilters()">Clear filters</button></div></td></tr>';
 
       var poolList = TUM_KELIMELER.filter(function(w){
-        if (w.durum !== "bilmiyorum") return false;
-        if (kelimeDortHaftaUstalaMi(w)) return false;
-        return true;
+        return w.durum !== "biliyorum" && !kelimeOgrenildiMi(w, learningStats);
       }).sort(function(a, b){ return (a.seviye || "").localeCompare(b.seviye || ""); });
 
       var pRows = [];
@@ -5043,6 +5186,20 @@
       }
       var kpBody = document.getElementById("knownPoolBody");
       if (kpBody) kpBody.innerHTML = kpRows.join("") || '<tr><td colspan="7" class="center" style="padding:14px;">No words in known pool.</td></tr>';
+      var learnedWords = TUM_KELIMELER.filter(function(w) { return kelimeOgrenildiMi(w, learningStats); });
+      var learnedRows = learnedWords.map(function(w) {
+        var st = learningStats[w.kelime.toLowerCase().trim()] || {};
+        return '<tr>' +
+          '<td class="col-lvl">' + escHtml(w.seviye) + '</td>' +
+          '<td class="col-type">' + escHtml(turTemizle(w.tur)) + '</td>' +
+          '<td class="col-mark">' + durumKutusuHtml(w.row, w.durum) + '</td>' +
+          '<td class="col-word" onclick="kelimeOku(\'' + escJs(w.kelime) + '\', this)">' + escHtml(w.kelime) + '</td>' +
+          '<td class="col-meaning">' + escHtml(w.anlam) + '</td>' +
+          '<td class="col-example" onclick="ornekOku(\'' + escJs(w.ornek) + '\', this)">' + escHtml(w.ornek) + '</td>' +
+          '<td class="col-date" title="First seen">' + escHtml(formatDisplayDate(st.firstSeenOn || "—")) + '</td>' +
+          '</tr>';
+      });
+      document.getElementById("learnedPoolBody").innerHTML = learnedRows.join("") || '<tr><td colspan="7" class="center" style="padding:14px;">No learned words yet.</td></tr>';
 
       if (AKTIF_SEKME === "flashcards") fcCiz(aktifHavuzuGetir());
       istatistikTablosuCiz();
@@ -5526,6 +5683,7 @@
       var key = (hedef.kelime || "").toString().trim().toLowerCase();
       SON_YEREL_DEGISIM[key] = Date.now();
       hedef.durum = yeniDurum;
+      SECENEKLER_CACHE = { key: "", list: [] };
       hedef.biliyorum = yeniDurum === "biliyorum";
       hedef.bilmiyorum = yeniDurum === "bilmiyorum";
       for (var s = 0; s < SHEET_KELIMELER.length; s++) {
@@ -5538,17 +5696,24 @@
       if (key) {
         var ist = istatistikMapAl();
         if (manuelMi !== false && yeniDurum === "biliyorum") {
-          var stKayit = istatistikKaydiNormalizeEt(ist[key]);
+          var stKayit = ogrenmeKaydiniHazirla(ist[key]);
           stKayit.word = hedef.kelime;
           stKayit.manualKnown = true;
+          stKayit.learned = false;
           stKayit.autoMasteredByStreak = false;
-          if (isRetentionWord(hedef)) scheduleMasteredReview(stKayit, Date.now(), false);
+          delete stKayit.nextReviewAt;
+          delete stKayit.reviewIntervalDays;
+          ogrenmeKaydiDegisti(stKayit);
           ist[key] = stKayit;
           istatistikMapKaydet(ist);
-        } else if (yeniDurum === "bilmiyorum" && ist[key]) {
-          var stKayit2 = istatistikKaydiNormalizeEt(ist[key]);
+        } else if (manuelMi !== false && yeniDurum !== "ogrenildi" && ist[key]) {
+          var stKayit2 = ogrenmeKaydiniHazirla(ist[key]);
           stKayit2.manualKnown = false;
           stKayit2.autoMasteredByStreak = false;
+          stKayit2.learned = false;
+          stKayit2.trainingStartedOn = "";
+          stKayit2.correctDuringGoal = 0;
+          stKayit2.correctAfterGoal = 0;
           if (isRetentionWord(hedef)) {
             stKayit2.cleanDays = [];
             stKayit2.cleanWeeks = [];
@@ -5557,6 +5722,7 @@
             delete stKayit2.nextReviewAt;
             delete stKayit2.reviewIntervalDays;
           }
+          ogrenmeKaydiDegisti(stKayit2);
           ist[key] = stKayit2;
           istatistikMapKaydet(ist);
         }
@@ -5564,7 +5730,7 @@
       kisiselDurumKaydet(hedef.kelime, yeniDurum);
       kisiselKnownSiraGuncelle(hedef.kelime, yeniDurum);
       if (!deferRender) tabloyuCiz();
-      var durumEtiket = yeniDurum === "biliyorum" ? "✓ Known (Moved to bottom)" : (yeniDurum === "bilmiyorum" ? "✕ Unknown" : "○ Pending");
+      var durumEtiket = durumMetniGetir(yeniDurum);
       bildirimGoster(durumEtiket + ": " + hedef.kelime);
 
       if (APPS_SCRIPT_URL) {
@@ -5573,7 +5739,7 @@
         fetch(APPS_SCRIPT_URL, {
           method: "POST",
           headers: { "Content-Type": "text/plain;charset=utf-8" },
-          body: JSON.stringify({ action: "setStatus", row: hedef.row, status: yeniDurum })
+          body: JSON.stringify({ action: "setStatus", row: hedef.row, status: yeniDurum, entry: istatistikMapAl()[key] })
         })
           .then(function(r) { return r.json(); })
           .then(function(res) {
@@ -5672,7 +5838,7 @@
       document.querySelector(".workspace-panel").classList.toggle("words-panel", AKTIF_SEKME === "sheet1");
       document.querySelector(".workspace-panel").classList.toggle("study-panel", AKTIF_SEKME === "flashcards");
       document.querySelector(".main-content").classList.toggle("study-layout", AKTIF_SEKME === "flashcards");
-      var views = {sheet1:"All words", sheetHavuz:"Word pool", pool:"Still learning", knownPool:"Mastered", stats:"Statistics"};
+      var views = {sheet1:"All words", sheetHavuz:"Word pool", pool:"Still learning", knownPool:"Already known", learnedPool:"Learned", stats:"Statistics"};
       var modes = {flashcards:"Flashcards", cloze:"Fill in the blank", quiz:"Quiz", confusables:"Similar words", listen:"Listening", match:"Word match"};
       var title = views[AKTIF_SEKME] || modes[AKTIF_MOD] || "Practice";
       document.getElementById("workspaceTitle").textContent = title;
@@ -5687,7 +5853,7 @@
 
     /** Show the number of matching rows rather than the unfiltered collection size. */
     function updateVisibleResultCount() {
-      var bodies = {sheet1:"sheet1Body", sheetHavuz:"sheetHavuzBody", pool:"poolBody", knownPool:"knownPoolBody", stats:"statsBody"};
+      var bodies = {sheet1:"sheet1Body", sheetHavuz:"sheetHavuzBody", pool:"poolBody", knownPool:"knownPoolBody", learnedPool:"learnedPoolBody", stats:"statsBody"};
       var body = document.getElementById(bodies[AKTIF_SEKME]);
       var count = body ? body.querySelectorAll("tr > td:first-child:not([colspan])").length : 0;
       document.getElementById("clearFiltersBtn").hidden = !document.getElementById("searchInput").value.trim() && document.getElementById("levelFilter").value === "ALL";
@@ -5731,6 +5897,9 @@
       listeyiBirlestirVeHazirla(FALLBACK_WORDS, false);
     }
     verileriYukle(false);
+    setInterval(canliVerileriGuncelle, CANLI_SENKRON_ARALIGI_MS);
+    document.addEventListener("visibilitychange", canliVerileriGuncelle);
+    window.addEventListener("focus", canliVerileriGuncelle);
 
     window.addEventListener("storage", function(e) {
       if (e && e.key === "kelime_istatistik_v1") {
