@@ -2401,7 +2401,7 @@
           if (SON_YEREL_DEGISIM[key] && (simdi - SON_YEREL_DEGISIM[key] < 8000) && durumMap[key]) {
             kisiselDurum = durumMap[key];
           } else {
-            kisiselDurum = item.durum || "bilmiyorum";
+            kisiselDurum = kayittanKelimeDurumuAl(item.durum || "bilmiyorum", ogrenmeMap[key]);
             kisiselDurumKaydet(item.kelime, kisiselDurum);
           }
         } else {
@@ -2451,22 +2451,31 @@
       }
 
       if (JSON.stringify(TUM_KELIMELER) === JSON.stringify(birlesik)) {
-        if (dortHaftaHatasizKontrolEt()) tabloyuCiz();
+        if (dortHaftaHatasizKontrolEt()) tabloyuCiz(canliMi);
         return;
       }
       var aktifKart = null;
-      if (AKTIF_SEKME === "flashcards" && (AKTIF_MOD === "flashcards" || AKTIF_MOD === "quiz")) {
-        aktifKart = fcDestesiniGetir(aktifHavuzuGetir())[FC_INDEX];
+      if (AKTIF_SEKME === "flashcards" && TUM_KELIMELER.length > 0) {
+        var mevcutDeste = AKTIF_MOD === "confusables" ? confusablesDestesiniGetir() : fcDestesiniGetir(aktifHavuzuGetir());
+        if (mevcutDeste.length > 0) {
+          var gecerliIdx = ((FC_INDEX % mevcutDeste.length) + mevcutDeste.length) % mevcutDeste.length;
+          aktifKart = mevcutDeste[gecerliIdx];
+        }
       }
       TUM_KELIMELER = birlesik;
-      SECENEKLER_CACHE = { key: "", list: [] };
       if (aktifKart) {
-        var yeniDeste = fcDestesiniGetir(aktifHavuzuGetir());
+        var yeniDeste = AKTIF_MOD === "confusables" ? confusablesDestesiniGetir() : fcDestesiniGetir(aktifHavuzuGetir());
         var yeniIndex = yeniDeste.findIndex(function(w) { return w.kelime.toLowerCase() === aktifKart.kelime.toLowerCase(); });
-        if (yeniIndex !== -1) FC_INDEX = yeniIndex;
-        else quizGecisZamanlayiciTemizle();
+        if (yeniIndex !== -1) {
+          FC_INDEX = yeniIndex;
+        } else {
+          SECENEKLER_CACHE = { key: "", list: [] };
+          quizGecisZamanlayiciTemizle();
+        }
+      } else {
+        SECENEKLER_CACHE = { key: "", list: [] };
       }
-      tabloyuCiz();
+      tabloyuCiz(canliMi);
     }
 
     function gvizTablosunuCozumle(table) {
@@ -2657,6 +2666,18 @@
         if (response && response.table) {
           var liste = gvizTablosunuCozumle(response.table);
           if (liste && liste.length > 0) {
+            var mevcutRowMap = {};
+            var kaynak = SHEET_KELIMELER && SHEET_KELIMELER.length ? SHEET_KELIMELER : TUM_KELIMELER;
+            for (var i = 0; i < (kaynak || []).length; i++) {
+              var k = (kaynak[i].kelime || "").toString().trim().toLowerCase();
+              if (k && kaynak[i].row) mevcutRowMap[k] = kaynak[i].row;
+            }
+            for (var j = 0; j < liste.length; j++) {
+              var lk = (liste[j].kelime || "").toString().trim().toLowerCase();
+              if (lk && mevcutRowMap[lk]) {
+                liste[j].row = mevcutRowMap[lk];
+              }
+            }
             SHEET_KELIMELER = liste;
             yerelOnbellekKaydet("kelime_son_sheet_words_v1", SHEET_KELIMELER);
             listeyiBirlestirVeHazirla(SHEET_KELIMELER, true);
@@ -3583,8 +3604,9 @@
       document.body.style.overflow = isMobile && isOpen ? "hidden" : "";
     }
 
-    var QUIZ_CORRECT_DELAY_MS = 1000;
+    var QUIZ_CORRECT_DELAY_MS = 3000;
     var QUIZ_GECIS_TIMER = null;
+    var SON_CIZILEN_SORU_ANAHTARI = "";
 
     function quizGecisZamanlayiciTemizle() {
       if (QUIZ_GECIS_TIMER) {
@@ -3595,6 +3617,7 @@
 
     function sekmeDegistir(s) {
       quizGecisZamanlayiciTemizle();
+      SON_CIZILEN_SORU_ANAHTARI = "";
       FC_OKUNAN_KART = "";
       AKTIF_SEKME = s;
       mobilMenuKapat();
@@ -3616,6 +3639,7 @@
 
     function calismaModuAc(mod) {
       quizGecisZamanlayiciTemizle();
+      SON_CIZILEN_SORU_ANAHTARI = "";
       FC_OKUNAN_KART = "";
       AKTIF_MOD = mod || "flashcards";
       AKTIF_SEKME = "flashcards";
@@ -3638,7 +3662,7 @@
       if (stView) stView.style.display = "none";
       tercihleriKaydet();
       tabloyuCiz();
-      canliVerileriGuncelle(true);
+      canliVerileriGuncelle(false);
     }
 
     function calismaKelimesiUygunMu(w, stats, now) {
@@ -4101,18 +4125,27 @@
       var cacheKey = AKTIF_MOD + ":" + (akilliMi ? "smart:" : "rand:") + dogruKey;
 
       if (SECENEKLER_CACHE.key === cacheKey && SECENEKLER_CACHE.list && SECENEKLER_CACHE.list.length >= 2) {
+        var guncelListe = [];
+        for (var c = 0; c < SECENEKLER_CACHE.list.length; c++) {
+          var eskiOpt = SECENEKLER_CACHE.list[c];
+          var guncelOpt = kelimeKartiniBul(eskiOpt.row, eskiOpt.kelime) || eskiOpt;
+          guncelListe.push(guncelOpt);
+        }
+        SECENEKLER_CACHE.list = guncelListe;
         return SECENEKLER_CACHE.list;
       }
 
       var secenekler = [dogruCard];
       var kullanilan = {};
       kullanilan[dogruKey] = true;
-      var quizAdaylari = {};
-      aktifHavuzuGetir().forEach(function(w) { quizAdaylari[w.kelime.toLowerCase().trim()] = w; });
+      var tumKelimeHaritasi = {};
+      TUM_KELIMELER.forEach(function(w) {
+        if (w && w.kelime) tumKelimeHaritasi[w.kelime.toLowerCase().trim()] = w;
+      });
 
       if (akilliMi) {
         var benzerAdaylar = benzerKelimeleriBul(dogruCard, 5);
-        benzerAdaylar = benzerAdaylar.map(function(w) { return quizAdaylari[w.kelime.toLowerCase().trim()]; }).filter(Boolean);
+        benzerAdaylar = benzerAdaylar.map(function(w) { return tumKelimeHaritasi[w.kelime.toLowerCase().trim()] || w; }).filter(Boolean);
         // İlk 2 en yakın ikizi doğrudan al, 3. çeldiriciyi ise en yakın 3.-5. aday arasından seç ki çeşitlilik de olsun
         for (var b = 0; b < benzerAdaylar.length && secenekler.length < 3; b++) {
           var bk = (benzerAdaylar[b].kelime || "").toLowerCase().trim();
@@ -4139,6 +4172,9 @@
       };
       var havuzAdaylar = (tumHavuz || []).filter(adayUygunMu);
       var tumBilinmeyenAdaylar = TUM_KELIMELER.filter(adayUygunMu);
+      var tumGenelAdaylar = TUM_KELIMELER.filter(function(w) {
+        return w && w.kelime && w.kelime.toLowerCase().trim() !== dogruKey;
+      });
 
       for (var i = havuzAdaylar.length - 1; i > 0; i--) {
         var r = Math.floor(Math.random() * (i + 1));
@@ -4167,6 +4203,22 @@
           if (!kullanilan[tk]) {
             secenekler.push(tumBilinmeyenAdaylar[n]);
             kullanilan[tk] = true;
+          }
+        }
+      }
+
+      if (secenekler.length < 4 && tumGenelAdaylar.length > 0) {
+        for (var g = tumGenelAdaylar.length - 1; g > 0; g--) {
+          var rg = Math.floor(Math.random() * (g + 1));
+          var tg = tumGenelAdaylar[g];
+          tumGenelAdaylar[g] = tumGenelAdaylar[rg];
+          tumGenelAdaylar[rg] = tg;
+        }
+        for (var gn = 0; gn < tumGenelAdaylar.length && secenekler.length < 4; gn++) {
+          var gk = (tumGenelAdaylar[gn].kelime || "").toLowerCase().trim();
+          if (!kullanilan[gk]) {
+            secenekler.push(tumGenelAdaylar[gn]);
+            kullanilan[gk] = true;
           }
         }
       }
@@ -4221,15 +4273,17 @@
       }
     }
 
-    function fcCiz(poolList) {
+    function fcCiz(poolList, arkaPlanSenkronMu) {
       var box = document.getElementById("fcContainer");
       if (!box) return;
+      if (QUIZ_GECIS_TIMER) return;
       if (AKTIF_MOD === "confusables") {
-        confusablesModuCiz(box);
+        confusablesModuCiz(box, arkaPlanSenkronMu);
         return;
       }
       var deck = fcDestesiniGetir(poolList);
       if (!deck.length) {
+        SON_CIZILEN_SORU_ANAHTARI = "";
         FC_OKUNAN_KART = "";
         box.innerHTML =
           '<div class="fc-empty">' +
@@ -4244,9 +4298,17 @@
 
       if (FC_INDEX >= deck.length) FC_INDEX = 0;
       if (FC_INDEX < 0) FC_INDEX = deck.length - 1;
+      var aktifCard = deck[FC_INDEX];
+      var soruAnahtari = AKTIF_MOD + ":" + (window.QUIZ_YON || "tr-en") + ":" + (aktifCard && aktifCard.kelime ? aktifCard.kelime.toLowerCase().trim() : "");
+      if (arkaPlanSenkronMu && SON_CIZILEN_SORU_ANAHTARI === soruAnahtari && box.children.length > 0) {
+        return;
+      }
       if (AKTIF_MOD !== "match") {
-        CALISMA_CEVAPLARI = {};
-        kelimeGosteriminiKaydet(deck[FC_INDEX]);
+        if (SON_CIZILEN_SORU_ANAHTARI !== soruAnahtari) {
+          CALISMA_CEVAPLARI = {};
+        }
+        SON_CIZILEN_SORU_ANAHTARI = soruAnahtari;
+        kelimeGosteriminiKaydet(aktifCard);
       }
 
       if (AKTIF_MOD === "cloze") {
@@ -4369,6 +4431,7 @@
     }
 
     function clozeSecenekSec(btnEl, secilen, dogru, row) {
+      if (QUIZ_GECIS_TIMER) return;
       var card = kelimeKartiniBul(row, dogru);
       var twinArea = document.getElementById("clozeTwinCompareArea");
       var fb = document.getElementById("clozeFeedbackBox");
@@ -4393,6 +4456,7 @@
         var mezun = (card && !card.isBuiltInTwin) ? srsArtir(card) : false;
         QUIZ_GECIS_TIMER = setTimeout(function() {
           QUIZ_GECIS_TIMER = null;
+          SON_CIZILEN_SORU_ANAHTARI = "";
           SECENEKLER_CACHE = { key: "", list: [] };
           if (!mezun) FC_INDEX++;
           tabloyuCiz();
@@ -4409,6 +4473,7 @@
     }
 
     function clozeYazKontrol(dogru, row) {
+      if (QUIZ_GECIS_TIMER) return;
       var inp = document.getElementById("clozeTypeInput");
       if (!inp) return;
       var yazilan = inp.value.trim();
@@ -4437,6 +4502,7 @@
         var mezun = (card && !card.isBuiltInTwin) ? srsArtir(card) : false;
         QUIZ_GECIS_TIMER = setTimeout(function() {
           QUIZ_GECIS_TIMER = null;
+          SON_CIZILEN_SORU_ANAHTARI = "";
           SECENEKLER_CACHE = { key: "", list: [] };
           if (!mezun) FC_INDEX++;
           tabloyuCiz();
@@ -4524,6 +4590,7 @@
     }
 
     function quizSecenekSec(btnEl, secilen, dogru, row) {
+      if (QUIZ_GECIS_TIMER) return;
       var card = kelimeKartiniBul(row, dogru);
       var twinArea = document.getElementById("quizTwinCompareArea");
       var confModMu = AKTIF_MOD === "confusables";
@@ -4544,6 +4611,7 @@
         var mezun = (card && !card.isBuiltInTwin) ? srsArtir(card) : false;
         QUIZ_GECIS_TIMER = setTimeout(function() {
           QUIZ_GECIS_TIMER = null;
+          SON_CIZILEN_SORU_ANAHTARI = "";
           SECENEKLER_CACHE = { key: "", list: [] };
           if (!mezun) FC_INDEX++;
           tabloyuCiz();
@@ -4564,6 +4632,7 @@
     }
 
     function quizYazKontrol(dogru, row) {
+      if (QUIZ_GECIS_TIMER) return;
       var inp = document.getElementById("quizTypeInput");
       if (!inp) return;
       var yazilan = inp.value.trim();
@@ -4599,6 +4668,7 @@
         var mezun = (card && !card.isBuiltInTwin) ? srsArtir(card) : false;
         QUIZ_GECIS_TIMER = setTimeout(function() {
           QUIZ_GECIS_TIMER = null;
+          SON_CIZILEN_SORU_ANAHTARI = "";
           SECENEKLER_CACHE = { key: "", list: [] };
           if (!mezun) FC_INDEX++;
           tabloyuCiz();
@@ -4650,9 +4720,10 @@
       return sonuc;
     }
 
-    function confusablesModuCiz(box) {
+    function confusablesModuCiz(box, arkaPlanSenkronMu) {
       var confDeck = confusablesDestesiniGetir();
       if (!confDeck.length) {
+        SON_CIZILEN_SORU_ANAHTARI = "";
         box.innerHTML =
           '<div class="fc-empty">' +
             '<div style="font-size:28px;margin-bottom:8px;">🔀</div>' +
@@ -4668,7 +4739,14 @@
       if (FC_INDEX < 0) FC_INDEX = confDeck.length - 1;
 
       var card = confDeck[FC_INDEX];
-      CALISMA_CEVAPLARI = {};
+      var soruAnahtari = "confusables:" + (window.QUIZ_YON || "tr-en") + ":" + (card && card.kelime ? card.kelime.toLowerCase().trim() : "");
+      if (arkaPlanSenkronMu && SON_CIZILEN_SORU_ANAHTARI === soruAnahtari && box.children.length > 0) {
+        return;
+      }
+      if (SON_CIZILEN_SORU_ANAHTARI !== soruAnahtari) {
+        CALISMA_CEVAPLARI = {};
+      }
+      SON_CIZILEN_SORU_ANAHTARI = soruAnahtari;
       kelimeGosteriminiKaydet(card);
       var pct = Math.round(((FC_INDEX + 1) / confDeck.length) * 100);
       var secenekler = secenekleriUret(card, confDeck);
@@ -4791,6 +4869,7 @@
     }
 
     function listenSecenekSec(btnEl, secilenKelime, dogruKelime, row) {
+      if (QUIZ_GECIS_TIMER) return;
       var card = TUM_KELIMELER.filter(function(w){ return w.row === row; })[0];
       var fb = document.getElementById("listenFeedbackBox");
       if (secilenKelime.toLowerCase() === dogruKelime.toLowerCase()) {
@@ -4809,6 +4888,7 @@
         var mezun = card ? srsArtir(card) : false;
         QUIZ_GECIS_TIMER = setTimeout(function() {
           QUIZ_GECIS_TIMER = null;
+          SON_CIZILEN_SORU_ANAHTARI = "";
           SECENEKLER_CACHE = { key: "", list: [] };
           if (!mezun) FC_INDEX++;
           tabloyuCiz();
@@ -4828,6 +4908,7 @@
     }
 
     function listenYazKontrol(dogru, row) {
+      if (QUIZ_GECIS_TIMER) return;
       var inp = document.getElementById("listenTypeInput");
       if (!inp) return;
       var yazilan = inp.value.trim();
@@ -4850,6 +4931,7 @@
         var mezun = card ? srsArtir(card) : false;
         QUIZ_GECIS_TIMER = setTimeout(function() {
           QUIZ_GECIS_TIMER = null;
+          SON_CIZILEN_SORU_ANAHTARI = "";
           SECENEKLER_CACHE = { key: "", list: [] };
           if (!mezun) FC_INDEX++;
           tabloyuCiz();
@@ -5026,6 +5108,7 @@
 
     function fcDegistir(delta) {
       quizGecisZamanlayiciTemizle();
+      SON_CIZILEN_SORU_ANAHTARI = "";
       FC_OKUNAN_KART = "";
       FC_INDEX += delta;
       FC_FLIPPED = false;
@@ -5034,8 +5117,33 @@
       tabloyuCiz();
     }
 
+    function fcKaristir() {
+      quizGecisZamanlayiciTemizle();
+      SON_CIZILEN_SORU_ANAHTARI = "";
+      FC_OKUNAN_KART = "";
+      var stats = istatistikMapAl();
+      var now = Date.now();
+      var unk = TUM_KELIMELER.filter(function(w){ return calismaKelimesiUygunMu(w, stats, now); }).map(function(w){ return w.kelime.toLowerCase(); });
+      for (var i = unk.length - 1; i > 0; i--) {
+        var r = Math.floor(Math.random() * (i + 1));
+        var tmp = unk[i];
+        unk[i] = unk[r];
+        unk[r] = tmp;
+      }
+      FC_SHUFFLED_KEYS = unk;
+      FC_INDEX = 0;
+      FC_FLIPPED = false;
+      SECENEKLER_CACHE = { key: "", list: [] };
+      MATCH_DURUM = { seciliEn: null, seciliTr: null, eslesenler: {}, trSira: [], keySet: "" };
+      tercihleriKaydet();
+      tabloyuCiz();
+      bildirimGoster("🔀 Shuffled");
+    }
+
     function fcBiliyorumIsaretle(row) {
       FC_FLIPPED = false;
+      SON_CIZILEN_SORU_ANAHTARI = "";
+      SECENEKLER_CACHE = { key: "", list: [] };
       kutucukDegisti(row, "biliyorum", true);
     }
 
@@ -5055,7 +5163,7 @@
       }
     });
 
-    function tabloyuCiz() {
+    function tabloyuCiz(arkaPlanSenkronMu) {
       dortHaftaHatasizKontrolEt();
       var total = TUM_KELIMELER.length, unk = 0, knw = 0, learned = 0, calismaSayisi = 0;
       var learningStats = istatistikMapAl();
@@ -5201,7 +5309,7 @@
       });
       document.getElementById("learnedPoolBody").innerHTML = learnedRows.join("") || '<tr><td colspan="7" class="center" style="padding:14px;">No learned words yet.</td></tr>';
 
-      if (AKTIF_SEKME === "flashcards") fcCiz(aktifHavuzuGetir());
+      if (AKTIF_SEKME === "flashcards") fcCiz(aktifHavuzuGetir(), arkaPlanSenkronMu);
       istatistikTablosuCiz();
       havuzTablosuCiz();
       updateVisibleResultCount();
@@ -5683,7 +5791,9 @@
       var key = (hedef.kelime || "").toString().trim().toLowerCase();
       SON_YEREL_DEGISIM[key] = Date.now();
       hedef.durum = yeniDurum;
-      SECENEKLER_CACHE = { key: "", list: [] };
+      if (!deferRender) {
+        SECENEKLER_CACHE = { key: "", list: [] };
+      }
       hedef.biliyorum = yeniDurum === "biliyorum";
       hedef.bilmiyorum = yeniDurum === "bilmiyorum";
       for (var s = 0; s < SHEET_KELIMELER.length; s++) {
