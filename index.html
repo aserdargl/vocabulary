@@ -1740,25 +1740,20 @@
     #statsView > .overview-grid { margin-bottom:10px; }
     #statsView .overview-card { min-height:0; }
     #resultCount { white-space:nowrap; }
-    #phrasalVerbsView { padding:16px; min-width:0; }
-    .pv-top-bar { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; margin-bottom:14px; padding-bottom:12px; border-bottom:1px solid var(--line); }
-    .pv-mode-tabs { display:inline-flex; align-items:center; flex-wrap:wrap; gap:6px; background:#f1f5f0; padding:4px; border-radius:10px; border:1px solid var(--line); }
-    .pv-mode-btn { border:1px solid transparent; background:transparent; color:var(--ink); border-radius:7px; padding:7px 13px; font-size:12px; font-weight:600; cursor:pointer; display:inline-flex; align-items:center; gap:6px; transition:background .14s, color .14s, border-color .14s; }
-    .pv-mode-btn:hover { background:#e4ece2; }
-    .pv-mode-btn.active { background:var(--accent); color:#ffffff; border-color:var(--accent); box-shadow:0 2px 6px rgba(35,121,87,0.22); }
-    .pv-controls-right { display:flex; align-items:center; flex-wrap:wrap; gap:8px; }
-    .pv-controls-right .inp { height:34px; }
-    .pv-controls-right .btn { height:34px; }
-    .pv-add-bar { display:none; background:#f8fafc; border:1px solid var(--line); border-radius:10px; padding:10px 12px; margin-bottom:14px; align-items:center; gap:8px; flex-wrap:wrap; }
-    .pv-add-bar.open { display:flex; }
-    #phrasalVerbsView .fc-wrap { margin-top:4px; padding:0; }
-    @media(max-width:600px) {
-      #phrasalVerbsView { padding:10px; }
-      .pv-mode-tabs { width:100%; }
-      .pv-mode-btn { flex:1 1 calc(50% - 6px); justify-content:center; }
-      .pv-controls-right { width:100%; }
-      .pv-controls-right input[type="search"] { flex:1; min-width:120px; }
-    }
+    .sidebar-section-switch { display:flex; gap:4px; padding:3px; margin:0 0 10px; background:#0f2e24; border:1px solid #2b5545; border-radius:8px; }
+    .sidebar-switch-btn { flex:1; border:0; background:transparent; color:#a8c2b1; font-size:10.5px; font-weight:700; letter-spacing:1.2px; padding:7px 8px; border-radius:6px; cursor:pointer; transition:background .15s, color .15s; text-align:center; }
+    .sidebar-switch-btn:hover { color:#ffffff; background:#1f4a3b; }
+    .sidebar-switch-btn.active { background:#e6efdd; color:#173f32; }
+    .sidebar-menu-group { display:flex; flex-direction:column; gap:5px; }
+    .sidebar-group-title.practice-title { margin-top:22px !important; }
+    @media(max-height:850px) { .sidebar-menu-group { gap:3px; } .sidebar-group-title.practice-title { margin-top:16px !important; } }
+    #addPvToggleBtn { height:38px; padding:0 16px; }
+    #addPvToggleBtn .icon { width:15px; height:15px; }
+    #addPvToggleBtn[hidden], #pvClearFiltersBtn[hidden] { display:none; }
+    #phrasalVerbsView { padding:0; min-width:0; }
+    #phrasalVerbsView .toolbar { padding:12px; }
+    #phrasalVerbsView .table-wrap { padding:0; }
+    #phrasalVerbsView .fc-wrap { margin-top:0; }
   </style>
 </head>
 <body>
@@ -1797,61 +1792,90 @@
         <button class="btn" style="height:26px;padding:0 8px;" onclick="mobilMenuKapat()">✕ Close</button>
       </div>
 
-      <div class="sidebar-group-title">LIBRARY</div>
-      <button class="side-nav-btn active-mode" id="topBtn-sheet1" onclick="sekmeDegistir('sheet1')" title="Main Vocabulary Table (Words)">
-        <span class="nav-label"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>All words</span>
-        <span class="side-nav-badge" id="navBadge-sheet1">-</span>
-      </button>
-      <button class="side-nav-btn" id="topBtn-sheetHavuz" onclick="sekmeDegistir('sheetHavuz')" title="Google Sheets 'Havuz' (Word Pool) Tab — Candidate words to transfer into Words">
-        <span class="nav-label"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 3 10 5-10 5L2 8l10-5Zm-9 9 9 5 9-5M3 16l9 5 9-5"/></svg>Word pool</span>
-        <span class="side-nav-badge" id="navBadge-sheetHavuz">-</span>
-      </button>
-      <button class="side-nav-btn" id="topBtn-phrasalVerbs" onclick="sekmeDegistir('phrasalVerbs')" title="Phrasal Verbs — List, Flashcards, Quiz & Fill in the blank">
-        <span class="nav-label"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>Phrasal Verbs</span>
-        <span class="side-nav-badge" id="navBadge-phrasalVerbs">-</span>
-      </button>
-      <button class="side-nav-btn" id="topBtn-pool" onclick="sekmeDegistir('pool')" title="Unknown Words in Words Table">
-        <span class="nav-label"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Still learning</span>
-        <span class="side-nav-badge" id="navBadge-pool">-</span>
-      </button>
-      <button class="side-nav-btn" id="topBtn-knownPool" onclick="sekmeDegistir('knownPool')" title="Known Words in Words Table">
-        <span class="nav-label"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/></svg>Already known</span>
-        <span class="side-nav-badge" id="navBadge-knownPool">-</span>
-      </button>
-      <button class="side-nav-btn" id="topBtn-learnedPool" onclick="sekmeDegistir('learnedPool')" title="Words learned through practice; checked periodically">
-        <span class="nav-label"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/></svg>Learned</span>
-        <span class="side-nav-badge" id="navBadge-learnedPool">-</span>
-      </button>
-      <button class="side-nav-btn" id="topBtn-stats" onclick="sekmeDegistir('stats')" title="Mistake Statistics & Error Bars">
-        <span class="nav-label"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 3v17h17M9 15v-4m5 4V7m5 8v-5"/></svg>Statistics</span>
-        <span class="side-nav-badge" id="navBadge-stats">0</span>
-      </button>
+      <div class="sidebar-section-switch" role="tablist" aria-label="Workspace section">
+        <button class="sidebar-switch-btn active" id="navSwitch-words" role="tab" aria-selected="true" onclick="bolumDegistir('words')">WORDS</button>
+        <button class="sidebar-switch-btn" id="navSwitch-phrasal" role="tab" aria-selected="false" onclick="bolumDegistir('phrasal')">PHRASAL</button>
+      </div>
 
-      <div class="sidebar-group-title" style="margin-top:6px;">PRACTICE</div>
-      <button class="side-nav-btn" id="topBtn-flashcards" onclick="calismaModuAc('flashcards')" title="3D Flashcards + Spaced Repetition">
-        <span class="nav-label"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="7" y="5" width="14" height="16" rx="2"/><path d="M3 17V5a2 2 0 0 1 2-2h12M11 11h6m-6 4h4"/></svg>Flashcards</span>
-        <span class="side-nav-badge" id="navBadge-flashcards">-</span>
-      </button>
-      <button class="side-nav-btn" id="topBtn-cloze" onclick="calismaModuAc('cloze')" title="Fill in the blank in Example Sentences">
-        <span class="nav-label"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16M4 10h7m6 0h3M4 15h16M4 20h10m-1-10h2"/></svg>Fill in the blank</span>
-      </button>
-      <button class="side-nav-btn" id="topBtn-quiz" onclick="calismaModuAc('quiz')" title="Active Recall (Turkish <-> English Quiz & Typing)">
-        <span class="nav-label"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/></svg>Quiz</span>
-      </button>
-      <button class="side-nav-btn" id="topBtn-confusables" onclick="calismaModuAc('confusables')" title="Confusable / Similar Words Quiz (e.g. Ambiguous vs Ambitious)">
-        <span class="nav-label"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7h3c4 0 7 10 11 10h4m-4-4 4 4-4 4M3 17h3c1 0 2-1 3-2m6-6 2-2h4m-4-4 4 4-4 4"/></svg>Similar words</span>
-      </button>
-      <button class="side-nav-btn" id="topBtn-listen" onclick="calismaModuAc('listen')" title="Listen to audio & find/type the word">
-        <span class="nav-label"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 14v-3a9 9 0 0 1 18 0v3"/><rect x="3" y="12" width="4" height="8" rx="2"/><rect x="17" y="12" width="4" height="8" rx="2"/></svg>Listening</span>
-      </button>
-      <button class="side-nav-btn" id="topBtn-match" onclick="calismaModuAc('match')" title="Match 5 English words with Turkish meanings">
-        <span class="nav-label"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16m-4-4 4 4-4 4M20 17H4m4-4-4 4 4 4"/></svg>Word match</span>
-      </button>
+      <div class="sidebar-menu-group" id="sidebarWordsMenu">
+        <button class="side-nav-btn active-mode" id="topBtn-sheet1" onclick="sekmeDegistir('sheet1')" title="Main Vocabulary Table (Words)">
+          <span class="nav-label"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>All words</span>
+          <span class="side-nav-badge" id="navBadge-sheet1">-</span>
+        </button>
+        <button class="side-nav-btn" id="topBtn-sheetHavuz" onclick="sekmeDegistir('sheetHavuz')" title="Google Sheets 'Havuz' (Word Pool) Tab — Candidate words to transfer into Words">
+          <span class="nav-label"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 3 10 5-10 5L2 8l10-5Zm-9 9 9 5 9-5M3 16l9 5 9-5"/></svg>Word pool</span>
+          <span class="side-nav-badge" id="navBadge-sheetHavuz">-</span>
+        </button>
+        <button class="side-nav-btn" id="topBtn-pool" onclick="sekmeDegistir('pool')" title="Unknown Words in Words Table">
+          <span class="nav-label"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Still learning</span>
+          <span class="side-nav-badge" id="navBadge-pool">-</span>
+        </button>
+        <button class="side-nav-btn" id="topBtn-knownPool" onclick="sekmeDegistir('knownPool')" title="Known Words in Words Table">
+          <span class="nav-label"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/></svg>Already known</span>
+          <span class="side-nav-badge" id="navBadge-knownPool">-</span>
+        </button>
+        <button class="side-nav-btn" id="topBtn-learnedPool" onclick="sekmeDegistir('learnedPool')" title="Words learned through practice; checked periodically">
+          <span class="nav-label"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/></svg>Learned</span>
+          <span class="side-nav-badge" id="navBadge-learnedPool">-</span>
+        </button>
+        <button class="side-nav-btn" id="topBtn-stats" onclick="sekmeDegistir('stats')" title="Mistake Statistics & Error Bars">
+          <span class="nav-label"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 3v17h17M9 15v-4m5 4V7m5 8v-5"/></svg>Statistics</span>
+          <span class="side-nav-badge" id="navBadge-stats">0</span>
+        </button>
+
+        <div class="sidebar-group-title practice-title">PRACTICE</div>
+        <button class="side-nav-btn" id="topBtn-flashcards" onclick="calismaModuAc('flashcards')" title="3D Flashcards + Spaced Repetition">
+          <span class="nav-label"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="7" y="5" width="14" height="16" rx="2"/><path d="M3 17V5a2 2 0 0 1 2-2h12M11 11h6m-6 4h4"/></svg>Flashcards</span>
+          <span class="side-nav-badge" id="navBadge-flashcards">-</span>
+        </button>
+        <button class="side-nav-btn" id="topBtn-cloze" onclick="calismaModuAc('cloze')" title="Fill in the blank in Example Sentences">
+          <span class="nav-label"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16M4 10h7m6 0h3M4 15h16M4 20h10m-1-10h2"/></svg>Fill in the blank</span>
+        </button>
+        <button class="side-nav-btn" id="topBtn-quiz" onclick="calismaModuAc('quiz')" title="Active Recall (Turkish <-> English Quiz & Typing)">
+          <span class="nav-label"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/></svg>Quiz</span>
+        </button>
+        <button class="side-nav-btn" id="topBtn-confusables" onclick="calismaModuAc('confusables')" title="Confusable / Similar Words Quiz (e.g. Ambiguous vs Ambitious)">
+          <span class="nav-label"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7h3c4 0 7 10 11 10h4m-4-4 4 4-4 4M3 17h3c1 0 2-1 3-2m6-6 2-2h4m-4-4 4 4-4 4"/></svg>Similar words</span>
+        </button>
+        <button class="side-nav-btn" id="topBtn-listen" onclick="calismaModuAc('listen')" title="Listen to audio & find/type the word">
+          <span class="nav-label"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 14v-3a9 9 0 0 1 18 0v3"/><rect x="3" y="12" width="4" height="8" rx="2"/><rect x="17" y="12" width="4" height="8" rx="2"/></svg>Listening</span>
+        </button>
+        <button class="side-nav-btn" id="topBtn-match" onclick="calismaModuAc('match')" title="Match 5 English words with Turkish meanings">
+          <span class="nav-label"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16m-4-4 4 4-4 4M20 17H4m4-4-4 4 4 4"/></svg>Word match</span>
+        </button>
+      </div>
+
+      <div class="sidebar-menu-group" id="sidebarPhrasalMenu" style="display:none;">
+        <button class="side-nav-btn" id="topBtn-pv-list" onclick="pvSekmeAc('list')" title="All Phrasal Verbs Table">
+          <span class="nav-label"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>All phrasal verbs</span>
+          <span class="side-nav-badge" id="navBadge-pv-list">60</span>
+        </button>
+        <button class="side-nav-btn" id="topBtn-pv-learning" onclick="pvSekmeAc('learning')" title="Phrasal Verbs still learning">
+          <span class="nav-label"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Still learning</span>
+          <span class="side-nav-badge" id="navBadge-pv-learning">-</span>
+        </button>
+        <button class="side-nav-btn" id="topBtn-pv-known" onclick="pvSekmeAc('known')" title="Phrasal Verbs already known">
+          <span class="nav-label"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/></svg>Already known</span>
+          <span class="side-nav-badge" id="navBadge-pv-known">-</span>
+        </button>
+
+        <div class="sidebar-group-title practice-title">PRACTICE</div>
+        <button class="side-nav-btn" id="topBtn-pv-flashcards" onclick="pvSekmeAc('flashcards')" title="Phrasal Verbs 3D Flashcards">
+          <span class="nav-label"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="7" y="5" width="14" height="16" rx="2"/><path d="M3 17V5a2 2 0 0 1 2-2h12M11 11h6m-6 4h4"/></svg>Flashcards</span>
+          <span class="side-nav-badge" id="navBadge-pv-flashcards">-</span>
+        </button>
+        <button class="side-nav-btn" id="topBtn-pv-cloze" onclick="pvSekmeAc('cloze')" title="Fill in the blank with Phrasal Verbs">
+          <span class="nav-label"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16M4 10h7m6 0h3M4 15h16M4 20h10m-1-10h2"/></svg>Fill in the blank</span>
+        </button>
+        <button class="side-nav-btn" id="topBtn-pv-quiz" onclick="pvSekmeAc('quiz')" title="Phrasal Verbs Quiz (EN <-> TR & Typing)">
+          <span class="nav-label"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/></svg>Quiz</span>
+        </button>
+      </div>
       <div class="sidebar-bottom"><div class="sidebar-note"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 4C9 2 3 8 6 15s15 5 14-11ZM5 21l10-11"/></svg><strong>Keep growing.</strong><p>A few words, a little practice,<br>a world of difference.</p></div><a class="sheet-link" href="https://docs.google.com/spreadsheets/d/1cUYfuFg7OSsWjCtLA7jiB77bGJITR6V0jF2ZUnyrXtc/edit" target="_blank" rel="noopener noreferrer"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg> Open Google Sheets <span>↗</span></a></div>
     </aside>
 
     <main class="main-content library-layout" id="mainContent" tabindex="-1">
-      <div class="page-heading"><div><h1 id="workspaceTitle">All words</h1></div><button class="btn btn-green" id="addWordToggleBtn" onclick="ekleBarAcKapat()"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg> Add word</button></div>
+      <div class="page-heading"><div><h1 id="workspaceTitle">All words</h1></div><button class="btn btn-green" id="addWordToggleBtn" onclick="ekleBarAcKapat()"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg> Add word</button><button class="btn btn-green" id="addPvToggleBtn" onclick="pvEkleBarAcKapat()" hidden><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg> Add phrasal verb</button></div>
       <section class="workspace-panel words-panel" aria-labelledby="workspaceTitle">
         <div class="toolbar"><label class="search-field"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></svg><input type="search" id="searchInput" class="inp" placeholder="Search words, meanings, or examples…" aria-label="Search vocabulary" oninput="tercihleriKaydet(); tabloyuCiz();"><kbd>/</kbd></label><div class="filter-actions"><select id="levelFilter" class="inp" aria-label="Filter by level" onchange="tercihleriKaydet(); tabloyuCiz();">
         <option value="ALL">All levels</option>
@@ -2068,67 +2092,55 @@
         </div>
       </div>
 
-      <div class="table-wrap modern-table-view" id="phrasalVerbsView" style="display:none;">
-        <div class="pv-top-bar">
-          <div class="pv-mode-tabs" role="tablist" aria-label="Phrasal Verbs modes">
-            <button class="pv-mode-btn active" id="pvModeBtn-list" role="tab" aria-selected="true" onclick="pvModSec('list')">📋 List</button>
-            <button class="pv-mode-btn" id="pvModeBtn-flashcards" role="tab" aria-selected="false" onclick="pvModSec('flashcards')">🃏 Flashcards</button>
-            <button class="pv-mode-btn" id="pvModeBtn-quiz" role="tab" aria-selected="false" onclick="pvModSec('quiz')">🎯 Quiz</button>
-            <button class="pv-mode-btn" id="pvModeBtn-cloze" role="tab" aria-selected="false" onclick="pvModSec('cloze')">📝 Fill in the blank</button>
+      <div id="phrasalVerbsView" style="display:none;">
+        <div id="pvListPanel">
+          <div class="toolbar">
+            <label class="search-field">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></svg>
+              <input type="search" id="pvSearchInput" class="inp" placeholder="Search phrasal verbs, meanings, or examples…" aria-label="Search phrasal verbs" oninput="pvCiz()">
+            </label>
+            <div class="filter-actions">
+              <select id="pvLevelFilter" class="inp" aria-label="Filter phrasal verbs by level" onchange="pvSeviyeDegisti()">
+                <option value="ALL">All levels</option>
+                <option value="B1">B1</option>
+                <option value="B2">B2</option>
+                <option value="C1">C1</option>
+              </select>
+              <button class="btn" id="pvClearFiltersBtn" onclick="pvFiltreTemizle()" hidden>Clear</button>
+            </div>
+            <span id="pvResultCount" aria-live="polite" style="white-space:nowrap;"></span>
           </div>
-          <div class="pv-controls-right">
-            <input type="search" id="pvSearchInput" class="inp" placeholder="Search phrasal verbs…" aria-label="Search phrasal verbs" oninput="pvCiz()" style="width:190px;">
-            <select id="pvLevelFilter" class="inp" aria-label="Filter phrasal verbs by level" onchange="pvSeviyeDegisti()">
-              <option value="ALL">All levels</option>
+
+          <div class="add-bar" id="pvAddBar" role="group" aria-label="Add a phrasal verb">
+            <select id="pvInSeviye" aria-label="Phrasal verb level" class="inp">
               <option value="B1">B1</option>
-              <option value="B2">B2</option>
+              <option value="B2" selected>B2</option>
               <option value="C1">C1</option>
             </select>
-            <button class="btn" id="pvShuffleBtn" onclick="pvKaristir()" style="display:none;" title="Shuffle practice cards">🔀 Shuffle</button>
-            <button class="btn btn-green" id="pvAddToggleBtn" onclick="pvEkleBarAcKapat()">➕ Add</button>
+            <input type="text" id="pvInKelime" aria-label="Phrasal verb" class="inp" placeholder="Phrasal verb (e.g. Bring up)" style="width:165px;">
+            <input type="text" id="pvInAnlam" aria-label="Turkish meaning" class="inp" placeholder="Meaning (Turkish)" style="width:190px;">
+            <input type="text" id="pvInOrnek" aria-label="Example sentence" class="inp" placeholder="Example sentence (Turkish translation)" style="flex:1;min-width:210px;">
+            <button class="btn btn-green" onclick="pvYeniEkle()">Save</button>
+            <button class="btn" onclick="pvEkleBarAcKapat()">Close</button>
           </div>
-        </div>
 
-        <div class="pv-add-bar" id="pvAddBar" role="group" aria-label="Add a phrasal verb">
-          <select id="pvInSeviye" aria-label="Phrasal verb level" class="inp">
-            <option value="B1">B1</option>
-            <option value="B2" selected>B2</option>
-            <option value="C1">C1</option>
-          </select>
-          <input type="text" id="pvInKelime" aria-label="Phrasal verb" class="inp" placeholder="Phrasal verb (e.g. Bring up)" style="width:165px;">
-          <input type="text" id="pvInAnlam" aria-label="Turkish meaning" class="inp" placeholder="Meaning (Turkish)" style="width:190px;">
-          <input type="text" id="pvInOrnek" aria-label="Example sentence" class="inp" placeholder="Example sentence (Turkish translation)" style="flex:1;min-width:210px;">
-          <button class="btn btn-green" onclick="pvYeniEkle()">Save</button>
-          <button class="btn" onclick="pvEkleBarAcKapat()">Close</button>
-        </div>
-
-        <div id="pvListPanel">
-          <div class="stats-kpi-bar" style="padding:0 0 12px;background:transparent;max-width:none;">
-            <div class="stats-kpis">
-              <span class="stats-kpi" id="kpiPvTotal">🔗 Total: 0</span>
-              <span class="stats-kpi" style="background:#fef3c7;border-color:#fcd34d;color:#92400e;" id="kpiPvLearning">⏳ Learning: 0</span>
-              <span class="stats-kpi ok" id="kpiPvKnown">✅ Known: 0</span>
-            </div>
+          <div class="table-wrap">
+            <table class="sheet-table">
+              <thead>
+                <tr>
+                  <th class="col-row">#</th>
+                  <th class="center">Level</th>
+                  <th class="col-type">Type</th>
+                  <th class="col-mark" title="Top (✓): Known | Bottom (✕): Unknown">✓/✕</th>
+                  <th>Phrasal Verb</th>
+                  <th>Meaning</th>
+                  <th>Example Sentence</th>
+                  <th class="center col-status">Status</th>
+                </tr>
+              </thead>
+              <tbody id="phrasalVerbsBody"></tbody>
+            </table>
           </div>
-          <section class="pool-card" aria-labelledby="pvListTitle">
-            <h3 id="pvListTitle">Phrasal Verbs</h3>
-            <div class="pool-table-scroll" role="region" aria-label="Phrasal verbs table" tabindex="0">
-              <table class="sheet-table collection-words">
-                <thead>
-                  <tr>
-                    <th class="col-row" style="width:36px;">#</th>
-                    <th class="center" style="width:58px;">Level</th>
-                    <th class="col-mark" style="width:52px;" title="Top (✓): Known | Bottom (✕): Unknown">✓/✕</th>
-                    <th style="width:160px;">Phrasal Verb</th>
-                    <th style="width:210px;">Meaning</th>
-                    <th>Example Sentence</th>
-                    <th class="center col-status" style="width:115px;">Status</th>
-                  </tr>
-                </thead>
-                <tbody id="phrasalVerbsBody"></tbody>
-              </table>
-            </div>
-          </section>
         </div>
 
         <div id="pvStudyPanel" style="display:none;">
@@ -3679,7 +3691,7 @@
         if (addBarEl && p.addBarOpen) addBarEl.classList.add("open");
 
         if (p.aktifMod) AKTIF_MOD = p.aktifMod;
-        if (p.pvMod && (p.pvMod === "list" || p.pvMod === "flashcards" || p.pvMod === "quiz" || p.pvMod === "cloze")) PV_MOD = p.pvMod;
+        if (p.pvMod && (p.pvMod === "list" || p.pvMod === "learning" || p.pvMod === "known" || p.pvMod === "flashcards" || p.pvMod === "quiz" || p.pvMod === "cloze")) PV_MOD = p.pvMod;
         if (p.aktifSekme) AKTIF_SEKME = p.aktifSekme;
 
         document.getElementById("sheet1View").style.display = AKTIF_SEKME === "sheet1" ? "block" : "none";
@@ -3725,6 +3737,21 @@
       if (tabSt) tabSt.classList.toggle("active", s === "stats");
       var topSt = document.getElementById("topBtn-stats");
       if (topSt) topSt.classList.toggle("active-mode", s === "stats");
+      var isPv = s === "phrasalVerbs";
+      var swWords = document.getElementById("navSwitch-words");
+      if (swWords) { swWords.classList.toggle("active", !isPv); swWords.setAttribute("aria-selected", String(!isPv)); }
+      var swPv = document.getElementById("navSwitch-phrasal");
+      if (swPv) { swPv.classList.toggle("active", isPv); swPv.setAttribute("aria-selected", String(isPv)); }
+      var wMenu = document.getElementById("sidebarWordsMenu");
+      if (wMenu) wMenu.style.display = isPv ? "none" : "flex";
+      var pMenu = document.getElementById("sidebarPhrasalMenu");
+      if (pMenu) pMenu.style.display = isPv ? "flex" : "none";
+      var pvNavModes = ["list", "learning", "known", "flashcards", "cloze", "quiz"];
+      for (var pIdx = 0; pIdx < pvNavModes.length; pIdx++) {
+        var pm = pvNavModes[pIdx];
+        var pmEl = document.getElementById("topBtn-pv-" + pm);
+        if (pmEl) pmEl.classList.toggle("active-mode", isPv && (typeof PV_MOD !== "undefined" ? PV_MOD : "list") === pm);
+      }
       var studyTabs = ["flashcards", "cloze", "quiz", "confusables", "listen", "match"];
       for (var i = 0; i < studyTabs.length; i++) {
         var tName = studyTabs[i];
@@ -6653,31 +6680,63 @@
       return guvenli + ' (<span class="cloze-blank" id="pvClozeBlankEl">_________</span>)';
     }
 
+    function bolumDegistir(bolum) {
+      if (bolum === "phrasal") {
+        PV_MOD = "list";
+        sekmeDegistir("phrasalVerbs");
+      } else {
+        sekmeDegistir("sheet1");
+      }
+    }
+
+    function pvSekmeAc(mod) {
+      pvGecisZamanlayiciTemizle();
+      PV_MOD = mod || "list";
+      PV_FLIPPED = false;
+      PV_OKUNAN_KART = "";
+      PV_SON_SORU_ANAHTARI = "";
+      PV_SECENEKLER_CACHE = { key: "", list: [] };
+      if (AKTIF_SEKME !== "phrasalVerbs") {
+        sekmeDegistir("phrasalVerbs");
+        return;
+      }
+      mobilMenuKapat();
+      sekmeButonlariniGuncelle();
+      tercihleriKaydet();
+      if (typeof updateWorkspaceHeading === "function") updateWorkspaceHeading();
+      pvCiz();
+    }
+
+    function pvFiltreTemizle() {
+      var s = document.getElementById("pvSearchInput");
+      if (s) s.value = "";
+      var l = document.getElementById("pvLevelFilter");
+      if (l) l.value = "ALL";
+      pvSeviyeDegisti();
+    }
+
     function pvCiz(arkaPlanSenkronMu) {
       var tumu = pvTumListeyiGetir();
-      var badge = document.getElementById("navBadge-phrasalVerbs");
-      if (badge) badge.innerText = String(tumu.length);
+      var known = 0, learning = 0;
+      for (var c = 0; c < tumu.length; c++) {
+        if (tumu[c].durum === "biliyorum") known++;
+        else learning++;
+      }
+      var bList = document.getElementById("navBadge-pv-list");
+      if (bList) bList.innerText = String(tumu.length);
+      var bLrn = document.getElementById("navBadge-pv-learning");
+      if (bLrn) bLrn.innerText = String(learning);
+      var bKnw = document.getElementById("navBadge-pv-known");
+      if (bKnw) bKnw.innerText = String(known);
+      var bFc = document.getElementById("navBadge-pv-flashcards");
+      if (bFc) bFc.innerText = String(learning);
       if (AKTIF_SEKME !== "phrasalVerbs") return;
 
-      var modes = ["list", "flashcards", "quiz", "cloze"];
-      for (var i = 0; i < modes.length; i++) {
-        var b = document.getElementById("pvModeBtn-" + modes[i]);
-        if (b) {
-          b.classList.toggle("active", PV_MOD === modes[i]);
-          b.setAttribute("aria-selected", String(PV_MOD === modes[i]));
-        }
-      }
+      var isList = PV_MOD === "list" || PV_MOD === "learning" || PV_MOD === "known";
       var listPanel = document.getElementById("pvListPanel");
       var studyPanel = document.getElementById("pvStudyPanel");
-      var searchInp = document.getElementById("pvSearchInput");
-      var addBtn = document.getElementById("pvAddToggleBtn");
-      var shuffleBtn = document.getElementById("pvShuffleBtn");
-      var isList = PV_MOD === "list";
       if (listPanel) listPanel.style.display = isList ? "block" : "none";
       if (studyPanel) studyPanel.style.display = isList ? "none" : "block";
-      if (searchInp) searchInp.style.display = isList ? "" : "none";
-      if (addBtn) addBtn.style.display = isList ? "" : "none";
-      if (shuffleBtn) shuffleBtn.style.display = isList ? "none" : "";
       if (!isList) {
         var addBar = document.getElementById("pvAddBar");
         if (addBar) addBar.classList.remove("open");
@@ -6691,25 +6750,20 @@
     }
 
     function pvListeCiz(tumu) {
-      var known = 0, learning = 0;
-      for (var i = 0; i < tumu.length; i++) {
-        if (tumu[i].durum === "biliyorum") known++;
-        else learning++;
-      }
-      var kTot = document.getElementById("kpiPvTotal");
-      if (kTot) kTot.innerText = "🔗 Total: " + tumu.length;
-      var kLrn = document.getElementById("kpiPvLearning");
-      if (kLrn) kLrn.innerText = "⏳ Learning: " + learning;
-      var kKnw = document.getElementById("kpiPvKnown");
-      if (kKnw) kKnw.innerText = "✅ Known: " + known;
-
       var q = ((document.getElementById("pvSearchInput") || {}).value || "").toLowerCase().trim();
       var lvl = ((document.getElementById("pvLevelFilter") || {}).value || "ALL");
+      var clearBtn = document.getElementById("pvClearFiltersBtn");
+      if (clearBtn) clearBtn.hidden = !q && lvl === "ALL";
       var list = tumu.filter(function(w) {
+        if (PV_MOD === "learning" && w.durum === "biliyorum") return false;
+        if (PV_MOD === "known" && w.durum !== "biliyorum") return false;
         if (lvl !== "ALL" && w.seviye !== lvl) return false;
         if (q && (w.kelime + " " + w.anlam + " " + w.ornek).toLowerCase().indexOf(q) === -1) return false;
         return true;
       });
+
+      var resCount = document.getElementById("pvResultCount");
+      if (resCount) resCount.textContent = list.length + (list.length === 1 ? " phrasal verb" : " phrasal verbs");
 
       var rows = [];
       for (var j = 0; j < list.length; j++) {
@@ -6719,6 +6773,7 @@
           '<tr class="' + (isKnown ? "row-known" : "") + '">' +
             '<td class="col-row">' + (j + 1) + '</td>' +
             '<td class="col-lvl">' + escHtml(x.seviye) + '</td>' +
+            '<td class="col-type">Phrasal Verb</td>' +
             '<td class="col-mark">' +
               '<div class="mark-split ' + (isKnown ? "biliyorum" : "bilmiyorum") + '">' +
                 '<div class="mark-half mark-top" onclick="pvDurumDegistir(\'' + escJs(x.kelime) + '\', \'biliyorum\')" title="Mark as Known">✓</div>' +
@@ -6731,13 +6786,13 @@
             '</td>' +
             '<td class="col-meaning">' + escHtml(x.anlam) + '</td>' +
             '<td class="col-example" onclick="ornekOku(\'' + escJs(x.ornek) + '\', this)" title="Click to listen to the example sentence">' + escHtml(x.ornek) + '</td>' +
-            '<td class="col-status"><span class="status-pill ' + (isKnown ? "biliyorum" : "bilmiyorum") + '">' + (isKnown ? "Known" : "Learning") + '</span></td>' +
+            '<td class="col-status"><span class="status-pill ' + (isKnown ? "biliyorum" : "bilmiyorum") + '">' + (isKnown ? "Already known" : "Still learning") + '</span></td>' +
           '</tr>'
         );
       }
       var body = document.getElementById("phrasalVerbsBody");
       if (body) {
-        body.innerHTML = rows.join("") || '<tr><td colspan="7" class="center" style="padding:14px;">No matching phrasal verbs.</td></tr>';
+        body.innerHTML = rows.join("") || '<tr><td colspan="8" class="center" style="padding:14px;"><div class="empty-state"><strong>No matching phrasal verbs</strong><p>Try another search or clear your filters.</p><button class="btn" onclick="pvFiltreTemizle()">Clear filters</button></div></td></tr>';
       }
     }
 
@@ -6784,7 +6839,8 @@
       var pct = Math.round(((PV_INDEX + 1) / deck.length) * 100);
       box.innerHTML =
         '<div class="fc-top">' +
-          '<span>Phrasal Verb Card <b>' + (PV_INDEX + 1) + ' / ' + deck.length + '</b></span>' +
+          '<span>Card <b>' + (PV_INDEX + 1) + ' / ' + deck.length + '</b></span>' +
+          '<button class="btn" style="height:28px;padding:0 10px;" onclick="pvKaristir()" title="Shuffle cards">🔀 Shuffle</button>' +
         '</div>' +
         '<div class="fc-progress-track"><div class="fc-progress-bar" style="width:' + pct + '%;"></div></div>' +
         '<div class="fc-scene" onclick="pvCevir()">' +
@@ -6846,7 +6902,8 @@
 
       box.innerHTML =
         '<div class="fc-top">' +
-          '<span>Phrasal Verb Quiz <b>' + (PV_INDEX + 1) + ' / ' + deck.length + '</b></span>' +
+          '<span>Question <b>' + (PV_INDEX + 1) + ' / ' + deck.length + '</b></span>' +
+          '<button class="btn" style="height:28px;padding:0 10px;" onclick="pvKaristir()" title="Shuffle questions">🔀 Shuffle</button>' +
         '</div>' +
         '<div class="fc-progress-track"><div class="fc-progress-bar" style="width:' + pct + '%;"></div></div>' +
         '<div class="study-box">' +
@@ -6978,7 +7035,8 @@
 
       box.innerHTML =
         '<div class="fc-top">' +
-          '<span>Phrasal Verb Fill in the blank <b>' + (PV_INDEX + 1) + ' / ' + deck.length + '</b></span>' +
+          '<span>Question <b>' + (PV_INDEX + 1) + ' / ' + deck.length + '</b></span>' +
+          '<button class="btn" style="height:28px;padding:0 10px;" onclick="pvKaristir()" title="Shuffle questions">🔀 Shuffle</button>' +
         '</div>' +
         '<div class="fc-progress-track"><div class="fc-progress-bar" style="width:' + pct + '%;"></div></div>' +
         '<div class="study-box">' +
@@ -7084,20 +7142,24 @@
 
     /** Keep page context and navigation accessible across library and study views. */
     function updateWorkspaceHeading() {
-      document.querySelector(".workspace-panel").classList.toggle("words-panel", AKTIF_SEKME === "sheet1");
-      var isStudy = AKTIF_SEKME === "flashcards" || (AKTIF_SEKME === "phrasalVerbs" && typeof PV_MOD !== "undefined" && PV_MOD !== "list");
+      var pvMod = typeof PV_MOD !== "undefined" ? PV_MOD : "list";
+      var isPvList = AKTIF_SEKME === "phrasalVerbs" && (pvMod === "list" || pvMod === "learning" || pvMod === "known");
+      var isStudy = AKTIF_SEKME === "flashcards" || (AKTIF_SEKME === "phrasalVerbs" && !isPvList);
+      document.querySelector(".workspace-panel").classList.toggle("words-panel", AKTIF_SEKME === "sheet1" || isPvList);
       document.querySelector(".workspace-panel").classList.toggle("study-panel", isStudy);
       document.querySelector(".main-content").classList.toggle("study-layout", isStudy);
-      var views = {sheet1:"All words", sheetHavuz:"Word pool", phrasalVerbs:"Phrasal Verbs", pool:"Still learning", knownPool:"Already known", learnedPool:"Learned", stats:"Statistics"};
+      var views = {sheet1:"All words", sheetHavuz:"Word pool", phrasalVerbs:"All phrasal verbs", pool:"Still learning", knownPool:"Already known", learnedPool:"Learned", stats:"Statistics"};
       var modes = {flashcards:"Flashcards", cloze:"Fill in the blank", quiz:"Quiz", confusables:"Similar words", listen:"Listening", match:"Word match"};
       var title = views[AKTIF_SEKME] || modes[AKTIF_MOD] || "Practice";
-      if (AKTIF_SEKME === "phrasalVerbs" && typeof PV_MOD !== "undefined" && PV_MOD !== "list") {
-        var pvModeTitles = {flashcards:"Phrasal Verbs · Flashcards", quiz:"Phrasal Verbs · Quiz", cloze:"Phrasal Verbs · Fill in the blank"};
-        title = pvModeTitles[PV_MOD] || "Phrasal Verbs";
+      if (AKTIF_SEKME === "phrasalVerbs") {
+        var pvModeTitles = {list:"All phrasal verbs", learning:"Still learning", known:"Already known", flashcards:"Flashcards", quiz:"Quiz", cloze:"Fill in the blank"};
+        title = pvModeTitles[pvMod] || "All phrasal verbs";
       }
       document.getElementById("workspaceTitle").textContent = title;
       document.getElementById("breadcrumbLabel").textContent = title;
       document.getElementById("addWordToggleBtn").hidden = AKTIF_SEKME !== "sheet1";
+      var addPvBtn = document.getElementById("addPvToggleBtn");
+      if (addPvBtn) addPvBtn.hidden = !isPvList;
       document.getElementById("mainContent").classList.toggle("library-layout", AKTIF_SEKME === "sheet1");
       document.querySelectorAll(".side-nav-btn").forEach(function(button) {
         if (button.classList.contains("active-mode")) button.setAttribute("aria-current", "page");
