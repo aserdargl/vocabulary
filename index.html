@@ -92,7 +92,6 @@
       background: #16a34a;
       display: inline-block;
     }
-    .sync-dot.loading { background: #f59e0b; }
 
     .toolbar-right {
       display: flex;
@@ -435,61 +434,6 @@
       padding: 2px 3px !important;
       user-select: none;
     }
-    .mark-split {
-      position: relative;
-      width: 34px;
-      height: 24px;
-      border-radius: 5px;
-      border: 1.5px solid #cbd5e1;
-      background: #ffffff;
-      display: inline-block;
-      vertical-align: middle;
-      overflow: hidden;
-      user-select: none;
-    }
-    .mark-split::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(to bottom right, transparent calc(50% - 0.75px), #94a3b8 calc(50% - 0.75px), #94a3b8 calc(50% + 0.75px), transparent calc(50% + 0.75px));
-      pointer-events: none;
-      z-index: 2;
-    }
-    .mark-half {
-      position: absolute;
-      inset: 0;
-      cursor: pointer;
-      font-weight: 900;
-      line-height: 1;
-      transition: background-color 0.12s ease, color 0.12s ease;
-      color: #94a3b8;
-    }
-    .mark-top {
-      clip-path: polygon(0 0, 100% 0, 0 100%);
-      font-size: 10.5px;
-      padding-top: 2px;
-      padding-left: 3px;
-      text-align: left;
-    }
-    .mark-bot {
-      clip-path: polygon(100% 0, 100% 100%, 0 100%);
-      font-size: 10px;
-      display: flex;
-      align-items: flex-end;
-      justify-content: flex-end;
-      padding-bottom: 2px;
-      padding-right: 3px;
-    }
-    .mark-top:hover { background: #dcfce7; color: #15803d; }
-    .mark-bot:hover { background: #fee2e2; color: #b91c1c; }
-    .mark-split.biliyorum { border-color: #16a34a; }
-    .mark-split.biliyorum .mark-top { background: #bbf7d0; color: #14532d; }
-    .mark-split.biliyorum .mark-bot { background: #f8fafc; color: #cbd5e1; }
-    .mark-split.biliyorum .mark-bot:hover { background: #fee2e2; color: #b91c1c; }
-    .mark-split.bilmiyorum { border-color: #dc2626; }
-    .mark-split.bilmiyorum .mark-bot { background: #fecaca; color: #991b1b; }
-    .mark-split.bilmiyorum .mark-top { background: #f8fafc; color: #cbd5e1; }
-    .mark-split.bilmiyorum .mark-top:hover { background: #dcfce7; color: #15803d; }
 
     /* Pool Layout */
     .pool-layout {
@@ -1322,7 +1266,7 @@
       }
     }
 
-    /* Vocabulary workspace: self-contained for the Google Apps Script host. */
+    /* Vocabulary workspace: standalone web application. */
     :root { --canvas:#f6f7f4; --surface:#fff; --ink:#243b33; --muted:#68776b; --line:#e6eae5; --accent:#237957; --accent-soft:#edf5ef; --sidebar-width:224px; --header-height:72px; }
     body { background:var(--canvas); color:var(--ink); font-family:Inter,"Segoe UI",Arial,sans-serif; padding-bottom:0; -webkit-font-smoothing:antialiased; }
     button,input,select,summary { font-family:inherit; }
@@ -1426,8 +1370,6 @@
     .inp { border:1px solid #dfe5de; border-radius:7px; height:36px; font-size:11px; font-weight:500; color:#53624f; }
     .inp:focus { border-color:#79a88a; box-shadow:0 0 0 3px #2379570d; }
     #levelFilter { min-width:108px; background:white; }
-    .sync-button { color:#6f7c6b; }
-    .sync-button .icon { width:14px; height:14px; }
     .table-wrap { padding:0; overflow-x:auto; scrollbar-width:thin; scrollbar-color:#c3d1c2 transparent; }
     table.sheet-table { border:0; font-size:var(--fs); }
     table.sheet-table th { background:#f6f8f4; color:#65745e; font-weight:500; font-size:10px; padding:12px 13px; border:0; border-top:1px solid var(--line); border-bottom:1px solid var(--line); position:static; text-transform:uppercase; letter-spacing:.5px; }
@@ -1445,12 +1387,6 @@
     .status-pill { min-width:85px; padding:4px 8px; font-size:9px; font-weight:500; }
     .status-pill.bilmiyorum { background:#fcf4e7; color:#8c692e; }
     .status-pill.biliyorum { background:#edf4e8; color:#57763f; }
-    .mark-split { border-color:#dbe3d4; height:28px; width:32px; border-width:1px; border-radius:6px; }
-    .mark-split::after { background:linear-gradient(to bottom right,transparent calc(50% - .5px),#dde5d7 calc(50% - .5px),#dde5d7 calc(50% + .5px),transparent calc(50% + .5px)); }
-    .mark-split.bilmiyorum { border-color:#e6d8b9; }
-    .mark-split.bilmiyorum .mark-bot { background:#f9f0dc; color:#ae915b; }
-    .mark-split.bilmiyorum .mark-top { background:white; color:#b3c0aa; }
-    .mark-half { touch-action:manipulation; }
     .pool-layout { gap:0; grid-template-columns:170px minmax(650px,1fr); }
     .stats-kpi-bar { border:0; border-radius:0; padding:14px; background:#fafbf8; margin:0; box-shadow:none; }
     .collection-footer { display:flex; justify-content:space-between; gap:12px; padding:15px 22px; font-size:9px; color:#78876c; }
@@ -1485,12 +1421,11 @@
     .overview-grid { margin-bottom:16px; }
     .practice-banner { padding-top:13px; padding-bottom:13px; margin-bottom:20px; }
     .collection-heading { padding-top:19px; padding-bottom:16px; }
-    .mark-split { display:inline-flex; width:56px; height:30px; }
-    .mark-split::after { display:none; }
-    .mark-half { position:static; clip-path:none; display:flex; align-items:center; justify-content:center; width:27px; height:28px; padding:0; border:0; background:transparent; font-size:11px; }
-    .mark-top { border-right:1px solid #e0e7da; }
-    th.col-mark,td.col-mark { width:68px; min-width:68px; max-width:68px; }
-    .mark-half:focus-visible { outline:3px solid #237957; outline-offset:-3px; }
+    .mark-toggle { display:inline-grid; place-items:center; width:26px; height:24px; padding:0; border:1px solid #cdd6c7; border-radius:4px; background:#f7f8f4; color:#576351; cursor:pointer; font:600 14px/1 sans-serif; }
+    .mark-toggle[aria-pressed="true"] { background:#e1f1df; color:#216535; border-color:#a7c7a5; }
+    .mark-toggle.unknown { background:#fbefeb; color:#934438; }
+    .mark-toggle:hover { border-color:currentColor; }
+    .mark-toggle:focus-visible { outline:2px solid #237957; outline-offset:1px; }
     .fc-top > div { flex-wrap:wrap; min-width:0; }
     @media(max-width:600px) { .fc-top { padding:12px; gap:12px; } .fc-top > span { line-height:1.6; } .fc-top > div { width:100%; } .twin-compare-grid { grid-template-columns:1fr; } .fc-btn { max-width:100%; white-space:normal; } .practice-banner > div { flex-basis:calc(100% - 55px); } .overview-card { border-radius:9px; } }
     @media(max-height:850px) { .sidebar-note { display:none; } .sidebar-bottom { padding-top:20px; } .sidebar-intro { padding-bottom:18px; } .left-sidebar { gap:3px; padding-top:23px; } .sidebar-group-title:nth-of-type(4) { margin-top:20px !important; } }
@@ -1509,7 +1444,7 @@
     #sheet1View .sheet-table th:nth-child(2) { width:calc(var(--fs) * 8); }
     #sheet1View .sheet-table th:nth-child(3) { width:42px; }
     #sheet1View .sheet-table th:nth-child(4) { width:calc(var(--fs) * 7); }
-    #sheet1View .sheet-table th:nth-child(5) { width:59px; }
+    #sheet1View .sheet-table th:nth-child(5) { width:36px; }
     #sheet1View .sheet-table th:nth-child(6) { width:108px; }
     #sheet1View .sheet-table th:nth-child(7) { width:174px; }
     #sheet1View .sheet-table th:nth-child(9) { width:100px; }
@@ -1520,8 +1455,6 @@
     #sheet1View .sheet-table tr.row-known td { background:#f2f7ed; }
     #sheet1View .sheet-table tr:hover td { background:#eaf2e2; }
     #sheet1View .sheet-table td.col-mark { padding:3px 4px !important; min-width:0; max-width:none; }
-    #sheet1View .mark-split { width:48px; height:24px; border-radius:4px; }
-    #sheet1View .mark-half { width:23px; height:22px; }
     #sheet1View .status-pill { min-width:0; max-width:100%; padding:3px 5px; font-size:9px; white-space:normal; overflow-wrap:anywhere; }
     @media(max-width:820px) { #sheet1View .sheet-table { min-width:840px; } }
     @media(max-width:600px) { #sheet1View .sheet-table { min-width:650px; } #sheet1View .sheet-table .col-example { min-width:0 !important; } #sheet1View .sheet-table td { padding:5px 6px; } }
@@ -1696,14 +1629,13 @@
     .modern-table-view .collection-words th:nth-child(1) { width:calc(var(--fs) * 3.2); }
     .modern-table-view .collection-words th:nth-child(2) { width:calc(var(--fs) * 4.5); }
     .modern-table-view .collection-words th:nth-child(3) { width:calc(var(--fs) * 6); }
-    .modern-table-view .collection-words th:nth-child(4) { width:calc(var(--fs) * 5); }
+    .modern-table-view .collection-words th:nth-child(4) { width:36px; }
     .modern-table-view .collection-words th:nth-child(5) { width:calc(var(--fs) * 12); }
     .modern-table-view .collection-words th:nth-child(6) { width:calc(var(--fs) * 15); }
     .modern-table-view .collection-words th:nth-child(8) { width:calc(var(--fs) * 8); }
     .modern-table-view .collection-words :is(.col-word,.col-type,.col-date) { white-space:normal; }
     .modern-table-view .collection-words :is(.col-meaning,.col-example) { min-width:0 !important; max-width:none; }
     .modern-table-view .collection-words td.col-mark { min-width:0; padding:5px 8px; }
-    .modern-table-view .mark-split { margin:auto; }
     #statsView.modern-table-view { overflow:visible; }
     #statsView .stats-kpi-bar { padding:0 0 14px; gap:12px; max-width:none; background:transparent; }
     #statsView .stats-kpis { gap:8px; }
@@ -1735,7 +1667,7 @@
 
     .page-heading { margin-bottom:12px; }
     .workspace-panel > .toolbar { padding:12px; }
-    .main-content:not(.library-layout) .workspace-panel > .toolbar, #addWordToggleBtn[hidden], #clearFiltersBtn[hidden], .main-content:not(.library-layout) #addBar { display:none; }
+    .main-content:not(.filterable-layout) .workspace-panel > .toolbar, #addWordToggleBtn[hidden], #clearFiltersBtn[hidden], .main-content:not(.library-layout) #addBar { display:none; }
     #sheetHavuzView .pool-layout, .modern-table-view .pool-layout { grid-template-columns:minmax(0,1fr); }
     #statsView > .overview-grid { margin-bottom:10px; }
     #statsView .overview-card { min-height:0; }
@@ -1747,35 +1679,6 @@
     .sidebar-menu-group { display:flex; flex-direction:column; gap:5px; }
     .sidebar-group-title.practice-title { margin-top:22px !important; }
     @media(max-height:850px) { .sidebar-menu-group { gap:3px; } .sidebar-group-title.practice-title { margin-top:16px !important; } }
-    #addPvToggleBtn { height:38px; padding:0 16px; }
-    #addPvToggleBtn .icon { width:15px; height:15px; }
-    #addPvToggleBtn[hidden], #pvClearFiltersBtn[hidden] { display:none; }
-    #phrasalVerbsView { padding:0; min-width:0; }
-    #phrasalVerbsView .toolbar { padding:12px; }
-    #phrasalVerbsView .table-wrap { padding:0; }
-    #phrasalVerbsView .fc-wrap { margin-top:0; }
-    #pvPoolPanel { padding:16px; min-width:0; }
-    #pvPoolPanel .stats-kpi-bar { padding:0 0 16px; background:transparent; gap:14px; max-width:none; }
-    #pvPoolPanel .stats-kpis { gap:8px; }
-    #pvPoolPanel .pool-actions { display:flex; align-items:center; flex-wrap:wrap; gap:8px; width:100%; }
-    #pvPoolPanel .pool-actions .inp, #pvPoolPanel .pool-actions .btn { min-height:34px; height:auto; }
-    #pvPoolPanel .pool-random { display:flex; align-items:center; flex-wrap:wrap; gap:6px; padding:5px; border:1px solid var(--line); border-radius:8px; background:#f6f8f4; }
-    #pvPoolPanel .pool-random label { padding-left:5px; color:var(--muted); font-size:12px; }
-    #pvPoolPanel #pvPoolRandomCount { width:54px; text-align:center; background:white; }
-    #pvPoolPanel #pvPoolRandomTransferBtn { background:var(--accent); border-color:var(--accent); color:white; }
-    #pvPoolPanel .pool-card { min-width:0; border:1px solid var(--line); border-radius:10px; background:white; overflow:hidden; }
-    #pvPoolPanel .pool-card h3 { padding:13px 14px; font-size:13px; font-weight:600; color:var(--ink); }
-    #pvPoolPanel .pool-table-scroll { max-width:100%; overflow-x:auto; scrollbar-width:thin; }
-    #pvPoolPanel .sheet-table { table-layout:fixed; min-width:640px; }
-    #pvPoolPanel .sheet-table th { padding:10px; font-size:11px; letter-spacing:0; text-transform:none; white-space:normal; }
-    #pvPoolPanel .sheet-table td { padding:10px; overflow-wrap:anywhere; }
-    #pvPoolPanel .pool-words th:nth-child(1) { width:36px; }
-    #pvPoolPanel .pool-words th:nth-child(2) { width:42px; }
-    #pvPoolPanel .pool-words th:nth-child(3) { width:60px; }
-    #pvPoolPanel .pool-words th:nth-child(5) { width:125px; }
-    #pvPoolPanel .pool-words th:nth-child(6) { width:180px; }
-    #pvPoolPanel .havuz-badge-wait, #pvPoolPanel .havuz-badge-done { border:0; border-radius:20px; padding:4px 9px; white-space:nowrap; font-size:11px; font-weight:500; }
-    #pvPoolPanel input[type="checkbox"] { width:15px; height:15px; accent-color:var(--accent); cursor:pointer; }
   </style>
 </head>
 <body>
@@ -1784,9 +1687,9 @@
     <a class="brand" href="#" onclick="sekmeDegistir('sheet1'); return false;" aria-label="Vocabulary home"><span class="brand-mark"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20M6.5 3H20v19H6.5A2.5 2.5 0 0 1 4 19.5v-14A2.5 2.5 0 0 1 6.5 3Z"/><path d="M8 7h8M8 11h6"/></svg></span><span>vocabulary<span class="brand-dot">.</span></span></a>
     <div class="header-context"><span>My workspace</span><span class="breadcrumb-separator">/</span><span id="breadcrumbLabel">Words</span></div>
     <div class="header-actions">
-      <span class="sync-badge" id="syncBadge" title="Two-way live sync with Google Sheets (Words)">
+      <span class="sync-badge" id="syncBadge" title="Vocabulary is stored in this browser">
         <span class="sync-dot" id="syncDot"></span>
-        <span id="syncText">Live</span>
+        <span id="syncText">Local library</span>
       </span>
       <span class="language-pair">EN <span>↔</span> TR</span>
       <details class="settings-menu" id="settingsMenu">
@@ -1798,7 +1701,7 @@
           <option value="gun" selected>Days</option>
           <option value="hafta">Weeks</option>
         </select>
-      </div><p>Words stay in training until the Goal ends. Learn with correct answers on 3+ different days, last 2 answers correct, and 1 final check after the Goal. Learned words are reviewed every 30 days.</p><p>Table font size</p><div class="font-ctrl" role="group" aria-label="Table font size" title="Table font size"><button class="font-btn" aria-label="Decrease table font size" onclick="yaziBoyutuDegistir(-1)">A−</button><span class="font-val" id="fontValLabel" aria-live="polite">13px</span><button class="font-btn" aria-label="Increase table font size" onclick="yaziBoyutuDegistir(1)">A+</button></div><hr><button class="btn" style="background:#fff7ed;border-color:#fb923c;color:#9a3412;" onclick="tumKelimeleriBilinmeyenYap(true)" title="Move all words in Words back to Unknown status and reset streak progress">↩️ Reset All</button></div>
+      </div><p>Words stay in training until the Goal ends. Learn with correct answers on 3+ different days, last 2 answers correct, and 1 final check after the Goal. Learned words are reviewed every 30 days.</p><p>Table font size</p><div class="font-ctrl" role="group" aria-label="Table font size" title="Table font size"><button class="font-btn" aria-label="Decrease table font size" onclick="yaziBoyutuDegistir(-1)">A−</button><span class="font-val" id="fontValLabel" aria-live="polite">13px</span><button class="font-btn" aria-label="Increase table font size" onclick="yaziBoyutuDegistir(1)">A+</button></div><hr><button class="btn" style="background:#fff7ed;border-color:#fb923c;color:#9a3412;" onclick="tumKelimeleriBilinmeyenYap(true)" title="Move all items in this collection back to Unknown status and reset streak progress">↩️ Reset All</button></div>
       </details>
       <button class="mobile-menu-btn" id="mobileMenuBtn" onclick="mobilMenuAcKapat()" aria-controls="leftSidebar" aria-expanded="false" aria-label="Open navigation">☰</button>
     </div>
@@ -1816,23 +1719,23 @@
 
       <div class="sidebar-section-switch" role="tablist" aria-label="Workspace section">
         <button class="sidebar-switch-btn active" id="navSwitch-words" role="tab" aria-selected="true" onclick="bolumDegistir('words')">WORDS</button>
-        <button class="sidebar-switch-btn" id="navSwitch-phrasal" role="tab" aria-selected="false" onclick="bolumDegistir('phrasal')">PHRASAL</button>
+        <button class="sidebar-switch-btn" id="navSwitch-phrasal" role="tab" aria-selected="false" onclick="bolumDegistir('phrasal')">PHRASAL VERBS</button>
       </div>
 
       <div class="sidebar-menu-group" id="sidebarWordsMenu">
-        <button class="side-nav-btn active-mode" id="topBtn-sheet1" onclick="sekmeDegistir('sheet1')" title="Main Vocabulary Table (Words)">
+        <button class="side-nav-btn active-mode" id="topBtn-sheet1" onclick="sekmeDegistir('sheet1')" title="Open this vocabulary collection">
           <span class="nav-label"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>All words</span>
           <span class="side-nav-badge" id="navBadge-sheet1">-</span>
         </button>
-        <button class="side-nav-btn" id="topBtn-sheetHavuz" onclick="sekmeDegistir('sheetHavuz')" title="Google Sheets 'Havuz' (Word Pool) Tab — Candidate words to transfer into Words">
+        <button class="side-nav-btn" id="topBtn-sheetHavuz" onclick="sekmeDegistir('sheetHavuz')" title="Candidate vocabulary to add to your library">
           <span class="nav-label"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 3 10 5-10 5L2 8l10-5Zm-9 9 9 5 9-5M3 16l9 5 9-5"/></svg>Word pool</span>
           <span class="side-nav-badge" id="navBadge-sheetHavuz">-</span>
         </button>
-        <button class="side-nav-btn" id="topBtn-pool" onclick="sekmeDegistir('pool')" title="Unknown Words in Words Table">
+        <button class="side-nav-btn" id="topBtn-pool" onclick="sekmeDegistir('pool')" title="Unknown Words in library">
           <span class="nav-label"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Still learning</span>
           <span class="side-nav-badge" id="navBadge-pool">-</span>
         </button>
-        <button class="side-nav-btn" id="topBtn-knownPool" onclick="sekmeDegistir('knownPool')" title="Known Words in Words Table">
+        <button class="side-nav-btn" id="topBtn-knownPool" onclick="sekmeDegistir('knownPool')" title="Known Words in library">
           <span class="nav-label"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/></svg>Already known</span>
           <span class="side-nav-badge" id="navBadge-knownPool">-</span>
         </button>
@@ -1867,41 +1770,11 @@
         </button>
       </div>
 
-      <div class="sidebar-menu-group" id="sidebarPhrasalMenu" style="display:none;">
-        <button class="side-nav-btn" id="topBtn-pv-list" onclick="pvSekmeAc('list')" title="All Phrasal Verbs Table">
-          <span class="nav-label"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>All phrasal verbs</span>
-          <span class="side-nav-badge" id="navBadge-pv-list">-</span>
-        </button>
-        <button class="side-nav-btn" id="topBtn-pv-pool" onclick="pvSekmeAc('pool')" title="Phrasal Verb Pool — Candidate phrasal verbs to transfer into All phrasal verbs">
-          <span class="nav-label"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 3 10 5-10 5L2 8l10-5Zm-9 9 9 5 9-5M3 16l9 5 9-5"/></svg>Phrasal pool</span>
-          <span class="side-nav-badge" id="navBadge-pv-pool">-</span>
-        </button>
-        <button class="side-nav-btn" id="topBtn-pv-learning" onclick="pvSekmeAc('learning')" title="Phrasal Verbs still learning">
-          <span class="nav-label"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Still learning</span>
-          <span class="side-nav-badge" id="navBadge-pv-learning">-</span>
-        </button>
-        <button class="side-nav-btn" id="topBtn-pv-known" onclick="pvSekmeAc('known')" title="Phrasal Verbs already known">
-          <span class="nav-label"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/></svg>Already known</span>
-          <span class="side-nav-badge" id="navBadge-pv-known">-</span>
-        </button>
-
-        <div class="sidebar-group-title practice-title">PRACTICE</div>
-        <button class="side-nav-btn" id="topBtn-pv-flashcards" onclick="pvSekmeAc('flashcards')" title="Phrasal Verbs 3D Flashcards">
-          <span class="nav-label"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="7" y="5" width="14" height="16" rx="2"/><path d="M3 17V5a2 2 0 0 1 2-2h12M11 11h6m-6 4h4"/></svg>Flashcards</span>
-          <span class="side-nav-badge" id="navBadge-pv-flashcards">-</span>
-        </button>
-        <button class="side-nav-btn" id="topBtn-pv-cloze" onclick="pvSekmeAc('cloze')" title="Fill in the blank with Phrasal Verbs">
-          <span class="nav-label"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16M4 10h7m6 0h3M4 15h16M4 20h10m-1-10h2"/></svg>Fill in the blank</span>
-        </button>
-        <button class="side-nav-btn" id="topBtn-pv-quiz" onclick="pvSekmeAc('quiz')" title="Phrasal Verbs Quiz (EN <-> TR & Typing)">
-          <span class="nav-label"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/></svg>Quiz</span>
-        </button>
-      </div>
-      <div class="sidebar-bottom"><div class="sidebar-note"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 4C9 2 3 8 6 15s15 5 14-11ZM5 21l10-11"/></svg><strong>Keep growing.</strong><p>A few words, a little practice,<br>a world of difference.</p></div><a class="sheet-link" href="https://docs.google.com/spreadsheets/d/1cUYfuFg7OSsWjCtLA7jiB77bGJITR6V0jF2ZUnyrXtc/edit" target="_blank" rel="noopener noreferrer"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg> Open Google Sheets <span>↗</span></a></div>
+      <div class="sidebar-bottom"><div class="sidebar-note"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 4C9 2 3 8 6 15s15 5 14-11ZM5 21l10-11"/></svg><strong>Keep growing.</strong><p>A few words, a little practice,<br>a world of difference.</p></div></div>
     </aside>
 
     <main class="main-content library-layout" id="mainContent" tabindex="-1">
-      <div class="page-heading"><div><h1 id="workspaceTitle">All words</h1></div><button class="btn btn-green" id="addWordToggleBtn" onclick="ekleBarAcKapat()"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg> Add word</button><button class="btn btn-green" id="addPvToggleBtn" onclick="pvEkleBarAcKapat()" hidden><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg> Add phrasal verb</button></div>
+      <div class="page-heading"><div><h1 id="workspaceTitle">All words</h1></div><button class="btn btn-green" id="addWordToggleBtn" onclick="ekleBarAcKapat()"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg> <span id="addWordLabel">Add word</span></button></div>
       <section class="workspace-panel words-panel" aria-labelledby="workspaceTitle">
         <div class="toolbar"><label class="search-field"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></svg><input type="search" id="searchInput" class="inp" placeholder="Search words, meanings, or examples…" aria-label="Search vocabulary" oninput="tercihleriKaydet(); tabloyuCiz();"><kbd>/</kbd></label><div class="filter-actions"><select id="levelFilter" class="inp" aria-label="Filter by level" onchange="tercihleriKaydet(); tabloyuCiz();">
         <option value="ALL">All levels</option>
@@ -1911,9 +1784,10 @@
         <option value="B2">B2</option>
         <option value="C1">C1</option>
         <option value="C2">C2</option>
-      </select><button class="btn" id="clearFiltersBtn" onclick="clearVocabularyFilters()" hidden>Clear</button><button class="btn sync-button" onclick="verileriYukle(true)" title="Refresh from Google Sheets"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 7v5h-5M4 17v-5h5"/><path d="M6 6a8 8 0 0 1 13 2M5 16a8 8 0 0 0 13 2"/></svg><span>Sync</span></button></div><span id="resultCount" aria-live="polite"></span></div>
+      </select><button class="btn" id="clearFiltersBtn" onclick="clearVocabularyFilters()" hidden>Clear</button></div><span id="resultCount" aria-live="polite"></span></div>
       <div class="add-bar" id="addBar" role="group" aria-label="Add a vocabulary word">
         <select id="inSeviye" aria-label="Word level" class="inp" onchange="tercihleriKaydet()">
+          <option value="A1">A1</option>
           <option value="A2">A2</option>
           <option value="B1">B1</option>
           <option value="B2" selected>B2</option>
@@ -1942,7 +1816,7 @@
               <th class="col-date">Date</th>
               <th class="center">Level</th>
               <th class="col-type">Type</th>
-              <th class="col-mark" title="Top (✓): Known | Bottom (✕): Unknown">✓/✕</th>
+              <th class="col-mark" title="Toggle known or unknown" aria-label="Known or unknown">✓</th>
               <th>Word</th>
               <th>Meaning</th>
               <th>Example Sentence</th>
@@ -1958,15 +1832,15 @@
           <div class="stats-kpis">
             <span class="stats-kpi" id="kpiHavuzTotal">📦 Total Pool: 0</span>
             <span class="stats-kpi" style="background:#fef3c7;border-color:#fcd34d;color:#92400e;" id="kpiHavuzWaiting">⏳ Waiting: 0</span>
-            <span class="stats-kpi ok" id="kpiHavuzTransferred">✅ Transferred to Words: 0</span>
+            <span class="stats-kpi ok" id="kpiHavuzTransferred">✅ Added to library: 0</span>
           </div>
           <div class="pool-actions">
             <details><summary>Random transfer</summary><div class="pool-random">
               <label for="havuzRandomCount">Count</label>
               <input type="number" id="havuzRandomCount" class="inp" min="1" max="50" value="5">
-              <button class="btn" id="havuzRandomTransferBtn" onclick="havuzdanRastgeleAktar()" title="Pick N random waiting words from the pool and transfer them to Words with auto-generated meaning, pronunciation, and example sentence">🎲 Transfer Random</button>
+              <button class="btn" id="havuzRandomTransferBtn" onclick="havuzdanRastgeleAktar()" title="Pick N random waiting words from the pool and add them to your library">🎲 Transfer Random</button>
             </div></details>
-            <button class="btn btn-green" id="havuzSelectedTransferBtn" onclick="havuzSecilenleriAktar()" title="Transfer selected words to Words with auto-generated meaning, pronunciation, and example sentence">➕ Transfer Selected to Words (0)</button>
+            <button class="btn btn-green" id="havuzSelectedTransferBtn" onclick="havuzSecilenleriAktar()" title="Add selected items to your library">➕ Add selected (0)</button>
           </div>
         </div>
         <div class="pool-layout">
@@ -1981,7 +1855,7 @@
                 <th class="center">Level</th>
                 <th>Word · click to listen</th>
                 <th class="center">Status</th>
-                <th>Transfer to Words</th>
+                <th>Add to library</th>
               </tr>
             </thead>
             <tbody id="sheetHavuzBody"></tbody>
@@ -2002,7 +1876,7 @@
                 <th class="col-row">#</th>
                 <th class="center">Level</th>
                 <th class="col-type">Type</th>
-                <th class="col-mark" title="Top (✓): Known | Bottom (✕): Unknown">✓/✕</th>
+                <th class="col-mark" title="Toggle known or unknown" aria-label="Known or unknown">✓</th>
                 <th>Word</th>
                 <th>Meaning</th>
                 <th>Example Sentence</th>
@@ -2027,7 +1901,7 @@
                 <th class="col-row">#</th>
                 <th class="center">Level</th>
                 <th class="col-type">Type</th>
-                <th class="col-mark" title="Top (✓): Known | Bottom (✕): Unknown">✓/✕</th>
+                <th class="col-mark" title="Toggle known or unknown" aria-label="Known or unknown">✓</th>
                 <th>Word</th>
                 <th>Meaning</th>
                 <th>Example Sentence</th>
@@ -2053,7 +1927,7 @@
                 <th class="col-row">#</th>
                 <th class="center">Level</th>
                 <th class="col-type">Type</th>
-                <th class="col-mark" title="Top (✓): Known | Bottom (✕): Unknown">✓/✕</th>
+                <th class="col-mark" title="Toggle known or unknown" aria-label="Known or unknown">✓</th>
                 <th>Word</th>
                 <th>Meaning</th>
                 <th>Example Sentence</th>
@@ -2069,7 +1943,7 @@
 
       <div class="table-wrap modern-table-view" id="statsView" style="display:none;">
       <section class="overview-grid" id="learningOverview" aria-label="Learning overview">
-        <button class="overview-card" onclick="sekmeDegistir('sheet1')"><span class="card-top"><span>Total words</span><span class="stat-icon"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20M6.5 3H20v19H6.5A2.5 2.5 0 0 1 4 19.5v-14A2.5 2.5 0 0 1 6.5 3Z"/><path d="M8 7h8M8 11h6"/></svg></span></span><strong id="stTotal">0</strong></button>
+        <button class="overview-card" onclick="sekmeDegistir('sheet1')"><span class="card-top"><span id="totalItemsLabel">Total words</span><span class="stat-icon"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20M6.5 3H20v19H6.5A2.5 2.5 0 0 1 4 19.5v-14A2.5 2.5 0 0 1 6.5 3Z"/><path d="M8 7h8M8 11h6"/></svg></span></span><strong id="stTotal">0</strong></button>
         <button class="overview-card" onclick="sekmeDegistir('pool')"><span class="card-top"><span>Still learning</span><span class="stat-icon amber"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span></span><strong id="stUnk">0</strong></button>
         <button class="overview-card" onclick="sekmeDegistir('knownPool')"><span class="card-top"><span>Known &amp; learned</span><span class="stat-icon green"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/></svg></span></span><strong id="stKnw">0</strong></button>
         <div class="overview-card progress-card"><span class="card-top"><span>Your progress</span><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 3v17h17M9 15v-4m5 4V7m5 8v-5"/></svg></span><strong id="masteryPercent">0<span>%</span></strong><div class="mastery-track" role="progressbar" aria-label="Words mastered" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="masteryProgress"><span id="masteryFill"></span></div><span class="stat-caption" id="masteryCaption">Your next word is a step forward.</span></div>
@@ -2080,10 +1954,6 @@
             <span class="stats-kpi err" id="kpiTotalMistakes">❌ Total Mistakes: 0</span>
             <span class="stats-kpi ok" id="kpiTotalCorrect">✅ Total Correct: 0</span>
             <span class="stats-kpi" id="kpiAccuracy">🎯 Accuracy: -</span>
-          </div>
-          <div class="stats-actions">
-            <button class="btn" onclick="istatistikleriSunucuyaSenkronizeEt(true)" title="Sync all historical stats to 'Mistake Stats' tab in Google Sheets">🔄 Sync Stats to Sheet</button>
-            <a href="https://docs.google.com/spreadsheets/d/1cUYfuFg7OSsWjCtLA7jiB77bGJITR6V0jF2ZUnyrXtc/edit" target="_blank" class="btn btn-green" title="View 'Mistake Stats' sheet tab in Google Sheets">📊 Open in Google Sheets</a>
           </div>
         </div>
         <section class="pool-card" aria-labelledby="practiceStatsTitle">
@@ -2118,106 +1988,6 @@
         </div>
       </div>
 
-      <div id="phrasalVerbsView" style="display:none;">
-        <div id="pvListPanel">
-          <div class="toolbar">
-            <label class="search-field">
-              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></svg>
-              <input type="search" id="pvSearchInput" class="inp" placeholder="Search phrasal verbs, meanings, or examples…" aria-label="Search phrasal verbs" oninput="pvCiz()">
-            </label>
-            <div class="filter-actions">
-              <select id="pvLevelFilter" class="inp" aria-label="Filter phrasal verbs by level" onchange="pvSeviyeDegisti()">
-                <option value="ALL">All levels</option>
-                <option value="B1">B1</option>
-                <option value="B2">B2</option>
-                <option value="C1">C1</option>
-              </select>
-              <button class="btn" id="pvClearFiltersBtn" onclick="pvFiltreTemizle()" hidden>Clear</button>
-            </div>
-            <span id="pvResultCount" aria-live="polite" style="white-space:nowrap;"></span>
-          </div>
-
-          <div class="add-bar" id="pvAddBar" role="group" aria-label="Add a phrasal verb">
-            <select id="pvInSeviye" aria-label="Phrasal verb level" class="inp">
-              <option value="B1">B1</option>
-              <option value="B2" selected>B2</option>
-              <option value="C1">C1</option>
-            </select>
-            <input type="text" id="pvInKelime" aria-label="Phrasal verb" class="inp" placeholder="Phrasal verb (e.g. Bring up)" style="width:165px;">
-            <input type="text" id="pvInAnlam" aria-label="Turkish meaning" class="inp" placeholder="Meaning (Turkish)" style="width:190px;">
-            <input type="text" id="pvInOrnek" aria-label="Example sentence" class="inp" placeholder="Example sentence (Turkish translation)" style="flex:1;min-width:210px;">
-            <button class="btn btn-green" onclick="pvYeniEkle()">Save</button>
-            <button class="btn" onclick="pvEkleBarAcKapat()">Close</button>
-          </div>
-
-          <div class="table-wrap">
-            <table class="sheet-table">
-              <thead>
-                <tr>
-                  <th class="col-row">#</th>
-                  <th class="center">Level</th>
-                  <th class="col-type">Type</th>
-                  <th class="col-mark" title="Top (✓): Known | Bottom (✕): Unknown">✓/✕</th>
-                  <th>Phrasal Verb</th>
-                  <th>Meaning</th>
-                  <th>Example Sentence</th>
-                  <th class="center col-status">Status</th>
-                </tr>
-              </thead>
-              <tbody id="phrasalVerbsBody"></tbody>
-            </table>
-          </div>
-        </div>
-
-        <div id="pvPoolPanel" style="display:none;">
-          <div class="stats-kpi-bar">
-            <div class="stats-kpis">
-              <span class="stats-kpi" id="kpiPvPoolTotal">📦 Total Pool: 0</span>
-              <span class="stats-kpi" style="background:#fef3c7;border-color:#fcd34d;color:#92400e;" id="kpiPvPoolWaiting">⏳ Waiting: 0</span>
-              <span class="stats-kpi ok" id="kpiPvPoolTransferred">✅ Transferred: 0</span>
-            </div>
-            <div class="pool-actions">
-              <input type="search" id="pvPoolSearchInput" class="inp" placeholder="Search phrasal pool…" aria-label="Search phrasal pool" oninput="pvCiz()" style="min-width:170px;">
-              <select id="pvPoolLevelFilter" class="inp" aria-label="Filter phrasal pool by level" onchange="pvCiz()">
-                <option value="ALL">All levels</option>
-                <option value="B1">B1</option>
-                <option value="B2">B2</option>
-                <option value="C1">C1</option>
-              </select>
-              <details><summary>Random transfer</summary><div class="pool-random">
-                <label for="pvPoolRandomCount">Count</label>
-                <input type="number" id="pvPoolRandomCount" class="inp" min="1" max="50" value="5">
-                <button class="btn" id="pvPoolRandomTransferBtn" onclick="pvHavuzdanRastgeleAktar()">🎲 Transfer Random</button>
-              </div></details>
-              <button class="btn btn-green" id="pvPoolSelectedTransferBtn" onclick="pvHavuzSecilenleriAktar()">➕ Transfer Selected (0)</button>
-            </div>
-          </div>
-          <section class="pool-card" aria-labelledby="pvPoolWordsTitle">
-            <h3 id="pvPoolWordsTitle">Pool phrasal verbs</h3>
-            <div class="pool-table-scroll" role="region" aria-label="Phrasal verb pool and transfer actions" tabindex="0">
-              <table class="sheet-table pool-words">
-                <thead>
-                  <tr>
-                    <th class="center"><input type="checkbox" id="pvPoolSelectAllCb" onchange="pvHavuzTumunuSecDegistir(this.checked)" aria-label="Select all visible waiting phrasal verbs"></th>
-                    <th class="col-row">#</th>
-                    <th class="center">Level</th>
-                    <th>Phrasal Verb · click to listen</th>
-                    <th class="center">Status</th>
-                    <th>Transfer to All phrasal verbs</th>
-                  </tr>
-                </thead>
-                <tbody id="pvPoolBody"></tbody>
-              </table>
-            </div>
-          </section>
-        </div>
-
-        <div id="pvStudyPanel" style="display:none;">
-          <div class="word-study-content">
-            <div class="fc-wrap" id="pvStudyContainer"></div>
-          </div>
-        </div>
-      </div>
       </section>
     </main>
   </div>
@@ -2226,7 +1996,7 @@
     <div class="bottom-tabs">
       <button class="sheet-tab active" id="tabBtn-sheet1" onclick="sekmeDegistir('sheet1')">📋 Words</button>
       <button class="sheet-tab" id="tabBtn-sheetHavuz" onclick="sekmeDegistir('sheetHavuz')">📦 Word Pool</button>
-      <button class="sheet-tab" id="tabBtn-phrasalVerbs" onclick="sekmeDegistir('phrasalVerbs')">🔗 Phrasal Verbs</button>
+      <button class="sheet-tab" id="tabBtn-phrasalVerbs" onclick="bolumDegistir('phrasal')">🔗 Phrasal Verbs</button>
       <button class="sheet-tab" id="tabBtn-pool" onclick="sekmeDegistir('pool')">📕 Unknown Pool</button>
       <button class="sheet-tab" id="tabBtn-knownPool" onclick="sekmeDegistir('knownPool')">📗 Known Pool</button>
       <button class="sheet-tab" id="tabBtn-learnedPool" onclick="sekmeDegistir('learnedPool')">📘 Learned</button>
@@ -2239,40 +2009,21 @@
       <button class="sheet-tab" id="tabBtn-match" onclick="calismaModuAc('match')">🧩 Match</button>
     </div>
     <div class="bottom-info">
-      Two-way live sync with Google Sheets
+      Stored in this browser
     </div>
   </div>
 
   <div class="toast" id="toastBox" role="status" aria-live="polite"></div>
 
+  <script src="library-data.js"></script>
   <script>
-    var SHEET_ID = "1cUYfuFg7OSsWjCtLA7jiB77bGJITR6V0jF2ZUnyrXtc";
-    var APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwoQfKD_9jNf0Q6LMnOk0kAYxNaNZMjYuHMiDmvOStTzt9py9RsuJHPryEyiTCELuHy/exec";
+    var PHRASAL = location.hash === "#phrasal";
 
-    var FALLBACK_WORDS = [
-      { row: 2, tarih: "2026-10-19", seviye: "B1", tur: "Adjective", kelime: "Reluctant", okunus: "ri-lak-tınt (/rɪˈlʌk.tənt/)", anlam: "İsteksiz, gönülsüz", ornek: "She was reluctant to accept the offer. (Teklifi kabul etmekte isteksizdi.)", durum: "bilmiyorum" },
-      { row: 3, tarih: "2026-10-19", seviye: "B2", tur: "Adjective", kelime: "Inevitable", okunus: "in-ev-i-tı-bıl (/ɪˈnev.ɪ.tə.bəl/)", anlam: "Kaçınılmaz", ornek: "Change is an inevitable part of life. (Değişim hayatın kaçınılmaz bir parçasıdır.)", durum: "bilmiyorum" },
-      { row: 4, tarih: "2026-10-19", seviye: "B2", tur: "Verb", kelime: "Comprehend", okunus: "kom-pri-hend (/ˌkɒm.prɪˈhend/)", anlam: "Kavramak, idrak etmek, anlamak", ornek: "It is difficult to comprehend the scale of the universe. (Evrenin büyüklüğünü kavramak zordur.)", durum: "bilmiyorum" },
-      { row: 5, tarih: "2026-10-19", seviye: "B2", tur: "Verb", kelime: "Thrive", okunus: "thrayv (/θraɪv/)", anlam: "Gelişmek, serpilmek, başarılı olmak", ornek: "Some plants thrive in sandy soil. (Bazı bitkiler kumlu toprakta çok iyi gelişir.)", durum: "bilmiyorum" },
-      { row: 6, tarih: "2026-10-19", seviye: "C1", tur: "Adjective", kelime: "Ambiguous", okunus: "em-big-yu-ıs (/æmˈbɪɡ.ju.əs/)", anlam: "Belirsiz, muğlak, iki anlamlı", ornek: "The wording of the agreement is ambiguous. (Anlaşmanın ifadeleri muğlak.)", durum: "bilmiyorum" },
-      { row: 7, tarih: "2026-10-19", seviye: "C1", tur: "Verb", kelime: "Scrutinize", okunus: "skru-ti-nayz (/ˈskruː.tɪ.naɪz/)", anlam: "Dikkatle incelemek, didik didik etmek", ornek: "The auditor scrutinized every financial record. (Denetçi her mali kaydı dikkatle inceledi.)", durum: "bilmiyorum" },
-      { row: 8, tarih: "2026-10-19", seviye: "C1", tur: "Adjective", kelime: "Resilient", okunus: "ri-zil-yınt (/rɪˈzɪl.jənt/)", anlam: "Dayanıklı, dirençli, çabuk toparlanan", ornek: "Children are often more resilient than adults think. (Çocuklar genellikle yetişkinlerin düşündüğünden daha dirençlidir.)", durum: "bilmiyorum" },
-      { row: 9, tarih: "2026-10-19", seviye: "C1", tur: "Verb", kelime: "Mitigate", okunus: "mit-i-geyt (/ˈmɪt.ɪ.ɡeɪt/)", anlam: "Hafifletmek, azaltmak, yatıştırmak", ornek: "Planting trees helps mitigate the effects of climate change. (Ağaç dikmek iklim değişikliğinin etkilerini hafifletmeye yardımcı olur.)", durum: "bilmiyorum" },
-      { row: 10, tarih: "2026-10-19", seviye: "C2", tur: "Adjective", kelime: "Ubiquitous", okunus: "yu-bik-vi-tıs (/juːˈbɪk.wɪ.təs/)", anlam: "Her yerde bulunan, çok yaygın", ornek: "Smartphones have become ubiquitous in modern society. (Akıllı telefonlar modern toplumda her yerde bulunur hale geldi.)", durum: "bilmiyorum" },
-      { row: 11, tarih: "2026-10-19", seviye: "C2", tur: "Adjective", kelime: "Ephemeral", okunus: "i-fem-ı-rıl (/ɪˈfem.ər.əl/)", anlam: "Kısa ömürlü, geçici, fani", ornek: "Fame in the digital age is often ephemeral. (Dijital çağda şöhret çoğu zaman kısa ömürlüdür.)", durum: "bilmiyorum" },
-      { row: 12, tarih: "2026-10-20", seviye: "B2", tur: "Adjective", kelime: "Diligent", okunus: "dil-i-cınt (/ˈdɪl.ɪ.dʒənt/)", anlam: "Çalışkan, gayretli, özenli", ornek: "She is a diligent worker who always meets deadlines. (Her zaman teslim tarihlerine uyan çalışkan bir çalışandır.)", durum: "bilmiyorum" },
-      { row: 13, tarih: "2026-10-20", seviye: "B2", tur: "Verb", kelime: "Foster", okunus: "fos-tır (/ˈfɒs.tər/)", anlam: "Teşvik etmek, geliştirmek, beslemek", ornek: "The team fosters open communication. (Ekip açık iletişimi teşvik eder.)", durum: "bilmiyorum" },
-      { row: 14, tarih: "2026-10-20", seviye: "B2", tur: "Verb", kelime: "Endure", okunus: "in-dyur (/ɪnˈdjʊər/)", anlam: "Katlanmak, dayanmak, sürmek", ornek: "They had to endure extreme heat. (Aşırı sıcağa katlanmak zorunda kaldılar.)", durum: "bilmiyorum" },
-      { row: 15, tarih: "2026-10-20", seviye: "B2", tur: "Verb", kelime: "Hinder", okunus: "hin-dır (/ˈhɪn.dər/)", anlam: "Engellemek, aksatmak", ornek: "Bad weather could hinder our progress. (Kötü hava ilerlememizi aksatabilir.)", durum: "bilmiyorum" },
-      { row: 16, tarih: "2026-10-20", seviye: "B2", tur: "Adjective", kelime: "Vague", okunus: "veyg (/veɪɡ/)", anlam: "Belirsiz, net olmayan", ornek: "His answers were vague and unhelpful. (Cevapları belirsiz ve yararsızdı.)", durum: "bilmiyorum" },
-      { row: 17, tarih: "2026-10-20", seviye: "B2", tur: "Adjective", kelime: "Substantial", okunus: "sıb-sten-şıl (/səbˈstæn.ʃəl/)", anlam: "Kayda değer, önemli miktarda", ornek: "There has been a substantial increase in sales. (Satışlarda kayda değer bir artış oldu.)", durum: "bilmiyorum" },
-      { row: 18, tarih: "2026-10-20", seviye: "B2", tur: "Adjective", kelime: "Plausible", okunus: "plo-zı-bıl (/ˈplɔː.zə.bəl/)", anlam: "Akla yatkın, makul, inandırıcı", ornek: "He gave a plausible explanation for the delay. (Gecikme için akla yatkın bir açıklama yaptı.)", durum: "bilmiyorum" },
-      { row: 19, tarih: "2026-10-20", seviye: "C1", tur: "Adjective", kelime: "Pragmatic", okunus: "preg-met-ik (/præɡˈmæt.ɪk/)", anlam: "Faydacı, pratik, gerçekçi", ornek: "We need a pragmatic approach to the problem. (Soruna gerçekçi bir yaklaşıma ihtiyacımız var.)", durum: "bilmiyorum" },
-      { row: 20, tarih: "2026-10-20", seviye: "C1", tur: "Adjective", kelime: "Coherent", okunus: "ko-hi-rınt (/kəʊˈhɪə.rənt/)", anlam: "Tutarlı, mantıklı, anlaşılır", ornek: "She presented a coherent argument. (Tutarlı bir argüman sundu.)", durum: "bilmiyorum" },
-      { row: 21, tarih: "2026-10-20", seviye: "C1", tur: "Verb", kelime: "Alleviate", okunus: "ı-lii-vi-eyt (/əˈliː.vi.eɪt/)", anlam: "Hafifletmek, dindirmek", ornek: "The medicine will alleviate your pain. (İlaç ağrını hafifletecektir.)", durum: "bilmiyorum" }
-    ];
+    function collectionKey(key) {
+      return PHRASAL ? "phrasal_" + key : key;
+    }
 
-    var SHEET_KELIMELER = [];
+    var BASE_WORDS = [];
     var TUM_KELIMELER = [];
     var HAVUZ_KELIMELER = [];
     var HAVUZ_SECILENLER = {};
@@ -2359,7 +2110,7 @@
 
     function kisiselKnownSiraAl() {
       try {
-        return JSON.parse(localStorage.getItem("kelime_kisisel_known_order_v1") || "{}");
+        return JSON.parse(localStorage.getItem(collectionKey("kelime_kisisel_known_order_v1")) || "{}");
       } catch (e) {
         return {};
       }
@@ -2375,38 +2126,44 @@
         } else {
           delete map[k];
         }
-        localStorage.setItem("kelime_kisisel_known_order_v1", JSON.stringify(map));
+        localStorage.setItem(collectionKey("kelime_kisisel_known_order_v1"), JSON.stringify(map));
       } catch (e) {}
     }
 
     function kisiselDurumlariAl() {
       try {
-        return JSON.parse(localStorage.getItem("kelime_kisisel_durum_v1") || "{}");
+        return JSON.parse(localStorage.getItem(collectionKey("kelime_kisisel_durum_v1")) || "{}");
       } catch (e) {
         return {};
       }
     }
 
-    function kisiselDurumKaydet(kelime, durum) {
+    function saveCollectionData(key, value) {
       try {
-        var map = kisiselDurumlariAl();
-        map[kelime.toString().trim().toLowerCase()] = durum;
-        localStorage.setItem("kelime_kisisel_durum_v1", JSON.stringify(map));
-      } catch (e) {}
+        localStorage.setItem(collectionKey(key), JSON.stringify(value));
+      } catch (error) {
+        document.getElementById("syncText").textContent = "Storage unavailable";
+        bildirimGoster("Could not save changes in this browser.");
+        throw error;
+      }
+    }
+
+    function kisiselDurumKaydet(kelime, durum) {
+      var map = kisiselDurumlariAl();
+      map[kelime.toString().trim().toLowerCase()] = durum;
+      saveCollectionData("kelime_kisisel_durum_v1", map);
     }
 
     function kisiselEklenenleriAl() {
       try {
-        return JSON.parse(localStorage.getItem("kelime_kisisel_eklenen_v1") || "[]");
+        return JSON.parse(localStorage.getItem(collectionKey("kelime_kisisel_eklenen_v1")) || "[]");
       } catch (e) {
         return [];
       }
     }
 
     function kisiselEklenenKaydet(liste) {
-      try {
-        localStorage.setItem("kelime_kisisel_eklenen_v1", JSON.stringify(liste));
-      } catch (e) {}
+      saveCollectionData("kelime_kisisel_eklenen_v1", liste);
     }
 
     function yaziBoyutuUygula() {
@@ -2463,12 +2220,6 @@
       if (!isNaN(kayitliSayi) && kayitliSayi >= 1 && kayitliSayi <= 365) { HEDEF_SAYI = kayitliSayi; }
       var kayitliBirim = localStorage.getItem("kelime_hedef_birim");
       if (kayitliBirim === "gun" || kayitliBirim === "hafta") { HEDEF_BIRIM = kayitliBirim; }
-      if (localStorage.getItem("kelime_tumunu_bilinmeyen_reset_20261021_v1") !== "1") {
-        localStorage.removeItem("kelime_kisisel_durum_v1");
-        localStorage.removeItem("kelime_srs_sayac_v1");
-        localStorage.removeItem("kelime_istatistik_v1");
-        localStorage.setItem("kelime_tumunu_bilinmeyen_reset_20261021_v1", "1");
-      }
     } catch (e) {}
     yaziBoyutuUygula();
     sesDurumuUygula();
@@ -2494,6 +2245,10 @@
       if (AKTIF_SES) {
         try { AKTIF_SES.pause(); AKTIF_SES.currentTime = 0; } catch (e) {}
         AKTIF_SES = null;
+      }
+      if (PHRASAL && "speechSynthesis" in window) {
+        tarayiciIleOku(temiz);
+        return;
       }
       if ("speechSynthesis" in window) window.speechSynthesis.cancel();
       var ses = new Audio("https://ssl.gstatic.com/dictionary/static/sounds/20200429/" + encodeURIComponent(temiz.toLowerCase()) + "--_us_1.mp3");
@@ -2533,7 +2288,7 @@
     }
 
     function escJs(s) {
-      return (s || "").toString().replace(/\\/g, "\\\\").replace(/'/g, "\\'").replace(/"/g, '\\"');
+      return escHtml(String(s || "").replace(/\\/g, "\\\\").replace(/'/g, "\\'").replace(/\r/g, "\\r").replace(/\n/g, "\\n"));
     }
 
     /** Formats ISO dates for display while preserving the stored value and time. */
@@ -2563,77 +2318,23 @@
       return durum;
     }
 
-    var SON_YEREL_DEGISIM = {};
 
-    function listeyiBirlestirVeHazirla(bazListe, canliMi) {
+    function listeyiBirlestirVeHazirla(bazListe, background) {
       var durumMap = kisiselDurumlariAl();
       var eklenenler = kisiselEklenenleriAl();
-      var birlesik = [];
-      var gorulen = {};
-      var simdi = Date.now();
       var ogrenmeMap = istatistikMapAl();
-
-      for (var i = 0; i < bazListe.length; i++) {
-        var item = bazListe[i];
-        var key = (item.kelime || "").toString().trim().toLowerCase();
-        if (!key) continue;
-        gorulen[key] = true;
-        var kisiselDurum;
-        if (canliMi) {
-          if (SON_YEREL_DEGISIM[key] && (simdi - SON_YEREL_DEGISIM[key] < 8000) && durumMap[key]) {
-            kisiselDurum = durumMap[key];
-          } else {
-            kisiselDurum = kayittanKelimeDurumuAl(item.durum || "bilmiyorum", ogrenmeMap[key]);
-            kisiselDurumKaydet(item.kelime, kisiselDurum);
-          }
-        } else {
-          kisiselDurum = durumMap[key] || item.durum || "bilmiyorum";
-        }
-        kisiselDurum = kayittanKelimeDurumuAl(kisiselDurum, ogrenmeMap[key]);
-        birlesik.push({
-          row: item.row || (i + 2),
-          tarih: item.tarih || "",
-          seviye: item.seviye || "B2",
-          tur: item.tur || "",
-          kelime: item.kelime,
-          okunus: item.okunus || "",
-          anlam: item.anlam || "",
-          ornek: item.ornek || "",
-          durum: kisiselDurum,
-          biliyorum: kisiselDurum === "biliyorum",
-          bilmiyorum: kisiselDurum === "bilmiyorum"
-        });
-      }
-
-      var kalanEklenenler = [];
-      for (var j = 0; j < eklenenler.length; j++) {
-        var ek = eklenenler[j];
-        var ekKey = (ek.kelime || "").toString().trim().toLowerCase();
-        if (!ekKey || gorulen[ekKey]) continue;
-        gorulen[ekKey] = true;
-        kalanEklenenler.push(ek);
-        var d = durumMap[ekKey] || ek.durum || "bilmiyorum";
-        d = kayittanKelimeDurumuAl(d, ogrenmeMap[ekKey]);
-        birlesik.push({
-          row: birlesik.length + 2,
-          tarih: ek.tarih || "",
-          seviye: ek.seviye || "B2",
-          tur: ek.tur || "",
-          kelime: ek.kelime,
-          okunus: ek.okunus || "",
-          anlam: ek.anlam || "",
-          ornek: ek.ornek || "",
-          durum: d,
-          biliyorum: d === "biliyorum",
-          bilmiyorum: d === "bilmiyorum"
-        });
-      }
-      if (canliMi && kalanEklenenler.length !== eklenenler.length) {
-        kisiselEklenenKaydet(kalanEklenenler);
-      }
-
+      var birlesik = mergeLibrary(bazListe, eklenenler).map(function(item, index) {
+        var key = item.kelime.trim().toLowerCase();
+        var durum = kayittanKelimeDurumuAl(durumMap[key] || item.durum || "bilmiyorum", ogrenmeMap[key]);
+        return {
+          row: index + 2, tarih: item.tarih || "", seviye: item.seviye || "B2",
+          tur: item.tur || "", kelime: item.kelime, okunus: item.okunus || "",
+          anlam: item.anlam || "", ornek: item.ornek || "", durum: durum,
+          biliyorum: durum === "biliyorum", bilmiyorum: durum === "bilmiyorum"
+        };
+      });
       if (JSON.stringify(TUM_KELIMELER) === JSON.stringify(birlesik)) {
-        if (dortHaftaHatasizKontrolEt()) tabloyuCiz(canliMi);
+        if (!birlesik.length || dortHaftaHatasizKontrolEt()) tabloyuCiz(background);
         return;
       }
       var aktifKart = null;
@@ -2666,179 +2367,7 @@
       } else {
         SECENEKLER_CACHE = { key: "", list: [] };
       }
-      tabloyuCiz(canliMi);
-    }
-
-    function gvizTablosunuCozumle(table) {
-      if (!table) return [];
-      var allRows = [];
-      if (table.cols && table.cols.length) {
-        var colLabels = [];
-        var hasLabel = false;
-        for (var c = 0; c < table.cols.length; c++) {
-          var lb = (table.cols[c].label || "").toString().trim();
-          if (lb) hasLabel = true;
-          colLabels.push(lb);
-        }
-        if (hasLabel) allRows.push(colLabels);
-      }
-      if (table.rows && table.rows.length) {
-        for (var r = 0; r < table.rows.length; r++) {
-          var cells = (table.rows[r] && table.rows[r].c) ? table.rows[r].c : [];
-          var rowArr = [];
-          for (var k = 0; k < cells.length; k++) {
-            var cell = cells[k];
-            if (!cell) {
-              rowArr.push("");
-            } else if (cell.f !== undefined && cell.f !== null) {
-              rowArr.push(String(cell.f).trim());
-            } else if (cell.v !== undefined && cell.v !== null) {
-              rowArr.push(String(cell.v).trim());
-            } else {
-              rowArr.push("");
-            }
-          }
-          allRows.push(rowArr);
-        }
-      }
-
-      var map = { date: 1, word: 2, pron: 3, type: 5, level: 6, meaning: 7, example: 8, known: 10, unknown: 11 };
-      var startIdx = 0;
-      var hasMeaningCol = false;
-      var hasTransferredCol = false;
-
-      for (var idx = 0; idx < Math.min(allRows.length, 8); idx++) {
-        var candidate = allRows[idx];
-        var foundWordCol = -1;
-        for (var m = 0; m < candidate.length; m++) {
-          var h = (candidate[m] || "").toLowerCase().trim();
-          if (h === "word" || h === "kelime") { foundWordCol = m; break; }
-        }
-        if (foundWordCol !== -1) {
-          startIdx = idx + 1;
-          for (var n = 0; n < candidate.length; n++) {
-            var hk = (candidate[n] || "").toLowerCase().trim();
-            if (hk === "date" || hk === "tarih") map.date = n;
-            else if (hk === "word" || hk === "kelime") map.word = n;
-            else if (hk.indexOf("pronun") !== -1 || hk.indexOf("okunu") !== -1) map.pron = n;
-            else if (hk === "type" || hk === "tür" || hk === "tur") map.type = n;
-            else if (hk === "level" || hk === "seviye") map.level = n;
-            else if (hk.indexOf("meaning") !== -1 || hk.indexOf("anlam") !== -1) { map.meaning = n; hasMeaningCol = true; }
-            else if (hk.indexOf("example") !== -1 || hk.indexOf("örnek") !== -1 || hk.indexOf("ornek") !== -1) map.example = n;
-            else if (hk === "known" || hk === "biliyorum") map.known = n;
-            else if (hk === "unknown" || hk === "bilmiyorum") map.unknown = n;
-            else if (hk.indexOf("transfer") !== -1 || hk.indexOf("aktar") !== -1) hasTransferredCol = true;
-          }
-          break;
-        }
-      }
-
-      // Guard: Never allow the 4-column Havuz/Pool sheet to be parsed as the Words table
-      if (hasTransferredCol && !hasMeaningCol) {
-        return [];
-      }
-
-      var parsed = [];
-      for (var p = startIdx; p < allRows.length; p++) {
-        var dRow = allRows[p];
-        var w = (dRow[map.word] || "").trim();
-        if (!w || w.toLowerCase() === "word" || w.toLowerCase() === "kelime") continue;
-        var kVal = (dRow[map.known] || "").toUpperCase();
-        var uVal = (dRow[map.unknown] || "").toUpperCase();
-        var durum = (kVal === "TRUE") ? "biliyorum" : ((uVal === "TRUE") ? "bilmiyorum" : "beklemede");
-        parsed.push({
-          row: parsed.length + 2,
-          tarih: dRow[map.date] || "",
-          kelime: w,
-          okunus: dRow[map.pron] || "",
-          tur: dRow[map.type] || "",
-          seviye: dRow[map.level] || "B1",
-          anlam: dRow[map.meaning] || "",
-          ornek: dRow[map.example] || "",
-          durum: durum
-        });
-      }
-      return parsed;
-    }
-
-    function gvizHavuzTablosunuCozumle(table) {
-      if (!table) return [];
-      var allRows = [];
-      if (table.cols && table.cols.length) {
-        var colLabels = [];
-        var hasLabel = false;
-        for (var c = 0; c < table.cols.length; c++) {
-          var lb = (table.cols[c].label || "").toString().trim();
-          if (lb) hasLabel = true;
-          colLabels.push(lb);
-        }
-        if (hasLabel) allRows.push(colLabels);
-      }
-      if (table.rows && table.rows.length) {
-        for (var r = 0; r < table.rows.length; r++) {
-          var cells = (table.rows[r] && table.rows[r].c) ? table.rows[r].c : [];
-          var rowArr = [];
-          for (var k = 0; k < cells.length; k++) {
-            var cell = cells[k];
-            if (!cell) {
-              rowArr.push("");
-            } else if (cell.f !== undefined && cell.f !== null) {
-              rowArr.push(String(cell.f).trim());
-            } else if (cell.v !== undefined && cell.v !== null) {
-              rowArr.push(String(cell.v).trim());
-            } else {
-              rowArr.push("");
-            }
-          }
-          allRows.push(rowArr);
-        }
-      }
-
-      var map = { level: 0, word: 1, status: 2, transferred: 3 };
-      var startIdx = 0;
-      for (var idx = 0; idx < Math.min(allRows.length, 5); idx++) {
-        var candidate = allRows[idx];
-        var foundWord = -1;
-        for (var m = 0; m < candidate.length; m++) {
-          var h = (candidate[m] || "").toLowerCase().trim();
-          if (h === "word" || h === "kelime") { foundWord = m; break; }
-        }
-        if (foundWord !== -1) {
-          startIdx = idx + 1;
-          for (var n = 0; n < candidate.length; n++) {
-            var hk = (candidate[n] || "").toLowerCase().trim();
-            if (hk === "level" || hk === "seviye") map.level = n;
-            else if (hk === "word" || hk === "kelime") map.word = n;
-            else if (hk === "status" || hk === "durum") map.status = n;
-            else if (hk.indexOf("transfer") !== -1 || hk.indexOf("aktar") !== -1) map.transferred = n;
-          }
-          break;
-        }
-      }
-
-      var parsed = [];
-      for (var p = startIdx; p < allRows.length; p++) {
-        var dRow = allRows[p];
-        var w = (dRow[map.word] || "").trim();
-        if (!w || w.toLowerCase() === "word" || w.toLowerCase() === "kelime") continue;
-        var stText = (dRow[map.status] || "").trim();
-        var trVal = (dRow[map.transferred] || "").toUpperCase().trim();
-        var aktarildi = (trVal === "TRUE") || (stText.toLowerCase().indexOf("aktar") !== -1);
-        parsed.push({
-          row: parsed.length + 2,
-          seviye: (dRow[map.level] || "B1").toUpperCase().trim(),
-          kelime: w,
-          durum: aktarildi ? "Aktarıldı" : (stText || "Bekliyor"),
-          aktarildi: aktarildi
-        });
-      }
-      return parsed;
-    }
-
-    function yerelOnbellekKaydet(anahtar, veri) {
-      try {
-        localStorage.setItem(anahtar, JSON.stringify(veri));
-      } catch (e) {}
+      tabloyuCiz(background);
     }
 
     function yerelOnbellekAl(anahtar) {
@@ -2852,124 +2381,16 @@
       }
     }
 
-    window.__onSheetData = function(response) {
-      try {
-        if (response && response.table) {
-          var liste = gvizTablosunuCozumle(response.table);
-          if (liste && liste.length > 0) {
-            var mevcutRowMap = {};
-            var kaynak = SHEET_KELIMELER && SHEET_KELIMELER.length ? SHEET_KELIMELER : TUM_KELIMELER;
-            for (var i = 0; i < (kaynak || []).length; i++) {
-              var k = (kaynak[i].kelime || "").toString().trim().toLowerCase();
-              if (k && kaynak[i].row) mevcutRowMap[k] = kaynak[i].row;
-            }
-            for (var j = 0; j < liste.length; j++) {
-              var lk = (liste[j].kelime || "").toString().trim().toLowerCase();
-              if (lk && mevcutRowMap[lk]) {
-                liste[j].row = mevcutRowMap[lk];
-              }
-            }
-            SHEET_KELIMELER = liste;
-            yerelOnbellekKaydet("kelime_son_sheet_words_v1", SHEET_KELIMELER);
-            listeyiBirlestirVeHazirla(SHEET_KELIMELER, true);
-            document.getElementById("syncDot").className = "sync-dot";
-            document.getElementById("syncText").innerText = "Live (" + liste.length + ")";
-            return;
-          }
-        }
-      } catch (e) {}
-    };
-
-    window.__onHavuzData = function(response) {
-      try {
-        if (response && response.table) {
-          var hListe = gvizHavuzTablosunuCozumle(response.table);
-          if (hListe && hListe.length > 0) {
-            HAVUZ_KELIMELER = hListe;
-            yerelOnbellekKaydet("kelime_son_havuz_v1", HAVUZ_KELIMELER);
-            havuzTablosuCiz();
-          }
-        }
-      } catch (e) {}
-    };
-
-    var CANLI_SENKRON_ARALIGI_MS = 60000;
-    var SON_CANLI_SENKRON = 0;
-
-    function canliVerileriGuncelle(zorla) {
-      if (document.hidden || (zorla !== true && Date.now() - SON_CANLI_SENKRON < CANLI_SENKRON_ARALIGI_MS)) return;
-      verileriYukle(false);
-    }
-
-    function verileriYukle(bildirimli) {
-      SON_CANLI_SENKRON = Date.now();
-      document.getElementById("syncDot").className = "sync-dot loading";
-      document.getElementById("syncText").innerText = "Syncing...";
-
-      // 1. Primary live sync via Apps Script JSON endpoint (zero cache delay, exact row numbers)
-      appsScripttenYukle();
-
-      // 2. Fast JSONP from Google Sheets gviz endpoint (explicitly targeting 'Words' tab)
-      var oldScript = document.getElementById("gvizJsonpScript");
-      if (oldScript && oldScript.parentNode) oldScript.parentNode.removeChild(oldScript);
-      var s = document.createElement("script");
-      s.id = "gvizJsonpScript";
-      s.src = "https://docs.google.com/spreadsheets/d/" + SHEET_ID + "/gviz/tq?sheet=Words&tqx=responseHandler:__onSheetData&_=" + Date.now();
-      document.body.appendChild(s);
-
-      // 3. Fast JSONP from Google Sheets gviz endpoint (explicitly targeting 'Havuz' tab)
-      var oldHavuzScript = document.getElementById("gvizHavuzJsonpScript");
-      if (oldHavuzScript && oldHavuzScript.parentNode) oldHavuzScript.parentNode.removeChild(oldHavuzScript);
-      var sh = document.createElement("script");
-      sh.id = "gvizHavuzJsonpScript";
-      sh.src = "https://docs.google.com/spreadsheets/d/" + SHEET_ID + "/gviz/tq?sheet=Havuz&tqx=responseHandler:__onHavuzData&_=" + Date.now();
-      document.body.appendChild(sh);
-
-      if (bildirimli) {
-        bildirimGoster("🔄 Synced with Google Sheet");
-      }
-    }
-
-    function appsScripttenYukle() {
-      if (!APPS_SCRIPT_URL) return;
-      fetch(APPS_SCRIPT_URL + "?action=json&_=" + Date.now())
-        .then(function(r) { return r.json(); })
-        .then(function(res) {
-          if (res && res.ok) {
-            if (res.stats) {
-              sunucuIstatistikleriniBirlestir(res.stats);
-            }
-            if (res.havuz && res.havuz.length > 0) {
-              HAVUZ_KELIMELER = res.havuz;
-              yerelOnbellekKaydet("kelime_son_havuz_v1", HAVUZ_KELIMELER);
-              havuzTablosuCiz();
-            }
-            if (res.words && res.words.length > 0) {
-              SHEET_KELIMELER = res.words;
-              yerelOnbellekKaydet("kelime_son_sheet_words_v1", SHEET_KELIMELER);
-              listeyiBirlestirVeHazirla(SHEET_KELIMELER, true);
-              document.getElementById("syncDot").className = "sync-dot";
-              document.getElementById("syncText").innerText = "Live (" + res.words.length + ")";
-            } else if (res.havuz && res.havuz.length > 0) {
-              havuzTablosuCiz();
-            }
-          }
-        })
-        .catch(function() {});
-    }
-
     function istatistikMapAl() {
       try {
-        return JSON.parse(localStorage.getItem("kelime_istatistik_v1") || "{}");
+        return JSON.parse(localStorage.getItem(collectionKey("kelime_istatistik_v1")) || "{}");
       } catch (e) {
         return {};
       }
     }
 
     function istatistikMapKaydet(map) {
-      try {
-        localStorage.setItem("kelime_istatistik_v1", JSON.stringify(map || {}));
-      } catch (e) {}
+      saveCollectionData("kelime_istatistik_v1", map || {});
     }
 
     function haftaAnahtariAl(d) {
@@ -3079,16 +2500,7 @@
       return word.durum === "ogrenildi" || !!(st && !st.manualKnown && ogrenmeKaydiniHazirla(st).learned);
     }
 
-    var OGRENME_SENKRON_TIMER = null;
     var CALISMA_CEVAPLARI = {};
-
-    function ogrenmeSenkronunuPlanla() {
-      if (!APPS_SCRIPT_URL || OGRENME_SENKRON_TIMER) return;
-      OGRENME_SENKRON_TIMER = setTimeout(function() {
-        OGRENME_SENKRON_TIMER = null;
-        istatistikleriSunucuyaSenkronizeEt(false);
-      }, 300);
-    }
 
     function kelimeGosteriminiKaydet(word) {
       if (!word || !word.kelime || word.durum === "biliyorum") return;
@@ -3102,7 +2514,6 @@
       ogrenmeKaydiDegisti(st);
       map[key] = st;
       istatistikMapKaydet(map);
-      ogrenmeSenkronunuPlanla();
     }
 
     function kelimeHatasizHaftaSayisiAl(st, refWord) {
@@ -3175,15 +2586,14 @@
           degisenler.push(w);
         }
       }
-      istatistikMapKaydet(map);
+      if (degisenler.length) istatistikMapKaydet(map);
       degisenler.forEach(function(w) { kutucukDegisti(w.row, "ogrenildi", true, false, true); });
       return degisenler.length;
     }
 
     function tumKelimeleriBilinmeyenYap(manuelMi) {
       var map = istatistikMapAl();
-      var geriSayi = 0;
-      try { localStorage.removeItem("kelime_srs_sayac_v1"); } catch (e) {}
+      try { localStorage.removeItem(collectionKey("kelime_srs_sayac_v1")); } catch (e) {}
       for (var i = 0; i < TUM_KELIMELER.length; i++) {
         var w = TUM_KELIMELER[i];
         var k = (w.kelime || "").toString().trim().toLowerCase();
@@ -3205,32 +2615,12 @@
           st.cleanDays = [];
           st.cleanWeeks = [];
         }
-        var degistiMi = w.durum !== "bilmiyorum";
         w.durum = "bilmiyorum";
         w.biliyorum = false;
         w.bilmiyorum = true;
-        SON_YEREL_DEGISIM[k] = Date.now();
-        for (var s = 0; s < SHEET_KELIMELER.length; s++) {
-          if (SHEET_KELIMELER[s].row === w.row || (SHEET_KELIMELER[s].kelime || "").toLowerCase() === k) {
-            SHEET_KELIMELER[s].durum = "bilmiyorum";
-            SHEET_KELIMELER[s].biliyorum = false;
-            SHEET_KELIMELER[s].bilmiyorum = true;
-          }
-        }
         kisiselDurumKaydet(w.kelime, "bilmiyorum");
-        if (degistiMi) {
-          geriSayi++;
-          if (APPS_SCRIPT_URL) {
-            fetch(APPS_SCRIPT_URL, {
-              method: "POST",
-              headers: { "Content-Type": "text/plain;charset=utf-8" },
-              body: JSON.stringify({ action: "setStatus", row: w.row, status: "bilmiyorum" })
-            }).catch(function() {});
-          }
-        }
       }
       istatistikMapKaydet(map);
-      ogrenmeSenkronunuPlanla();
       tabloyuCiz();
       if (manuelMi) {
         bildirimGoster("↩️ All words (" + TUM_KELIMELER.length + " words) moved back to Unknown Pool!");
@@ -3239,80 +2629,6 @@
 
     function erkenBilinenleriHavuzaGeriAl() {
       tumKelimeleriBilinmeyenYap(true);
-    }
-
-    function sunucuIstatistikleriniBirlestir(serverStats) {
-      if (!serverStats || typeof serverStats !== "object") return;
-      var localMap = istatistikMapAl();
-      var pending = false;
-      Object.keys(serverStats).forEach(function(rawKey) {
-        var key = rawKey.toLowerCase().trim();
-        var sv = serverStats[rawKey];
-        if (!sv) return;
-        var lc = localMap[key] || {};
-        var localVersion = Number(lc.learningUpdatedAt) || 0;
-        var serverVersion = Number(sv.learningUpdatedAt) || 0;
-        var merged = Object.assign({}, sv, lc);
-        if (serverVersion > localVersion) Object.assign(merged, sv);
-        var latest = serverVersion > localVersion ? sv : lc;
-        if (latest.learningVersion === 2) {
-          ["learningVersion", "learningUpdatedAt", "trainingStartedOn", "correctDuringGoal", "correctAfterGoal", "correctDays", "consecutiveCorrect", "lastAnswerCorrect", "learned", "learnedOn", "manualKnown", "autoMasteredByStreak", "nextReviewAt", "reviewIntervalDays", "seenCount"].forEach(function(field) {
-            if (latest[field] === undefined) delete merged[field];
-            else merged[field] = latest[field];
-          });
-        }
-        merged.kelime = sv.kelime || sv.word || lc.kelime || key;
-        merged.seviye = sv.seviye || sv.level || lc.seviye || "";
-        merged.anlam = sv.anlam || sv.meaning || lc.anlam || "";
-        merged.mistakes = Math.max(Number(lc.mistakes) || 0, Number(sv.mistakes) || 0);
-        merged.correct = Math.max(Number(lc.correct) || 0, Number(sv.correct) || 0);
-        var maxSeen = Math.max(Number(lc.seenCount) || 0, Number(sv.seenCount) || 0, merged.mistakes + merged.correct);
-        if (maxSeen > 0) merged.seenCount = maxSeen;
-        var dates = [lc.firstSeenOn, sv.firstSeenOn].filter(function(d) { return takvimGunuAl(d) !== null; }).sort();
-        if (dates.length) merged.firstSeenOn = dates[0];
-        localMap[key] = ogrenmeKaydiniHazirla(merged);
-        if (localVersion > serverVersion || merged.correct > (Number(sv.correct) || 0) || merged.mistakes > (Number(sv.mistakes) || 0)) pending = true;
-      });
-      Object.keys(localMap).forEach(function(key) { if (!serverStats[key]) pending = true; });
-      istatistikMapKaydet(localMap);
-      istatistikTablosuCiz();
-      if (pending) ogrenmeSenkronunuPlanla();
-    }
-
-    function istatistikleriSunucuyaSenkronizeEt(bildirimli) {
-      if (!APPS_SCRIPT_URL) return;
-      var localMap = istatistikMapAl();
-      for (var i = 0; i < TUM_KELIMELER.length; i++) {
-        var w = TUM_KELIMELER[i];
-        var k = (w.kelime || "").toLowerCase().trim();
-        if (localMap[k]) {
-          localMap[k].kelime = w.kelime;
-          localMap[k].word = w.kelime;
-          localMap[k].seviye = w.seviye || localMap[k].seviye || "";
-          localMap[k].level = w.seviye || localMap[k].seviye || "";
-          localMap[k].anlam = w.anlam || localMap[k].anlam || "";
-          localMap[k].meaning = w.anlam || localMap[k].anlam || "";
-        }
-      }
-      if (bildirimli) {
-        bildirimGoster("📊 Syncing Mistake Stats to Google Sheets...");
-      }
-      fetch(APPS_SCRIPT_URL, {
-        method: "POST",
-        keepalive: true,
-        headers: { "Content-Type": "text/plain;charset=utf-8" },
-        body: JSON.stringify({ action: "syncStats", stats: localMap })
-      })
-        .then(function(r) { return r.json(); })
-        .then(function(res) {
-          if (res && res.ok && res.stats) {
-            sunucuIstatistikleriniBirlestir(res.stats);
-            if (bildirimli) {
-              bildirimGoster("✅ 'Mistake Stats' updated in Google Sheets!");
-            }
-          }
-        })
-        .catch(function() {});
     }
 
     function alistirmaSonucuKaydet(kelime, dogruMu, mod) {
@@ -3436,51 +2752,6 @@
       // Instantaneous UI update (0ms)
       istatistikTablosuCiz();
 
-      if (APPS_SCRIPT_URL) {
-        var payloadEntry = Object.assign({}, kayit, {
-          word: kayit.kelime,
-          kelime: kayit.kelime,
-          level: kayit.seviye,
-          seviye: kayit.seviye,
-          meaning: kayit.anlam,
-          anlam: kayit.anlam,
-          mistakes: kayit.mistakes,
-          correct: kayit.correct,
-          lastPractice: kayit.lastPractice
-        });
-        fetch(APPS_SCRIPT_URL, {
-          method: "POST",
-          keepalive: true,
-          headers: { "Content-Type": "text/plain;charset=utf-8" },
-          body: JSON.stringify({
-            action: "recordAttempt",
-            word: kayit.kelime,
-            isCorrect: !!dogruMu,
-            mode: mod || AKTIF_MOD,
-            level: kayit.seviye,
-            meaning: kayit.anlam,
-            entry: payloadEntry
-          })
-        })
-          .then(function(r) { return r.json(); })
-          .then(function(res) {
-            if (res && res.ok && res.stats) {
-              sunucuIstatistikleriniBirlestir(res.stats);
-            }
-          })
-          .catch(function() {
-            fetch(
-              APPS_SCRIPT_URL +
-                "?action=recordAttempt&word=" + encodeURIComponent(kayit.kelime) +
-                "&isCorrect=" + (dogruMu ? "1" : "0") +
-                "&mode=" + encodeURIComponent(mod || AKTIF_MOD) +
-                "&mistakes=" + kayit.mistakes +
-                "&correct=" + kayit.correct +
-                "&entry=" + encodeURIComponent(JSON.stringify(payloadEntry)) +
-                "&_=" + Date.now()
-            ).catch(function() {});
-          });
-      }
     }
 
     function ogrenmeIlerlemesiHtml(st, status) {
@@ -3665,7 +2936,7 @@
 
     function srsMapAl() {
       try {
-        return JSON.parse(localStorage.getItem("kelime_srs_sayac_v1") || "{}");
+        return JSON.parse(localStorage.getItem(collectionKey("kelime_srs_sayac_v1")) || "{}");
       } catch (e) {
         return {};
       }
@@ -3686,7 +2957,7 @@
         var prefs = {
           aktifSekme: AKTIF_SEKME,
           aktifMod: AKTIF_MOD,
-          pvMod: typeof PV_MOD !== "undefined" ? PV_MOD : "list",
+
           fcIndex: FC_INDEX,
           fcShuffledKeys: FC_SHUFFLED_KEYS,
           modKonumlari: typeof MOD_KONUMLARI !== "undefined" ? MOD_KONUMLARI : {},
@@ -3704,13 +2975,13 @@
           inSeviye: inSevEl ? inSevEl.value : "B2",
           inTur: inTurEl ? inTurEl.value : "Adjective"
         };
-        localStorage.setItem("kelime_ui_tercihler_v1", JSON.stringify(prefs));
+        localStorage.setItem(collectionKey("kelime_ui_tercihler_v1"), JSON.stringify(prefs));
       } catch (e) {}
     }
 
     function tercihleriYukleVeUygula() {
       try {
-        var raw = localStorage.getItem("kelime_ui_tercihler_v1");
+        var raw = localStorage.getItem(collectionKey("kelime_ui_tercihler_v1"));
         if (!raw) return;
         var p = JSON.parse(raw);
         if (!p) return;
@@ -3760,14 +3031,14 @@
         if (addBarEl && p.addBarOpen) addBarEl.classList.add("open");
 
         if (p.aktifMod) AKTIF_MOD = p.aktifMod;
-        if (p.pvMod && (p.pvMod === "list" || p.pvMod === "pool" || p.pvMod === "learning" || p.pvMod === "known" || p.pvMod === "flashcards" || p.pvMod === "quiz" || p.pvMod === "cloze")) PV_MOD = p.pvMod;
-        if (p.aktifSekme) AKTIF_SEKME = p.aktifSekme;
+
+        if (p.aktifSekme && p.aktifSekme !== "phrasalVerbs") AKTIF_SEKME = p.aktifSekme;
 
         document.getElementById("sheet1View").style.display = AKTIF_SEKME === "sheet1" ? "block" : "none";
         var shHavuzView = document.getElementById("sheetHavuzView");
         if (shHavuzView) shHavuzView.style.display = AKTIF_SEKME === "sheetHavuz" ? "block" : "none";
-        var pvView = document.getElementById("phrasalVerbsView");
-        if (pvView) pvView.style.display = AKTIF_SEKME === "phrasalVerbs" ? "block" : "none";
+
+
         document.getElementById("poolView").style.display = AKTIF_SEKME === "pool" ? "block" : "none";
         var kpView = document.getElementById("knownPoolView");
         if (kpView) kpView.style.display = AKTIF_SEKME === "knownPool" ? "block" : "none";
@@ -3785,8 +3056,8 @@
       document.getElementById("tabBtn-sheet1").classList.toggle("active", s === "sheet1");
       var tabShHavuz = document.getElementById("tabBtn-sheetHavuz");
       if (tabShHavuz) tabShHavuz.classList.toggle("active", s === "sheetHavuz");
-      var tabPv = document.getElementById("tabBtn-phrasalVerbs");
-      if (tabPv) tabPv.classList.toggle("active", s === "phrasalVerbs");
+
+
       document.getElementById("tabBtn-pool").classList.toggle("active", s === "pool");
       var tabKnw = document.getElementById("tabBtn-knownPool");
       if (tabKnw) tabKnw.classList.toggle("active", s === "knownPool");
@@ -3796,8 +3067,8 @@
       if (topS1) topS1.classList.toggle("active-mode", s === "sheet1");
       var topShHavuz = document.getElementById("topBtn-sheetHavuz");
       if (topShHavuz) topShHavuz.classList.toggle("active-mode", s === "sheetHavuz");
-      var topPv = document.getElementById("topBtn-phrasalVerbs");
-      if (topPv) topPv.classList.toggle("active-mode", s === "phrasalVerbs");
+
+
       var topPool = document.getElementById("topBtn-pool");
       if (topPool) topPool.classList.toggle("active-mode", s === "pool");
       var topKnw = document.getElementById("topBtn-knownPool");
@@ -3806,21 +3077,12 @@
       if (tabSt) tabSt.classList.toggle("active", s === "stats");
       var topSt = document.getElementById("topBtn-stats");
       if (topSt) topSt.classList.toggle("active-mode", s === "stats");
-      var isPv = s === "phrasalVerbs";
-      var swWords = document.getElementById("navSwitch-words");
-      if (swWords) { swWords.classList.toggle("active", !isPv); swWords.setAttribute("aria-selected", String(!isPv)); }
-      var swPv = document.getElementById("navSwitch-phrasal");
-      if (swPv) { swPv.classList.toggle("active", isPv); swPv.setAttribute("aria-selected", String(isPv)); }
-      var wMenu = document.getElementById("sidebarWordsMenu");
-      if (wMenu) wMenu.style.display = isPv ? "none" : "flex";
-      var pMenu = document.getElementById("sidebarPhrasalMenu");
-      if (pMenu) pMenu.style.display = isPv ? "flex" : "none";
-      var pvNavModes = ["list", "pool", "learning", "known", "flashcards", "cloze", "quiz"];
-      for (var pIdx = 0; pIdx < pvNavModes.length; pIdx++) {
-        var pm = pvNavModes[pIdx];
-        var pmEl = document.getElementById("topBtn-pv-" + pm);
-        if (pmEl) pmEl.classList.toggle("active-mode", isPv && (typeof PV_MOD !== "undefined" ? PV_MOD : "list") === pm);
-      }
+      ["words", "phrasal"].forEach(function(section) {
+        var button = document.getElementById("navSwitch-" + section);
+        var selected = (section === "phrasal") === PHRASAL;
+        button.classList.toggle("active", selected);
+        button.setAttribute("aria-selected", String(selected));
+      });
       var studyTabs = ["flashcards", "cloze", "quiz", "confusables", "listen", "match"];
       for (var i = 0; i < studyTabs.length; i++) {
         var tName = studyTabs[i];
@@ -4011,7 +3273,7 @@
       } else {
         quizGecisZamanlayiciTemizle();
       }
-      if (typeof pvGecisZamanlayiciTemizle === "function") pvGecisZamanlayiciTemizle();
+
       SON_CIZILEN_SORU_ANAHTARI = "";
       FC_OKUNAN_KART = "";
       AKTIF_SEKME = s;
@@ -4020,8 +3282,8 @@
       document.getElementById("sheet1View").style.display = s === "sheet1" ? "block" : "none";
       var shHavuzView = document.getElementById("sheetHavuzView");
       if (shHavuzView) shHavuzView.style.display = s === "sheetHavuz" ? "block" : "none";
-      var pvView = document.getElementById("phrasalVerbsView");
-      if (pvView) pvView.style.display = s === "phrasalVerbs" ? "block" : "none";
+
+
       document.getElementById("poolView").style.display = s === "pool" ? "block" : "none";
       var kpView = document.getElementById("knownPoolView");
       if (kpView) kpView.style.display = s === "knownPool" ? "block" : "none";
@@ -4041,7 +3303,7 @@
       } else {
         quizGecisZamanlayiciTemizle();
       }
-      if (typeof pvGecisZamanlayiciTemizle === "function") pvGecisZamanlayiciTemizle();
+
       SON_CIZILEN_SORU_ANAHTARI = "";
       FC_OKUNAN_KART = "";
       AKTIF_MOD = mod || "flashcards";
@@ -4057,8 +3319,8 @@
       document.getElementById("sheet1View").style.display = "none";
       var shHavuzView = document.getElementById("sheetHavuzView");
       if (shHavuzView) shHavuzView.style.display = "none";
-      var pvView = document.getElementById("phrasalVerbsView");
-      if (pvView) pvView.style.display = "none";
+
+
       document.getElementById("poolView").style.display = "none";
       var kpView = document.getElementById("knownPoolView");
       if (kpView) kpView.style.display = "none";
@@ -4068,7 +3330,6 @@
       if (stView) stView.style.display = "none";
       tercihleriKaydet();
       tabloyuCiz();
-      canliVerileriGuncelle(true);
     }
 
     function calismaKelimesiUygunMu(w, stats, now) {
@@ -4392,7 +3653,7 @@
     function tumAdayHavuzunuGetir(dogruKey) {
       // Sadece Words (TUM_KELIMELER) sekmesine aktarılmış kelimeler aday olarak kullanılır
       var birlesik = [];
-      var gorulen = {};
+      var gorulen = Object.create(null);
       if (dogruKey) gorulen[dogruKey] = true;
 
       for (var i = 0; i < TUM_KELIMELER.length; i++) {
@@ -4472,23 +3733,10 @@
       eklenenler.push(yeni);
       kisiselEklenenKaydet(eklenenler);
       kisiselDurumKaydet(m.kelime, "bilmiyorum");
-      SON_YEREL_DEGISIM[k] = Date.now();
       SECENEKLER_CACHE = { key: "", list: [] };
-      listeyiBirlestirVeHazirla(SHEET_KELIMELER.length ? SHEET_KELIMELER : FALLBACK_WORDS, false);
-      bildirimGoster("➕ Added '" + m.kelime + "' to Words!");
+      listeyiBirlestirVeHazirla(BASE_WORDS, false);
+      bildirimGoster("➕ Added '" + m.kelime + "' to the library!");
 
-      if (APPS_SCRIPT_URL) {
-        fetch(APPS_SCRIPT_URL, {
-          method: "POST",
-          headers: { "Content-Type": "text/plain;charset=utf-8" },
-          body: JSON.stringify({ action: "addWords", words: [yeni] })
-        })
-          .then(function(r) { return r.json(); })
-          .then(function(res) {
-            if (res && res.ok) appsScripttenYukle();
-          })
-          .catch(function() {});
-      }
     }
 
     function ikizKarsilastirmaKutusuHtml(dogruCard, secilenYanlisKelime, baslikMetni) {
@@ -4564,8 +3812,9 @@
         if (w && w.kelime) tumKelimeHaritasi[w.kelime.toLowerCase().trim()] = w;
       });
 
+      var stats = istatistikMapAl();
       var adayUygunMu = function(w) {
-        if (!w || !calismaKelimesiUygunMu(w, istatistikMapAl(), Date.now())) return false;
+        if (!w || !calismaKelimesiUygunMu(w, stats, Date.now())) return false;
         return (w.kelime || "").toLowerCase().trim() !== dogruKey;
       };
 
@@ -4665,6 +3914,7 @@
     }
 
     function cumledeKelimeyiGizle(enCumle, kelime) {
+      if (PHRASAL) return pvCumledeGizle(enCumle, kelime);
       if (!enCumle) return '<span class="cloze-blank" id="clozeBlankEl">_______</span>';
       var temizKelime = (kelime || "").trim();
       var kok = temizKelime.length > 4 ? temizKelime.slice(0, -1) : temizKelime;
@@ -4716,7 +3966,7 @@
             '<div style="font-size:28px;margin-bottom:8px;">🎉</div>' +
             '<div style="font-weight:700;color:#1e293b;margin-bottom:6px;">No words to practice</div>' +
             '<div style="display:flex;gap:8px;justify-content:center;">' +
-              '<button class="fc-btn" onclick="sekmeDegistir(\'sheet1\')">📋 Go to Words</button>' +
+              '<button class="fc-btn" onclick="sekmeDegistir(\'sheet1\')">📋 Open library</button>' +
             '</div>' +
           '</div>';
         return;
@@ -4856,6 +4106,20 @@
         '</div>';
     }
 
+    function revealClozeAnswer(answer) {
+      var first = document.getElementById("clozeBlankEl");
+      if (!first) return;
+      if (first.hasAttribute && first.hasAttribute("data-answer")) {
+        first.parentElement.querySelectorAll(".cloze-blank[data-answer]").forEach(function(blank) {
+          blank.textContent = blank.dataset.answer;
+          blank.classList.add("filled");
+        });
+      } else {
+        first.innerText = answer;
+        first.classList.add("filled");
+      }
+    }
+
     function clozeSecenekSec(btnEl, secilen, dogru, row) {
       if (QUIZ_GECIS_TIMER) return;
       var card = kelimeKartiniBul(row, dogru);
@@ -4864,11 +4128,7 @@
       if (secilen.toLowerCase() === dogru.toLowerCase()) {
         quizGecisZamanlayiciTemizle();
         btnEl.classList.add("correct");
-        var blankEl = document.getElementById("clozeBlankEl");
-        if (blankEl) {
-          blankEl.innerText = dogru;
-          blankEl.classList.add("filled");
-        }
+        revealClozeAnswer(dogru);
         if (fb && card && card.ornek) {
           fb.style.display = "block";
           fb.innerHTML = "✅ <b>" + escHtml(dogru) + " (" + escHtml(card.anlam) + "):</b> " + ornekBicimlendir(card.ornek);
@@ -4912,11 +4172,7 @@
         quizGecisZamanlayiciTemizle();
         inp.style.borderColor = "#16a34a";
         inp.style.background = "#dcfce7";
-        var blankEl = document.getElementById("clozeBlankEl");
-        if (blankEl) {
-          blankEl.innerText = dogru;
-          blankEl.classList.add("filled");
-        }
+        revealClozeAnswer(dogru);
         if (fb && card && card.ornek) {
           fb.style.display = "block";
           fb.innerHTML = "✅ <b>" + escHtml(dogru) + " (" + escHtml(card.anlam) + "):</b> " + ornekBicimlendir(card.ornek);
@@ -5124,13 +4380,13 @@
     }
 
     function confusablesDestesiniGetir() {
-
+      var stats = istatistikMapAl();
       var adayListe = TUM_KELIMELER.filter(function(item) {
-        return calismaKelimesiUygunMu(item, istatistikMapAl(), Date.now());
+        return calismaKelimesiUygunMu(item, stats, Date.now());
       });
 
       var sonuc = [];
-      var gorulen = {};
+      var gorulen = Object.create(null);
       for (var i = 0; i < adayListe.length; i++) {
         var w = adayListe[i];
         var wk = w.kelime.toLowerCase().trim();
@@ -5143,7 +4399,7 @@
           var yk = (yakinlar[y].kelime || "").toLowerCase().trim();
           if (yk && !gorulen[yk]) {
             var mevcutKart = kelimeKartiniBul(-1, yakinlar[y].kelime);
-            if (mevcutKart && calismaKelimesiUygunMu(mevcutKart, istatistikMapAl(), Date.now())) {
+            if (mevcutKart && calismaKelimesiUygunMu(mevcutKart, stats, Date.now())) {
               gorulen[yk] = true;
               sonuc.push(mevcutKart);
             }
@@ -5161,7 +4417,7 @@
         box.innerHTML =
           '<div class="fc-empty">' +
             '<div style="font-size:28px;margin-bottom:8px;">🔀</div>' +
-            '<div style="font-weight:700;color:#1e293b;margin-bottom:6px;">No Matching Words Found in Words Table</div>' +
+            '<div style="font-weight:700;color:#1e293b;margin-bottom:6px;">No Matching Words Found in library</div>' +
             '<div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:8px;">' +
               '<button class="fc-btn" onclick="sekmeDegistir(\'sheetHavuz\')">📦 Transfer Words from Pool</button>' +
             '</div>' +
@@ -5580,12 +4836,6 @@
     document.addEventListener("keydown", function(e) {
       var tag = (e.target && e.target.tagName) ? e.target.tagName.toUpperCase() : "";
       if (tag === "INPUT" || tag === "SELECT" || tag === "TEXTAREA") return;
-      if (AKTIF_SEKME === "phrasalVerbs" && typeof PV_MOD !== "undefined" && PV_MOD === "flashcards") {
-        if (e.code === "Space") { e.preventDefault(); pvCevir(); }
-        else if (e.code === "ArrowRight") { e.preventDefault(); pvDegistir(1); }
-        else if (e.code === "ArrowLeft") { e.preventDefault(); pvDegistir(-1); }
-        return;
-      }
       if (AKTIF_SEKME !== "flashcards" || AKTIF_MOD !== "flashcards") return;
       if (e.code === "Space") {
         e.preventDefault();
@@ -5598,6 +4848,15 @@
         fcDegistir(-1);
       }
     });
+
+    function filteredLibraryItems(items) {
+      var query = document.getElementById("searchInput").value.trim().toLowerCase();
+      var level = document.getElementById("levelFilter").value;
+      return items.filter(function(item) {
+        return (level === "ALL" || item.seviye === level) &&
+          (!query || [item.kelime, item.anlam, item.ornek].join(" ").toLowerCase().includes(query));
+      });
+    }
 
     function tabloyuCiz(arkaPlanSenkronMu) {
       dortHaftaHatasizKontrolEt();
@@ -5630,17 +4889,8 @@
       var nbFc = document.getElementById("navBadge-flashcards");
       if (nbFc) nbFc.innerText = String(calismaSayisi);
 
-      var q = (document.getElementById("searchInput").value || "").toLowerCase().trim();
-      var lvl = document.getElementById("levelFilter").value;
-
       var knownOrderMap = kisiselKnownSiraAl();
-      var s1List = [];
-      for (var j = 0; j < TUM_KELIMELER.length; j++) {
-        var xItem = TUM_KELIMELER[j];
-        if (lvl !== "ALL" && xItem.seviye !== lvl) continue;
-        if (q && (xItem.kelime + " " + xItem.anlam + " " + xItem.ornek).toLowerCase().indexOf(q) === -1) continue;
-        s1List.push(xItem);
-      }
+      var s1List = filteredLibraryItems(TUM_KELIMELER);
       s1List.sort(function(a, b) {
         var aKnown = a.durum === "biliyorum" ? 1 : 0;
         var bKnown = b.durum === "biliyorum" ? 1 : 0;
@@ -5681,7 +4931,7 @@
       }
       document.getElementById("sheet1Body").innerHTML = s1Rows.join("") || '<tr><td colspan="9" class="center" style="padding:14px;"><div class="empty-state"><strong>No matching words</strong><p>Try another search or clear your filters.</p><button class="btn" onclick="clearVocabularyFilters()">Clear filters</button></div></td></tr>';
 
-      var poolList = TUM_KELIMELER.filter(function(w){
+      var poolList = s1List.filter(function(w){
         return w.durum !== "biliyorum" && !kelimeOgrenildiMi(w, learningStats);
       }).sort(function(a, b){ return (a.seviye || "").localeCompare(b.seviye || ""); });
 
@@ -5706,9 +4956,8 @@
       }
       document.getElementById("poolBody").innerHTML = pRows.join("") || '<tr><td colspan="8" class="center" style="padding:14px;">No words in pool.</td></tr>';
 
-      var knownPoolList = TUM_KELIMELER.filter(function(w){
-        if (w.durum !== "biliyorum") return false;
-        return true;
+      var knownPoolList = s1List.filter(function(w){
+        return w.durum === "biliyorum";
       }).sort(function(a, b){ return (a.seviye || "").localeCompare(b.seviye || ""); });
 
       var kpRows = [];
@@ -5732,7 +4981,7 @@
       }
       var kpBody = document.getElementById("knownPoolBody");
       if (kpBody) kpBody.innerHTML = kpRows.join("") || '<tr><td colspan="8" class="center" style="padding:14px;">No words in known pool.</td></tr>';
-      var learnedWords = TUM_KELIMELER.filter(function(w) { return kelimeOgrenildiMi(w, learningStats); });
+      var learnedWords = s1List.filter(function(w) { return kelimeOgrenildiMi(w, learningStats); });
       var learnedRows = learnedWords.map(function(w, idx) {
         var st = learningStats[w.kelime.toLowerCase().trim()] || {};
         return '<tr>' +
@@ -5749,7 +4998,7 @@
       document.getElementById("learnedPoolBody").innerHTML = learnedRows.join("") || '<tr><td colspan="8" class="center" style="padding:14px;">No learned words yet.</td></tr>';
 
       if (AKTIF_SEKME === "flashcards") fcCiz(aktifHavuzuGetir(), arkaPlanSenkronMu);
-      if (typeof pvCiz === "function") pvCiz(arkaPlanSenkronMu);
+
       istatistikTablosuCiz();
       havuzTablosuCiz();
       updateVisibleResultCount();
@@ -5757,7 +5006,7 @@
 
     function havuzYerelAktarilanAl() {
       try {
-        return JSON.parse(localStorage.getItem("kelime_havuz_aktarilan_v1") || "{}");
+        return JSON.parse(localStorage.getItem(collectionKey("kelime_havuz_aktarilan_v1")) || "{}");
       } catch (e) {
         return {};
       }
@@ -5770,7 +5019,7 @@
           var k = (kelimeListesi[i] || "").toString().trim().toLowerCase();
           if (k) map[k] = true;
         }
-        localStorage.setItem("kelime_havuz_aktarilan_v1", JSON.stringify(map));
+        localStorage.setItem(collectionKey("kelime_havuz_aktarilan_v1"), JSON.stringify(map));
       } catch (e) {}
     }
 
@@ -5791,8 +5040,8 @@
         if (HAVUZ_SECILENLER[k]) seciliSayi++;
       }
       btn.innerText = HAVUZ_AKTARILIYOR
-        ? "⏳ Transferring to Words..."
-        : ("➕ Transfer Selected to Words (" + seciliSayi + ")");
+        ? "⏳ Adding to library..."
+        : ("➕ Add selected (" + seciliSayi + ")");
       btn.disabled = HAVUZ_AKTARILIYOR || seciliSayi === 0;
       var rndBtn = document.getElementById("havuzRandomTransferBtn");
       if (rndBtn) rndBtn.disabled = HAVUZ_AKTARILIYOR;
@@ -5858,7 +5107,7 @@
       var kpiDone = document.getElementById("kpiHavuzTransferred");
       if (kpiTot) kpiTot.innerText = "📦 Total Pool: " + totalCount;
       if (kpiWait) kpiWait.innerText = "⏳ Waiting: " + waitCount;
-      if (kpiDone) kpiDone.innerText = "✅ Transferred to Words: " + doneCount;
+      if (kpiDone) kpiDone.innerText = "✅ Added to library: " + doneCount;
 
       var tabHavuzBtn = document.getElementById("tabBtn-sheetHavuz");
       if (tabHavuzBtn) {
@@ -5869,19 +5118,21 @@
         nbHavuz.innerText = totalCount > 0 ? String(waitCount) : "-";
       }
 
+      if (AKTIF_SEKME !== "sheetHavuz") return;
       if (totalCount === 0) {
-        mainBody.innerHTML = '<tr><td colspan="6" class="center" style="padding:18px;color:#64748b;">⏳ Loading Google Sheets <b>Havuz</b> (Word Pool) tab...</td></tr>';
+        mainBody.innerHTML = '<tr><td colspan="6" class="center" style="padding:18px;color:#64748b;">Your candidate pool is empty.</td></tr>';
         havuzSecimButonunuGuncelle();
         return;
       }
 
 
       var poolRows = [];
-      for (var m = 0; m < HAVUZ_KELIMELER.length; m++) {
-        var item = HAVUZ_KELIMELER[m];
+      var visible = filteredLibraryItems(HAVUZ_KELIMELER);
+      for (var m = 0; m < visible.length; m++) {
+        var item = visible[m];
         var itemDone = havuzKelimeAktarildiMi(item, wordsMap, yerelMap);
         poolRows.push({
-          row: item.row,
+          row: m + 1,
           seviye: item.seviye,
           kelime: item.kelime,
           aktarildi: itemDone
@@ -5919,8 +5170,8 @@
             '</td>' +
             '<td>' +
               (x.aktarildi
-                ? '<span style="font-size:11px;color:#15803d;font-weight:700;">📋 Already in Words</span>'
-                : '<button class="btn btn-green" style="height:22px;font-size:11px;" ' + (HAVUZ_AKTARILIYOR ? 'disabled ' : '') + 'onclick="havuzdanTekKelimeAktar(\'' + escJs(x.kelime) + '\', \'' + escJs(x.seviye) + '\')">➕ Transfer to Words</button>') +
+                ? '<span style="font-size:11px;color:#15803d;font-weight:700;">📋 Already in library</span>'
+                : '<button class="btn btn-green" style="height:22px;font-size:11px;" ' + (HAVUZ_AKTARILIYOR ? 'disabled ' : '') + 'onclick="havuzdanTekKelimeAktar(\'' + escJs(x.kelime) + '\', \'' + escJs(x.seviye) + '\')">➕ Add to library</button>') +
             '</td>' +
           '</tr>'
         );
@@ -5928,7 +5179,10 @@
 
       mainBody.innerHTML = rowsHtml.join("") || '<tr><td colspan="6" class="center" style="padding:16px;">No matching words found in Pool.</td></tr>';
       var selAllCb = document.getElementById("havuzSelectAllCb");
-      if (selAllCb) selAllCb.checked = false;
+      if (selAllCb) {
+        var waiting = poolRows.filter(function(item) { return !item.aktarildi; });
+        selAllCb.checked = waiting.length > 0 && waiting.every(function(item) { return HAVUZ_SECILENLER[item.kelime.toLowerCase().trim()]; });
+      }
       havuzSecimButonunuGuncelle();
     }
 
@@ -5960,6 +5214,11 @@
       var k = temiz.toLowerCase();
       var today = new Date().toISOString().slice(0, 10);
       var bazSeviye = (seviye || "B2").toString().trim().toUpperCase();
+
+      if (PHRASAL) {
+        var phrase = PHRASAL_VERBS_LIST.find(function(item) { return item.kelime.toLowerCase() === k; });
+        if (phrase) return Promise.resolve(Object.assign({}, phrase, { tarih: today, durum: "bilmiyorum" }));
+      }
 
       // 1. Önce yerleşik akademik sözlükte varsa doğrudan al
       if (IKIZ_SOZLUK_HARITASI[k] && IKIZ_SOZLUK_HARITASI[k].meta) {
@@ -6070,13 +5329,13 @@
         }
       }
       if (gecerli.length === 0) {
-        bildirimGoster("ℹ️ Selected words are already in the Words table.");
+        bildirimGoster("ℹ️ Selected words are already in the library.");
         return;
       }
 
       HAVUZ_AKTARILIYOR = true;
       havuzSecimButonunuGuncelle();
-      bildirimGoster("⏳ Transferring " + gecerli.length + " word(s) (with meaning, pronunciation & example) to Words...");
+      bildirimGoster("⏳ Transferring " + gecerli.length + " word(s) (with meaning, pronunciation & example) to the library...");
 
       var zincir = Promise.resolve([]);
       for (var j = 0; j < gecerli.length; j++) {
@@ -6098,7 +5357,6 @@
           eklenenler.push(zk);
           kisiselDurumKaydet(zk.kelime, "bilmiyorum");
           var lowK = zk.kelime.toLowerCase().trim();
-          SON_YEREL_DEGISIM[lowK] = Date.now();
           delete HAVUZ_SECILENLER[lowK];
           aktarilanIsimler.push(zk.kelime);
         }
@@ -6114,32 +5372,9 @@
         }
 
         HAVUZ_AKTARILIYOR = false;
-        listeyiBirlestirVeHazirla(SHEET_KELIMELER.length ? SHEET_KELIMELER : FALLBACK_WORDS, false);
-        bildirimGoster("✅ Transferred " + zenginKelimeler.length + " word(s) to Words!");
+        listeyiBirlestirVeHazirla(BASE_WORDS, false);
+        bildirimGoster("✅ Transferred " + zenginKelimeler.length + " word(s) to the library!");
 
-        if (APPS_SCRIPT_URL) {
-          document.getElementById("syncDot").className = "sync-dot loading";
-          document.getElementById("syncText").innerText = "Saving...";
-          fetch(APPS_SCRIPT_URL, {
-            method: "POST",
-            headers: { "Content-Type": "text/plain;charset=utf-8" },
-            body: JSON.stringify({ action: "addWords", words: zenginKelimeler })
-          })
-            .then(function(r) { return r.json(); })
-            .then(function(res) {
-              if (res && res.ok) {
-                bildirimGoster("☁️ Saved to Google Sheets 'Words' tab (" + zenginKelimeler.length + " words)");
-                appsScripttenYukle();
-              } else {
-                document.getElementById("syncDot").className = "sync-dot";
-                document.getElementById("syncText").innerText = "Live (" + TUM_KELIMELER.length + ")";
-              }
-            })
-            .catch(function() {
-              document.getElementById("syncDot").className = "sync-dot";
-              document.getElementById("syncText").innerText = "Live (" + TUM_KELIMELER.length + ")";
-            });
-        }
       }).catch(function() {
         HAVUZ_AKTARILIYOR = false;
         havuzSecimButonunuGuncelle();
@@ -6180,15 +5415,16 @@
       var yerelMap = havuzYerelAktarilanAl();
 
       var bekleyenler = [];
-      for (var j = 0; j < HAVUZ_KELIMELER.length; j++) {
-        var h = HAVUZ_KELIMELER[j];
+      var visible = filteredLibraryItems(HAVUZ_KELIMELER);
+      for (var j = 0; j < visible.length; j++) {
+        var h = visible[j];
         if (!havuzKelimeAktarildiMi(h, wordsMap, yerelMap)) {
           bekleyenler.push({ kelime: h.kelime, seviye: h.seviye });
         }
       }
 
       if (bekleyenler.length === 0) {
-        bildirimGoster("ℹ️ No waiting words left in the pool.");
+        bildirimGoster("ℹ️ No waiting words match these filters.");
         return;
       }
 
@@ -6205,20 +5441,20 @@
     }
 
     function durumKutusuHtml(row, durum) {
-      return (
-        '<div class="mark-split ' + (durum || "beklemede") + '">' +
-          '<button type="button" class="mark-half mark-top" aria-label="Mark as known" onclick="durumSec(event, ' + row + ', \'biliyorum\')" title="Top (✓): Known">✓</button>' +
-          '<button type="button" class="mark-half mark-bot" aria-label="Mark as unknown" onclick="durumSec(event, ' + row + ', \'bilmiyorum\')" title="Bottom (✕): Unknown">✕</button>' +
-        '</div>'
-      );
+      var known = durum === "biliyorum" || durum === "ogrenildi";
+      var label = known ? "Mark as unknown" : "Mark as known";
+      var symbol = known ? "✓" : "✕";
+      return '<button type="button" class="mark-toggle ' + (known ? '' : 'unknown') +
+        '" data-row="' + row + '" aria-label="Known" aria-pressed="' + known +
+        '" title="' + label + '" onclick="durumSec(this, ' + row + ')">' + symbol + '</button>';
     }
 
-    function durumSec(e, row, tip) {
-      if (e) {
-        e.preventDefault();
-        e.stopPropagation();
-      }
-      kutucukDegisti(row, tip, true, true);
+    function durumSec(button, row) {
+      var table = button.closest("table");
+      var next = button.getAttribute("aria-pressed") === "true" ? "bilmiyorum" : "biliyorum";
+      kutucukDegisti(row, next, true, true);
+      var target = table.querySelector('.mark-toggle[data-row="' + row + '"]') || table.querySelector(".mark-toggle");
+      if (target) target.focus({preventScroll:true});
     }
 
     function kutucukDegisti(row, tip, isChecked, manuelMi, deferRender) {
@@ -6229,20 +5465,12 @@
       if (!hedef) return;
       var yeniDurum = isChecked ? tip : "beklemede";
       var key = (hedef.kelime || "").toString().trim().toLowerCase();
-      SON_YEREL_DEGISIM[key] = Date.now();
       hedef.durum = yeniDurum;
       if (!deferRender) {
         SECENEKLER_CACHE = { key: "", list: [] };
       }
       hedef.biliyorum = yeniDurum === "biliyorum";
       hedef.bilmiyorum = yeniDurum === "bilmiyorum";
-      for (var s = 0; s < SHEET_KELIMELER.length; s++) {
-        if (SHEET_KELIMELER[s].row === row || (SHEET_KELIMELER[s].kelime || "").toLowerCase() === key) {
-          SHEET_KELIMELER[s].durum = yeniDurum;
-          SHEET_KELIMELER[s].biliyorum = yeniDurum === "biliyorum";
-          SHEET_KELIMELER[s].bilmiyorum = yeniDurum === "bilmiyorum";
-        }
-      }
       if (key) {
         var ist = istatistikMapAl();
         if (manuelMi !== false && yeniDurum === "biliyorum") {
@@ -6285,27 +5513,6 @@
       var durumEtiket = durumMetniGetir(yeniDurum);
       bildirimGoster(durumEtiket + ": " + hedef.kelime);
 
-      if (APPS_SCRIPT_URL) {
-        document.getElementById("syncDot").className = "sync-dot loading";
-        document.getElementById("syncText").innerText = "Saving...";
-        fetch(APPS_SCRIPT_URL, {
-          method: "POST",
-          headers: { "Content-Type": "text/plain;charset=utf-8" },
-          body: JSON.stringify({ action: "setStatus", row: hedef.row, status: yeniDurum, entry: istatistikMapAl()[key] })
-        })
-          .then(function(r) { return r.json(); })
-          .then(function(res) {
-            document.getElementById("syncDot").className = "sync-dot";
-            document.getElementById("syncText").innerText = "Live (" + TUM_KELIMELER.length + ")";
-            if (res && res.ok) {
-              bildirimGoster(durumEtiket + " saved: " + hedef.kelime);
-            }
-          })
-          .catch(function() {
-            document.getElementById("syncDot").className = "sync-dot";
-            document.getElementById("syncText").innerText = "Live (" + TUM_KELIMELER.length + ")";
-          });
-      }
     }
 
     function ekleBarAcKapat() {
@@ -6320,12 +5527,13 @@
       var anlam = document.getElementById("inAnlam").value.trim();
       if (!kelime || !anlam) { bildirimGoster("Word and Meaning are required."); return; }
 
+      if (kelimeTablodaVarMi(kelime)) { bildirimGoster("Already in your library: " + kelime); return; }
       var today = new Date().toISOString().slice(0, 10);
       var yeni = {
         tarih: today,
         kelime: kelime,
         okunus: "",
-        tur: document.getElementById("inTur").value,
+        tur: PHRASAL ? "Phrasal Verb" : document.getElementById("inTur").value,
         seviye: document.getElementById("inSeviye").value,
         anlam: anlam,
         ornek: document.getElementById("inOrnek").value.trim(),
@@ -6336,538 +5544,16 @@
       eklenenler.push(yeni);
       kisiselEklenenKaydet(eklenenler);
       kisiselDurumKaydet(kelime, "bilmiyorum");
-      SON_YEREL_DEGISIM[kelime.toLowerCase()] = Date.now();
 
       document.getElementById("inKelime").value = "";
       document.getElementById("inAnlam").value = "";
       document.getElementById("inOrnek").value = "";
 
-      listeyiBirlestirVeHazirla(SHEET_KELIMELER.length ? SHEET_KELIMELER : FALLBACK_WORDS, false);
-      bildirimGoster("☁️ Adding to Google Sheet: " + kelime + "...");
+      listeyiBirlestirVeHazirla(BASE_WORDS, false);
+      bildirimGoster("Saved locally: " + kelime);
 
-      if (APPS_SCRIPT_URL) {
-        var btn = document.getElementById("saveWordBtn");
-        if (btn) btn.disabled = true;
-        document.getElementById("syncDot").className = "sync-dot loading";
-        document.getElementById("syncText").innerText = "Saving...";
-        fetch(APPS_SCRIPT_URL, {
-          method: "POST",
-          headers: { "Content-Type": "text/plain;charset=utf-8" },
-          body: JSON.stringify({ action: "addWords", words: [yeni] })
-        })
-          .then(function(r) { return r.json(); })
-          .then(function(res) {
-            if (btn) btn.disabled = false;
-            if (res && res.ok) {
-              bildirimGoster("✅ Added to Google Sheet: " + kelime);
-              appsScripttenYukle();
-            } else {
-              document.getElementById("syncDot").className = "sync-dot";
-              document.getElementById("syncText").innerText = "Live (" + TUM_KELIMELER.length + ")";
-            }
-          })
-          .catch(function() {
-            if (btn) btn.disabled = false;
-            document.getElementById("syncDot").className = "sync-dot";
-            document.getElementById("syncText").innerText = "Live (" + TUM_KELIMELER.length + ")";
-          });
-      }
     }
 
-
-    // =========================================================================
-    // PHRASAL VERBS — LIST, FLASHCARDS, QUIZ & FILL IN THE BLANK
-    // =========================================================================
-    var PHRASAL_VERBS_LIST = [
-      { kelime: "Bring up", seviye: "B1", tur: "Phrasal Verb", anlam: "Konu açmak, gündeme getirmek; çocuk yetiştirmek", ornek: "She brought up an important issue during the meeting. (Toplantı sırasında önemli bir konuyu gündeme getirdi.)" },
-      { kelime: "Call off", seviye: "B2", tur: "Phrasal Verb", anlam: "İptal etmek", ornek: "They had to call off the match because of heavy rain. (Şiddetli yağmur yüzünden maçı iptal etmek zorunda kaldılar.)" },
-      { kelime: "Carry out", seviye: "B2", tur: "Phrasal Verb", anlam: "Yürütmek, uygulamak, gerçekleştirmek", ornek: "Scientists carried out a detailed study on sleep habits. (Bilim insanları uyku alışkanlıkları üzerine ayrıntılı bir çalışma yürüttü.)" },
-      { kelime: "Catch up with", seviye: "B1", tur: "Phrasal Verb", anlam: "Yetişmek, arayı kapatmak; hasret gidermek", ornek: "I need to study hard to catch up with the rest of the class. (Sınıfın geri kalanına yetişmek için çok çalışmam gerekiyor.)" },
-      { kelime: "Come across", seviye: "B2", tur: "Phrasal Verb", anlam: "Tesadüfen karşılaşmak, rastlamak; izlenim bırakmak", ornek: "I came across an old photo while cleaning the attic. (Tavan arasını temizlerken eski bir fotoğrafa rastladım.)" },
-      { kelime: "Come up with", seviye: "B2", tur: "Phrasal Verb", anlam: "Fikir/çözüm üretmek, bulmak", ornek: "She came up with a brilliant solution to the problem. (Soruna harika bir çözüm buldu.)" },
-      { kelime: "Cut down on", seviye: "B2", tur: "Phrasal Verb", anlam: "Azaltmak, kısmak (tüketim vb.)", ornek: "He is trying to cut down on sugar and caffeine. (Şeker ve kafein tüketimini azaltmaya çalışıyor.)" },
-      { kelime: "Figure out", seviye: "B1", tur: "Phrasal Verb", anlam: "Çözmek, anlamak, akıl erdirmek", ornek: "We finally figured out why the server kept crashing. (Sunucunun neden sürekli çöktüğünü sonunda anladık.)" },
-      { kelime: "Find out", seviye: "B1", tur: "Phrasal Verb", anlam: "Öğrenmek, keşfetmek, ortaya çıkarmak", ornek: "She found out that the flight had been delayed. (Uçuşun ertelendiğini öğrendi.)" },
-      { kelime: "Get along with", seviye: "B1", tur: "Phrasal Verb", anlam: "İyi geçinmek, anlaşmak", ornek: "He gets along with almost everyone in the office. (Ofisteki hemen herkesle iyi geçinir.)" },
-      { kelime: "Get away with", seviye: "C1", tur: "Phrasal Verb", anlam: "Yanına kâr kalmak, cezasız kurtulmak", ornek: "He thought he could get away with lying to the manager. (Müdüre yalan söyleyip kurtulabileceğini sandı.)" },
-      { kelime: "Get over", seviye: "B1", tur: "Phrasal Verb", anlam: "Atlatmak, üstesinden gelmek (hastalık, üzüntü)", ornek: "It took her weeks to get over the flu. (Gribi atlatması haftalar sürdü.)" },
-      { kelime: "Give in", seviye: "B2", tur: "Phrasal Verb", anlam: "Pes etmek, boyun eğmek, kabul etmek", ornek: "After hours of negotiation, they finally gave in to our terms. (Saatler süren pazarlıktan sonra sonunda şartlarımızı kabul ettiler.)" },
-      { kelime: "Give up", seviye: "B1", tur: "Phrasal Verb", anlam: "Vazgeçmek, bırakmak", ornek: "Never give up on your dreams even when things get tough. (İşler zorlaşsa bile hayallerinden asla vazgeçme.)" },
-      { kelime: "Go through", seviye: "B2", tur: "Phrasal Verb", anlam: "Zor bir süreçten geçmek; detaylı incelemek", ornek: "Let us go through the contract line by line. (Sözleşmeyi satır satır inceleyelim.)" },
-      { kelime: "Hold on", seviye: "B1", tur: "Phrasal Verb", anlam: "Beklemek, tutunmak", ornek: "Please hold on for a moment while I check your account. (Hesabınızı kontrol ederken lütfen bir dakika bekleyin.)" },
-      { kelime: "Keep up with", seviye: "B2", tur: "Phrasal Verb", anlam: "Ayak uydurmak, takip etmek", ornek: "It is hard to keep up with rapid changes in technology. (Teknolojideki hızlı değişimlere ayak uydurmak zor.)" },
-      { kelime: "Look after", seviye: "B1", tur: "Phrasal Verb", anlam: "Bakmak, ilgilenmek, göz kulak olmak", ornek: "My neighbor offered to look after our cat while we travel. (Komşumuz seyahatteyken kedimize bakmayı teklif etti.)" },
-      { kelime: "Look forward to", seviye: "B1", tur: "Phrasal Verb", anlam: "Dört gözle beklemek, sabırsızlanmak", ornek: "I look forward to hearing from you soon. (Sizden yakında haber almayı dört gözle bekliyorum.)" },
-      { kelime: "Look into", seviye: "B2", tur: "Phrasal Verb", anlam: "Araştırmak, incelemek, soruşturmak", ornek: "The committee promised to look into the complaint immediately. (Komite şikayeti derhal inceleyeceğine söz verdi.)" },
-      { kelime: "Look up to", seviye: "B2", tur: "Phrasal Verb", anlam: "Saygı duymak, örnek almak", ornek: "Young players really look up to the team captain. (Genç oyuncular takım kaptanını gerçekten örnek alıyor.)" },
-      { kelime: "Make up", seviye: "B1", tur: "Phrasal Verb", anlam: "Uydurmak; barışmak; oluşturmak", ornek: "He made up a strange excuse for arriving late. (Geç kaldığı için tuhaf bir bahane uydurdu.)" },
-      { kelime: "Make up for", seviye: "B2", tur: "Phrasal Verb", anlam: "Telafi etmek", ornek: "She worked overtime to make up for the lost day. (Kaybedilen günü telafi etmek için fazla mesai yaptı.)" },
-      { kelime: "Pick up", seviye: "B1", tur: "Phrasal Verb", anlam: "Almak (bir yerden); kapmak/öğrenmek; toparlanmak", ornek: "Can you pick up some milk on your way home? (Eve dönerken biraz süt alabilir misin?)" },
-      { kelime: "Point out", seviye: "B2", tur: "Phrasal Verb", anlam: "İşaret etmek, belirtmek, dikkat çekmek", ornek: "The reviewer pointed out two minor errors in the report. (İncelemeci rapordaki iki küçük hataya dikkat çekti.)" },
-      { kelime: "Pull off", seviye: "C1", tur: "Phrasal Verb", anlam: "Zor bir işi başarmak, altından kalkmak", ornek: "Nobody thought they could pull off such an ambitious launch. (Kimse bu kadar iddialı bir lansmanı başarabileceklerini düşünmüyordu.)" },
-      { kelime: "Put off", seviye: "B2", tur: "Phrasal Verb", anlam: "Ertelemek; soğutmak", ornek: "Do not put off until tomorrow what you can do today. (Bugün yapabileceğin işi yarına erteleme.)" },
-      { kelime: "Put up with", seviye: "B2", tur: "Phrasal Verb", anlam: "Katlanmak, tahammül etmek", ornek: "I cannot put up with the construction noise any longer. (İnşaat gürültüsüne daha fazla tahammül edemiyorum.)" },
-      { kelime: "Run into", seviye: "B2", tur: "Phrasal Verb", anlam: "Tesadüfen karşılaşmak; sorunla karşılaşmak", ornek: "We ran into unexpected delays at the airport. (Havalimanında beklenmedik gecikmelerle karşılaştık.)" },
-      { kelime: "Run out of", seviye: "B1", tur: "Phrasal Verb", anlam: "Tükenmek, bitmek", ornek: "We ran out of coffee right before the morning meeting. (Sabah toplantısından hemen önce kahvemiz bitti.)" },
-      { kelime: "Set up", seviye: "B1", tur: "Phrasal Verb", anlam: "Kurmak, ayarlamak, düzenlemek", ornek: "They set up a new startup right after graduation. (Mezuniyetten hemen sonra yeni bir girişim kurdular.)" },
-      { kelime: "Settle down", seviye: "B2", tur: "Phrasal Verb", anlam: "Yerleşmek, durulmak, sakinleşmek", ornek: "After years of traveling, he decided to settle down in Izmir. (Yıllarca seyahat ettikten sonra İzmir'e yerleşmeye karar verdi.)" },
-      { kelime: "Show up", seviye: "B1", tur: "Phrasal Verb", anlam: "Ortaya çıkmak, çıkagelmek, katılmak", ornek: "Over two hundred guests showed up for the opening night. (Açılış gecesine iki yüzden fazla misafir katıldı.)" },
-      { kelime: "Sort out", seviye: "B2", tur: "Phrasal Verb", anlam: "Çözüme kavuşturmak, halletmek, düzenlemek", ornek: "We need to sort out the billing issue before Friday. (Cuma gününden önce fatura sorununu halletmemiz gerekiyor.)" },
-      { kelime: "Stand out", seviye: "B2", tur: "Phrasal Verb", anlam: "Öne çıkmak, göze çarpmak, fark yaratmak", ornek: "Her portfolio really stood out among all the applicants. (Portföyü tüm adaylar arasında gerçekten öne çıktı.)" },
-      { kelime: "Take after", seviye: "B2", tur: "Phrasal Verb", anlam: "Benzemek (anne/baba vb. aile ferdine)", ornek: "He takes after his mother in both humor and patience. (Hem mizah hem de sabır açısından annesine benziyor.)" },
-      { kelime: "Take off", seviye: "B1", tur: "Phrasal Verb", anlam: "Havalanmak (uçak); çıkarmak (kıyafet); hızla yükselmek", ornek: "The plane took off twenty minutes ahead of schedule. (Uçak planlanandan yirmi dakika önce havalandı.)" },
-      { kelime: "Take over", seviye: "B2", tur: "Phrasal Verb", anlam: "Devralmak, kontrolü ele geçirmek", ornek: "A larger firm took over the local bakery chain last year. (Daha büyük bir firma geçen yıl yerel fırın zincirini devraldı.)" },
-      { kelime: "Take up", seviye: "B2", tur: "Phrasal Verb", anlam: "Yeni bir hobiye/işe başlamak; yer/zaman kaplamak", ornek: "She decided to take up photography during the summer. (Yazın fotoğrafçılığa başlamaya karar verdi.)" },
-      { kelime: "Turn down", seviye: "B2", tur: "Phrasal Verb", anlam: "Reddetmek; sesini/ısısını kısmak", ornek: "He turned down the job offer because of the long commute. (Uzun yol yüzünden iş teklifini reddetti.)" },
-      { kelime: "Turn out", seviye: "B2", tur: "Phrasal Verb", anlam: "Sonuçlanmak, ortaya çıkmak", ornek: "The weather forecast was wrong and the day turned out sunny. (Hava tahmini yanıldı ve gün güneşli geçti.)" },
-      { kelime: "Turn up", seviye: "B2", tur: "Phrasal Verb", anlam: "Çıkagelmek, bulunmak; sesini açmak", ornek: "My missing keys turned up under the sofa cushions. (Kayıp anahtarlarım koltuk minderlerinin altından çıktı.)" },
-      { kelime: "Work out", seviye: "B1", tur: "Phrasal Verb", anlam: "Antrenman yapmak; yolunda gitmek; hesaplamak/çözmek", ornek: "Everything worked out much better than we had expected. (Her şey beklediğimizden çok daha iyi sonuçlandı.)" },
-      { kelime: "Break down", seviye: "B1", tur: "Phrasal Verb", anlam: "Bozulmak, arızalanmak; parçalara ayırmak; duygusal olarak çökmek", ornek: "Our car broke down halfway up the mountain road. (Arabamız dağ yolunun yarısında arızalandı.)" },
-      { kelime: "Bring about", seviye: "C1", tur: "Phrasal Verb", anlam: "Yol açmak, sebep olmak, gerçekleştirmek", ornek: "The new policy brought about major improvements in safety. (Yeni politika güvenlikte büyük iyileştirmelere yol açtı.)" },
-      { kelime: "Back up", seviye: "B2", tur: "Phrasal Verb", anlam: "Yedeklemek; desteklemek", ornek: "Always back up your important files to the cloud. (Önemli dosyalarını her zaman buluta yedekle.)" },
-      { kelime: "End up", seviye: "B1", tur: "Phrasal Verb", anlam: "Sonunda bir durumda/yerde bulmak kendini", ornek: "We took a wrong turn and ended up in a quiet village. (Yanlış bir dönüş yaptık ve kendimizi sakin bir köyde bulduk.)" },
-      { kelime: "Fall apart", seviye: "B2", tur: "Phrasal Verb", anlam: "Dağılmak, parçalanmak, çökmek", ornek: "The deal fell apart at the very last minute. (Anlaşma tam son dakikada bozuldu.)" },
-      { kelime: "Hand in", seviye: "B1", tur: "Phrasal Verb", anlam: "Teslim etmek (ödev, rapor, istifa)", ornek: "Please hand in your assignments before 5 PM. (Lütfen ödevlerinizi saat 17:00'den önce teslim edin.)" },
-      { kelime: "Lay off", seviye: "C1", tur: "Phrasal Verb", anlam: "İşten çıkarmak", ornek: "The factory had to lay off fifty workers during the downturn. (Fabrika durgunluk döneminde elli işçiyi işten çıkarmak zorunda kaldı.)" },
-      { kelime: "Let down", seviye: "B2", tur: "Phrasal Verb", anlam: "Hayal kırıklığına uğratmak, yarı yolda bırakmak", ornek: "She promised she would never let her teammates down. (Takım arkadaşlarını asla yarı yolda bırakmayacağına söz verdi.)" },
-      { kelime: "Move on", seviye: "B1", tur: "Phrasal Verb", anlam: "İlerlemek, yeni bir konuya/sayfaya geçmek", ornek: "Now that we agreed on the budget, let us move on to the timeline. (Bütçede anlaştığımıza göre şimdi takvime geçelim.)" },
-      { kelime: "Pay off", seviye: "B2", tur: "Phrasal Verb", anlam: "Karşılığını vermek, işe yaramak; borcu tamamen ödemek", ornek: "Months of disciplined practice finally paid off in the exam. (Aylarca süren disiplinli çalışma sınavda sonunda karşılığını verdi.)" },
-      { kelime: "Rule out", seviye: "C1", tur: "Phrasal Verb", anlam: "İhtimal dışı bırakmak, elemek", ornek: "Doctors ruled out any serious injury after the scan. (Doktorlar taramadan sonra ciddi bir yaralanma ihtimalini eledi.)" },
-      { kelime: "Wear out", seviye: "B2", tur: "Phrasal Verb", anlam: "Yıpratmak, eskimek; bitkin düşürmek", ornek: "Walking ten miles in the heat completely wore us out. (Sıcakta on mil yürümek bizi tamamen bitkin düşürdü.)" },
-      { kelime: "Wind up", seviye: "C1", tur: "Phrasal Verb", anlam: "Sonuçlanmak; sonlandırmak, bitirmek", ornek: "If we do not leave now, we will wind up missing the train. (Şimdi çıkmazsak sonunda treni kaçıracağız.)" },
-      { kelime: "Drop off", seviye: "B2", tur: "Phrasal Verb", anlam: "Bırakmak (arabayla); uyuyakalmak; azalmak", ornek: "I can drop off the package at the post office for you. (Paketi senin için postaneye bırakabilirim.)" },
-      { kelime: "Fill out", seviye: "B1", tur: "Phrasal Verb", anlam: "Form doldurmak", ornek: "Please fill out this registration form and sign at the bottom. (Lütfen bu kayıt formunu doldurun ve altını imzalayın.)" },
-      { kelime: "Hang out", seviye: "B1", tur: "Phrasal Verb", anlam: "Takılmak, vakit geçirmek", ornek: "We usually hang out at the cafe near the library. (Genellikle kütüphanenin yanındaki kafede takılırız.)" },
-      { kelime: "Check out", seviye: "B1", tur: "Phrasal Verb", anlam: "Göz atmak, incelemek; otelden çıkış yapmak", ornek: "You should check out that new documentary on ocean life. (Okyanus yaşamı hakkındaki o yeni belgesele göz atmalısın.)" },
-      { kelime: "Account for", seviye: "C1", tur: "Phrasal Verb", anlam: "Açıklamak, hesabını vermek; oranını oluşturmak", ornek: "Exports account for more than half of the company revenue. (İhracat, şirket gelirinin yarısından fazlasını oluşturuyor.)" },
-      { kelime: "Add up", seviye: "B2", tur: "Phrasal Verb", anlam: "Mantıklı gelmek, tutmak; toplamak", ornek: "His story did not add up when we checked the dates. (Tarihleri kontrol ettiğimizde hikayesi tutmadı.)" },
-      { kelime: "Blow up", seviye: "B2", tur: "Phrasal Verb", anlam: "Patlamak; öfkeden köpürmek; şişirmek", ornek: "A small disagreement quickly blew up into a major argument. (Küçük bir anlaşmazlık hızla büyük bir tartışmaya dönüştü.)" },
-      { kelime: "Break into", seviye: "B2", tur: "Phrasal Verb", anlam: "Zorla girmek; yeni bir sektöre adım atmak", ornek: "Thieves broke into the jewelry store overnight. (Hırsızlar gece boyunca kuyumcuya zorla girdi.)" },
-      { kelime: "Break out", seviye: "B2", tur: "Phrasal Verb", anlam: "Patlak vermek (yangın, savaş); kaçmak", ornek: "A fire broke out in the warehouse early this morning. (Bu sabah erken saatlerde depoda yangın çıktı.)" },
-      { kelime: "Break up", seviye: "B1", tur: "Phrasal Verb", anlam: "Ayrılmak (ilişki); dağılmak, sona ermek", ornek: "They decided to break up after three years together. (Üç yıl birlikte olduktan sonra ayrılmaya karar verdiler.)" },
-      { kelime: "Burn out", seviye: "B2", tur: "Phrasal Verb", anlam: "Tükenmek, aşırı yorulmak", ornek: "If you keep working twelve hours a day, you will burn out. (Günde on iki saat çalışmaya devam edersen tükenirsin.)" },
-      { kelime: "Calm down", seviye: "B1", tur: "Phrasal Verb", anlam: "Sakinleşmek, yatışmak", ornek: "Take a deep breath and calm down before answering. (Cevap vermeden önce derin bir nefes al ve sakinleş.)" },
-      { kelime: "Carry on", seviye: "B1", tur: "Phrasal Verb", anlam: "Devam etmek, sürdürmek", ornek: "Despite the interruption, the speaker carried on smoothly. (Kesintiye rağmen konuşmacı sorunsuzca devam etti.)" },
-      { kelime: "Cheer up", seviye: "B1", tur: "Phrasal Verb", anlam: "Neşelenmek, keyfi yerine gelmek", ornek: "A walk in the sunshine always helps me cheer up. (Güneşte yürüyüş yapmak her zaman neşelenmeme yardımcı olur.)" },
-      { kelime: "Clear up", seviye: "B2", tur: "Phrasal Verb", anlam: "Açıklığa kavuşturmak; (hava) açmak; toparlamak", ornek: "Let us schedule a quick call to clear up the misunderstanding. (Yanlış anlaşılmayı gidermek için kısa bir görüşme ayarlayalım.)" },
-      { kelime: "Close down", seviye: "B2", tur: "Phrasal Verb", anlam: "Kapanmak, faaliyetini durdurmak (işletme)", ornek: "Several small bookstores closed down during the recession. (Durgunluk sırasında birkaç küçük kitapçı kapandı.)" },
-      { kelime: "Come down with", seviye: "B2", tur: "Phrasal Verb", anlam: "Hastalığa yakalanmak", ornek: "I think I am coming down with a cold. (Sanırım soğuk algınlığına yakalanıyorum.)" },
-      { kelime: "Count on", seviye: "B2", tur: "Phrasal Verb", anlam: "Güvenmek, bel bağlamak", ornek: "You can always count on her to meet a tight deadline. (Sıkı bir teslim tarihine uyması konusunda ona her zaman güvenebilirsin.)" },
-      { kelime: "Cut off", seviye: "B2", tur: "Phrasal Verb", anlam: "Kesmek (elektrik, iletişim, sözünü)", ornek: "The storm cut off electricity to the entire valley. (Fırtına tüm vadinin elektriğini kesti.)" },
-      { kelime: "Deal with", seviye: "B1", tur: "Phrasal Verb", anlam: "İlgilenmek, başa çıkmak, ele almak", ornek: "Customer support deals with hundreds of tickets every day. (Müşteri desteği her gün yüzlerce taleple ilgileniyor.)" },
-      { kelime: "Do without", seviye: "B2", tur: "Phrasal Verb", anlam: "... olmadan idare etmek", ornek: "We will have to do without a car for a few days. (Birkaç gün arabasız idare etmek zorunda kalacağız.)" },
-      { kelime: "Drop out", seviye: "B2", tur: "Phrasal Verb", anlam: "Okulu/yarışı bırakmak, çekilmek", ornek: "He dropped out of college to launch his own software company. (Kendi yazılım şirketini kurmak için üniversiteyi bıraktı.)" },
-      { kelime: "Face up to", seviye: "C1", tur: "Phrasal Verb", anlam: "Yüzleşmek, kabullenmek (zor bir gerçeği)", ornek: "We must face up to the financial risks of the project. (Projenin finansal riskleriyle yüzleşmeliyiz.)" },
-      { kelime: "Fall behind", seviye: "B2", tur: "Phrasal Verb", anlam: "Geri kalmak, geride kalmak", ornek: "After missing two weeks of class, she fell behind in math. (İki hafta dersi kaçırdıktan sonra matematikte geri kaldı.)" },
-      { kelime: "Get by", seviye: "B2", tur: "Phrasal Verb", anlam: "Geçinmek, idare etmek", ornek: "My French is basic, but it is enough to get by while traveling. (Fransızcam temel düzeyde ama seyahat ederken idare etmeye yetiyor.)" },
-      { kelime: "Get rid of", seviye: "B1", tur: "Phrasal Verb", anlam: "Kurtulmak, elden çıkarmak", ornek: "It is time to get rid of all those broken cables. (Tüm o bozuk kablolardan kurtulma zamanı geldi.)" },
-      { kelime: "Go ahead", seviye: "B1", tur: "Phrasal Verb", anlam: "Devam etmek, başlamak, buyurmak", ornek: "The board approved the plan, so we can go ahead next week. (Kurul planı onayladı, bu yüzden gelecek hafta başlayabiliriz.)" },
-      { kelime: "Grow up", seviye: "B1", tur: "Phrasal Verb", anlam: "Büyümek, yetişmek", ornek: "She grew up in a small coastal town near Antalya. (Antalya yakınlarında küçük bir sahil kasabasında büyüdü.)" },
-      { kelime: "Hold back", seviye: "C1", tur: "Phrasal Verb", anlam: "Kendini tutmak, engellemek, gizlemek", ornek: "He could barely hold back his excitement after winning. (Kazandıktan sonra heyecanını zor tuttu.)" },
-      { kelime: "Leave out", seviye: "B2", tur: "Phrasal Verb", anlam: "Dışarıda bırakmak, atlamak, dahil etmemek", ornek: "Please do not leave out any important details in the summary. (Lütfen özette hiçbir önemli detayı atlama.)" },
-      { kelime: "Live up to", seviye: "C1", tur: "Phrasal Verb", anlam: "Beklentileri karşılamak, layık olmak", ornek: "The sequel did not quite live up to the original movie. (Devam filmi ilk filmin beklentilerini pek karşılamadı.)" },
-      { kelime: "Look down on", seviye: "C1", tur: "Phrasal Verb", anlam: "Küçümsemek, tepeden bakmak", ornek: "You should never look down on someone because of their job. (Kimseyi işi yüzünden asla küçümsememelisin.)" },
-      { kelime: "Miss out on", seviye: "B2", tur: "Phrasal Verb", anlam: "Fırsatı kaçırmak, mahrum kalmak", ornek: "Book early so you do not miss out on the discount. (İndirimi kaçırmamak için erken rezervasyon yap.)" },
-      { kelime: "Pass out", seviye: "B2", tur: "Phrasal Verb", anlam: "Bayılmak; dağıtmak", ornek: "He nearly passed out from standing in the hot sun all day. (Bütün gün kızgın güneşin altında durmaktan neredeyse bayılıyordu.)" },
-      { kelime: "Put aside", seviye: "B2", tur: "Phrasal Verb", anlam: "Bir kenara koymak (para, zaman, anlaşmazlık)", ornek: "They try to put aside a little money every month for travel. (Seyahat için her ay biraz para kenara koymaya çalışıyorlar.)" },
-      { kelime: "Put forward", seviye: "C1", tur: "Phrasal Verb", anlam: "Öne sürmek, teklif etmek", ornek: "She put forward a strong proposal for reducing waste. (Atıkları azaltmak için güçlü bir öneri sundu.)" },
-      { kelime: "Set off", seviye: "B2", tur: "Phrasal Verb", anlam: "Yola çıkmak; tetiklemek (alarm vb.)", ornek: "We set off at dawn to avoid heavy highway traffic. (Yoğun otoyol trafiğinden kaçınmak için şafakta yola çıktık.)" },
-      { kelime: "Sign up", seviye: "B1", tur: "Phrasal Verb", anlam: "Kayıt olmak, üye olmak", ornek: "Over fifty employees signed up for the first-aid workshop. (Elliden fazla çalışan ilk yardım atölyesine kayıt oldu.)" },
-      { kelime: "Slow down", seviye: "B1", tur: "Phrasal Verb", anlam: "Yavaşlamak, hızını azaltmak", ornek: "You need to slow down when driving through a school zone. (Okul bölgesinden geçerken yavaşlaman gerekir.)" },
-      { kelime: "Speak up", seviye: "B1", tur: "Phrasal Verb", anlam: "Sesini yükseltmek; fikrini açıkça söylemek", ornek: "Could you speak up a bit so everyone in the back can hear? (Arkadaki herkesin duyabilmesi için biraz daha yüksek sesle konuşabilir misin?)" },
-      { kelime: "Stick to", seviye: "B2", tur: "Phrasal Verb", anlam: "Sadık kalmak, bağlı kalmak (plan, diyet, kural)", ornek: "It is important to stick to your study schedule every week. (Her hafta çalışma programına sadık kalmak önemlidir.)" },
-      { kelime: "Think over", seviye: "B2", tur: "Phrasal Verb", anlam: "İyice düşünmek, enine boyuna değerlendirmek", ornek: "Take the weekend to think over the contract before signing. (İmzalamadan önce sözleşmeyi iyice düşünmek için hafta sonunu kullan.)" },
-      { kelime: "Throw away", seviye: "B1", tur: "Phrasal Verb", anlam: "Çöpe atmak; boşa harcamak (fırsat)", ornek: "Do not throw away that receipt in case we need a refund. (İade gerekirse diye o fişi çöpe atma.)" },
-      { kelime: "Try out", seviye: "B1", tur: "Phrasal Verb", anlam: "Denemek, test etmek", ornek: "Let us try out the new recipe this Saturday evening. (Bu cumartesi akşamı yeni tarifi deneyelim.)" }
-    ];
-
-    var PV_MOD = "list";
-    var PV_INDEX = 0;
-    var PV_FLIPPED = false;
-    var PV_SHUFFLED_KEYS = null;
-    var PV_GECIS_TIMER = null;
-    var PV_SECENEKLER_CACHE = { key: "", list: [] };
-    var PV_OKUNAN_KART = "";
-    var PV_SON_SORU_ANAHTARI = "";
-    var PV_PRATIK_TUMU = false;
-    var PV_HAVUZ_SECILENLER = {};
-    var PV_STARTER_COUNT = 15;
-
-    function pvAktifSetAl() {
-      try {
-        var raw = localStorage.getItem("kelime_pv_active_v1");
-        if (raw) {
-          var arr = JSON.parse(raw);
-          if (Array.isArray(arr)) return arr;
-        }
-      } catch (e) {}
-      var starterCount = typeof PV_STARTER_COUNT !== "undefined" ? PV_STARTER_COUNT : 15;
-      var starter = [];
-      for (var i = 0; i < Math.min(starterCount, PHRASAL_VERBS_LIST.length); i++) {
-        starter.push(PHRASAL_VERBS_LIST[i].kelime.toLowerCase().trim());
-      }
-      pvAktifSetKaydet(starter);
-      return starter;
-    }
-
-    function pvAktifSetKaydet(arr) {
-      try { localStorage.setItem("kelime_pv_active_v1", JSON.stringify(arr || [])); } catch (e) {}
-    }
-
-    function pvHavuzListesiniGetir() {
-      var aktifArr = pvAktifSetAl();
-      var aktifMap = {};
-      for (var a = 0; a < aktifArr.length; a++) aktifMap[aktifArr[a]] = true;
-      var sonuc = [];
-      for (var i = 0; i < PHRASAL_VERBS_LIST.length; i++) {
-        var item = PHRASAL_VERBS_LIST[i];
-        var k = item.kelime.toLowerCase().trim();
-        sonuc.push({
-          kelime: item.kelime,
-          seviye: item.seviye || "B2",
-          tur: "Phrasal Verb",
-          anlam: item.anlam || "",
-          ornek: item.ornek || "",
-          aktarildi: !!aktifMap[k]
-        });
-      }
-      return sonuc;
-    }
-
-    function pvHavuzSecimDegistir(kelime, seciliMi) {
-      var k = (kelime || "").toLowerCase().trim();
-      if (!k) return;
-      if (seciliMi) PV_HAVUZ_SECILENLER[k] = true;
-      else delete PV_HAVUZ_SECILENLER[k];
-      pvHavuzSecimButonGuncelle();
-    }
-
-    function pvHavuzSecimButonGuncelle() {
-      var n = Object.keys(PV_HAVUZ_SECILENLER).length;
-      var btn = document.getElementById("pvPoolSelectedTransferBtn");
-      if (btn) btn.innerText = "➕ Transfer Selected (" + n + ")";
-    }
-
-    function pvHavuzTumunuSecDegistir(seciliMi) {
-      var q = ((document.getElementById("pvPoolSearchInput") || {}).value || "").toLowerCase().trim();
-      var lvl = ((document.getElementById("pvPoolLevelFilter") || {}).value || "ALL");
-      var havuz = pvHavuzListesiniGetir();
-      for (var i = 0; i < havuz.length; i++) {
-        var h = havuz[i];
-        if (h.aktarildi) continue;
-        if (lvl !== "ALL" && h.seviye !== lvl) continue;
-        if (q && (h.kelime + " " + h.anlam).toLowerCase().indexOf(q) === -1) continue;
-        var k = h.kelime.toLowerCase().trim();
-        if (seciliMi) PV_HAVUZ_SECILENLER[k] = true;
-        else delete PV_HAVUZ_SECILENLER[k];
-      }
-      pvCiz();
-    }
-
-    function pvHavuzdanAktar(kelimeListesi) {
-      if (!kelimeListesi || !kelimeListesi.length) return;
-      var aktif = pvAktifSetAl();
-      var map = {};
-      for (var i = 0; i < aktif.length; i++) map[aktif[i]] = true;
-      var eklenen = 0;
-      for (var j = 0; j < kelimeListesi.length; j++) {
-        var k = (kelimeListesi[j] || "").toLowerCase().trim();
-        if (k && !map[k]) {
-          aktif.push(k);
-          map[k] = true;
-          delete PV_HAVUZ_SECILENLER[k];
-          eklenen++;
-        }
-      }
-      if (eklenen > 0) {
-        pvAktifSetKaydet(aktif);
-        bildirimGoster("✅ Transferred " + eklenen + " phrasal verb" + (eklenen === 1 ? "" : "s") + " to All phrasal verbs");
-        pvCiz();
-      }
-    }
-
-    function pvHavuzTekAktar(kelime) {
-      pvHavuzdanAktar([kelime]);
-    }
-
-    function pvHavuzSecilenleriAktar() {
-      var keys = Object.keys(PV_HAVUZ_SECILENLER);
-      if (!keys.length) {
-        bildirimGoster("ℹ️ Please select phrasal verbs to transfer first.");
-        return;
-      }
-      pvHavuzdanAktar(keys);
-    }
-
-    function pvHavuzdanRastgeleAktar() {
-      var adetEl = document.getElementById("pvPoolRandomCount");
-      var adet = adetEl ? parseInt(adetEl.value, 10) : 5;
-      if (isNaN(adet) || adet < 1) adet = 5;
-      if (adet > 50) adet = 50;
-      var lvl = ((document.getElementById("pvPoolLevelFilter") || {}).value || "ALL");
-      var bekleyenler = pvHavuzListesiniGetir().filter(function(h) {
-        if (h.aktarildi) return false;
-        if (lvl !== "ALL" && h.seviye !== lvl) return false;
-        return true;
-      });
-      if (!bekleyenler.length) {
-        bildirimGoster("🎉 No waiting phrasal verbs left in this filter.");
-        return;
-      }
-      for (var i = bekleyenler.length - 1; i > 0; i--) {
-        var r = Math.floor(Math.random() * (i + 1));
-        var tmp = bekleyenler[i]; bekleyenler[i] = bekleyenler[r]; bekleyenler[r] = tmp;
-      }
-      var secilen = bekleyenler.slice(0, adet).map(function(h) { return h.kelime; });
-      pvHavuzdanAktar(secilen);
-    }
-
-    function pvGecisZamanlayiciTemizle() {
-      if (PV_GECIS_TIMER) {
-        clearTimeout(PV_GECIS_TIMER);
-        PV_GECIS_TIMER = null;
-      }
-    }
-
-    function pvDurumMapAl() {
-      try { return JSON.parse(localStorage.getItem("kelime_pv_durum_v1") || "{}"); } catch (e) { return {}; }
-    }
-
-    function pvDurumKaydet(kelime, durum) {
-      var map = pvDurumMapAl();
-      var k = (kelime || "").toString().trim().toLowerCase();
-      if (!k) return;
-      map[k] = durum;
-      try { localStorage.setItem("kelime_pv_durum_v1", JSON.stringify(map)); } catch (e) {}
-    }
-
-    function pvOzelEklenenleriAl() {
-      try { return JSON.parse(localStorage.getItem("kelime_pv_custom_v1") || "[]"); } catch (e) { return []; }
-    }
-
-    function pvOzelEklenenleriKaydet(liste) {
-      try { localStorage.setItem("kelime_pv_custom_v1", JSON.stringify(liste || [])); } catch (e) {}
-    }
-
-    function pvTumListeyiGetir() {
-      var durumMap = pvDurumMapAl();
-      var ozel = pvOzelEklenenleriAl();
-      var aktifArr = pvAktifSetAl();
-      var aktifMap = {};
-      for (var a = 0; a < aktifArr.length; a++) aktifMap[aktifArr[a]] = true;
-      var map = {};
-      var sonuc = [];
-      function ekle(item) {
-        if (!item || !item.kelime) return;
-        var k = item.kelime.toString().trim().toLowerCase();
-        if (!k || map[k]) return;
-        map[k] = true;
-        var d = durumMap[k] || item.durum || "bilmiyorum";
-        sonuc.push({
-          kelime: item.kelime.toString().trim(),
-          seviye: (item.seviye || "B2").toString().trim().toUpperCase(),
-          tur: "Phrasal Verb",
-          anlam: (item.anlam || "").toString().trim(),
-          ornek: (item.ornek || "").toString().trim(),
-          durum: d
-        });
-      }
-      for (var i = 0; i < ozel.length; i++) ekle(ozel[i]);
-      if (typeof TUM_KELIMELER !== "undefined" && TUM_KELIMELER) {
-        for (var j = 0; j < TUM_KELIMELER.length; j++) {
-          var tw = TUM_KELIMELER[j];
-          if (tw && (tw.tur || "").toLowerCase().indexOf("phrasal") !== -1) ekle(tw);
-        }
-      }
-      for (var m = 0; m < PHRASAL_VERBS_LIST.length; m++) {
-        var pk = PHRASAL_VERBS_LIST[m].kelime.toLowerCase().trim();
-        if (aktifMap[pk]) ekle(PHRASAL_VERBS_LIST[m]);
-      }
-      return sonuc;
-    }
-
-    function pvDesteGetir() {
-      var tumu = pvTumListeyiGetir();
-      var lvlEl = document.getElementById("pvLevelFilter");
-      var lvl = lvlEl ? lvlEl.value : "ALL";
-      var filtreli = tumu.filter(function(w) {
-        if (lvl !== "ALL" && w.seviye !== lvl) return false;
-        if (!PV_PRATIK_TUMU && w.durum === "biliyorum") return false;
-        return true;
-      });
-      if (!PV_SHUFFLED_KEYS || !PV_SHUFFLED_KEYS.length) return filtreli;
-      var byKey = {};
-      for (var i = 0; i < filtreli.length; i++) byKey[filtreli[i].kelime.toLowerCase()] = filtreli[i];
-      var result = [];
-      var used = {};
-      for (var j = 0; j < PV_SHUFFLED_KEYS.length; j++) {
-        var k = PV_SHUFFLED_KEYS[j];
-        if (byKey[k]) { result.push(byKey[k]); used[k] = true; }
-      }
-      for (var m = 0; m < filtreli.length; m++) {
-        var km = filtreli[m].kelime.toLowerCase();
-        if (!used[km]) result.push(filtreli[m]);
-      }
-      return result;
-    }
-
-    function pvModSec(mod) {
-      pvGecisZamanlayiciTemizle();
-      PV_MOD = mod || "list";
-      PV_FLIPPED = false;
-      PV_OKUNAN_KART = "";
-      PV_SON_SORU_ANAHTARI = "";
-      PV_SECENEKLER_CACHE = { key: "", list: [] };
-      tercihleriKaydet();
-      if (typeof updateWorkspaceHeading === "function") updateWorkspaceHeading();
-      pvCiz();
-    }
-
-    function pvSeviyeDegisti() {
-      pvGecisZamanlayiciTemizle();
-      PV_INDEX = 0;
-      PV_FLIPPED = false;
-      PV_OKUNAN_KART = "";
-      PV_SON_SORU_ANAHTARI = "";
-      PV_SECENEKLER_CACHE = { key: "", list: [] };
-      pvCiz();
-    }
-
-    function pvEkleBarAcKapat() {
-      var bar = document.getElementById("pvAddBar");
-      if (!bar) return;
-      var open = bar.classList.toggle("open");
-      if (open) {
-        var inp = document.getElementById("pvInKelime");
-        if (inp) inp.focus();
-      }
-    }
-
-    function pvYeniEkle() {
-      var kelime = (document.getElementById("pvInKelime").value || "").trim();
-      var anlam = (document.getElementById("pvInAnlam").value || "").trim();
-      var ornek = (document.getElementById("pvInOrnek").value || "").trim();
-      var seviye = (document.getElementById("pvInSeviye").value || "B2").trim();
-      if (!kelime || !anlam) {
-        bildirimGoster("Phrasal Verb and Meaning are required.");
-        return;
-      }
-      var ozel = pvOzelEklenenleriAl();
-      ozel.unshift({ kelime: kelime, seviye: seviye, tur: "Phrasal Verb", anlam: anlam, ornek: ornek, durum: "bilmiyorum" });
-      pvOzelEklenenleriKaydet(ozel);
-      pvDurumKaydet(kelime, "bilmiyorum");
-      document.getElementById("pvInKelime").value = "";
-      document.getElementById("pvInAnlam").value = "";
-      document.getElementById("pvInOrnek").value = "";
-      bildirimGoster("✅ Added Phrasal Verb: " + kelime);
-      pvCiz();
-    }
-
-    function pvDurumDegistir(kelime, yeniDurum) {
-      pvDurumKaydet(kelime, yeniDurum);
-      bildirimGoster(yeniDurum === "biliyorum" ? "✅ Marked as Known: " + kelime : "🔄 Marked as Learning: " + kelime);
-      pvCiz();
-    }
-
-    function pvTumunuSifirla() {
-      try { localStorage.removeItem("kelime_pv_durum_v1"); } catch (e) {}
-      PV_PRATIK_TUMU = false;
-      PV_INDEX = 0;
-      PV_FLIPPED = false;
-      bildirimGoster("↩️ All Phrasal Verbs reset to Learning");
-      pvCiz();
-    }
-
-    function pvKaristir() {
-      pvGecisZamanlayiciTemizle();
-      var deck = pvDesteGetir().map(function(w) { return w.kelime.toLowerCase(); });
-      for (var i = deck.length - 1; i > 0; i--) {
-        var r = Math.floor(Math.random() * (i + 1));
-        var tmp = deck[i]; deck[i] = deck[r]; deck[r] = tmp;
-      }
-      PV_SHUFFLED_KEYS = deck;
-      PV_INDEX = 0;
-      PV_FLIPPED = false;
-      PV_OKUNAN_KART = "";
-      PV_SON_SORU_ANAHTARI = "";
-      PV_SECENEKLER_CACHE = { key: "", list: [] };
-      pvCiz();
-      bildirimGoster("🔀 Shuffled Phrasal Verbs");
-    }
-
-    function pvDegistir(delta) {
-      pvGecisZamanlayiciTemizle();
-      PV_INDEX += delta;
-      PV_FLIPPED = false;
-      PV_OKUNAN_KART = "";
-      PV_SON_SORU_ANAHTARI = "";
-      PV_SECENEKLER_CACHE = { key: "", list: [] };
-      pvCiz();
-    }
-
-    function pvCevir() {
-      PV_FLIPPED = !PV_FLIPPED;
-      var inner = document.getElementById("pvCardInner");
-      if (inner) inner.classList.toggle("flipped", PV_FLIPPED);
-    }
-
-    function pvYonuDegistir() {
-      window.QUIZ_YON = window.QUIZ_YON === "en-tr" ? "tr-en" : "en-tr";
-      try { localStorage.setItem("kelime_quiz_yon", window.QUIZ_YON); } catch (e) {}
-      PV_SON_SORU_ANAHTARI = "";
-      PV_OKUNAN_KART = "";
-      tercihleriKaydet();
-      pvCiz();
-      bildirimGoster(window.QUIZ_YON === "en-tr"
-        ? "🇬🇧 Quiz Direction: English → Turkish"
-        : "🇹🇷 Quiz Direction: Turkish → English");
-    }
-
-    function pvOtomatikOku(card) {
-      if (!SES_ACIK || !card || AKTIF_SEKME !== "phrasalVerbs") return;
-      var key = PV_MOD + ":" + (PV_MOD === "quiz" ? (window.QUIZ_YON || "tr-en") + ":" : "") + card.kelime.toLowerCase().trim();
-      if (PV_OKUNAN_KART === key) return;
-      PV_OKUNAN_KART = key;
-      if ("speechSynthesis" in window) {
-        if (AKTIF_SES) {
-          try { AKTIF_SES.pause(); } catch (e) {}
-          AKTIF_SES = null;
-        }
-        tarayiciIleOku(card.kelime);
-      } else {
-        kelimeOku(card.kelime);
-      }
-    }
-
-    function pvSecenekleriUret(dogruCard, tumListe) {
-      var dogruKey = dogruCard.kelime.toLowerCase().trim();
-      var cacheKey = PV_MOD + ":" + dogruKey;
-      if (PV_SECENEKLER_CACHE.key === cacheKey && PV_SECENEKLER_CACHE.list && PV_SECENEKLER_CACHE.list.length >= 2) {
-        return PV_SECENEKLER_CACHE.list;
-      }
-      var adaylar = (tumListe || []).filter(function(w) {
-        return w && w.kelime && w.kelime.toLowerCase().trim() !== dogruKey;
-      });
-      var ilkKelime = dogruKey.split(/\s+/)[0];
-      var ayniFiil = adaylar.filter(function(w) { return w.kelime.toLowerCase().trim().split(/\s+/)[0] === ilkKelime; });
-      var digerleri = adaylar.filter(function(w) { return w.kelime.toLowerCase().trim().split(/\s+/)[0] !== ilkKelime; });
-      function karistir(arr) {
-        for (var i = arr.length - 1; i > 0; i--) {
-          var r = Math.floor(Math.random() * (i + 1));
-          var t = arr[i]; arr[i] = arr[r]; arr[r] = t;
-        }
-      }
-      karistir(ayniFiil);
-      karistir(digerleri);
-      var secenekler = [dogruCard];
-      var birlesik = ayniFiil.slice(0, 2).concat(digerleri);
-      for (var j = 0; j < birlesik.length && secenekler.length < 4; j++) {
-        secenekler.push(birlesik[j]);
-      }
-      karistir(secenekler);
-      PV_SECENEKLER_CACHE = { key: cacheKey, list: secenekler };
-      return secenekler;
-    }
 
     var PV_VERB_FORMS = {
       blow: ["blow", "blows", "blowing", "blew", "blown"],
@@ -6905,591 +5591,84 @@
       think: ["think", "thinks", "thinking", "thought"],
       throw: ["throw", "throws", "throwing", "threw", "thrown"],
       try: ["try", "tries", "trying", "tried"],
+      wake: ["wake", "wakes", "waking", "woke", "woken"],
+      write: ["write", "writes", "writing", "wrote", "written"],
+      sit: ["sit", "sits", "sitting", "sat"],
+      eat: ["eat", "eats", "eating", "ate", "eaten"],
+      build: ["build", "builds", "building", "built"],
       wear: ["wear", "wears", "wearing", "wore", "worn"],
       wind: ["wind", "winds", "winding", "wound"]
     };
 
     function pvCumledeGizle(enCumle, pv) {
-      if (!enCumle) return '<span class="cloze-blank" id="pvClozeBlankEl">_________</span>';
+      if (!enCumle) return '<span class="cloze-blank" id="clozeBlankEl">_________</span>';
       var parts = (pv || "").trim().toLowerCase().split(/\s+/).filter(Boolean);
       var guvenli = escHtml(enCumle);
-      if (!parts.length) return guvenli + ' (<span class="cloze-blank" id="pvClozeBlankEl">_________</span>)';
+      if (!parts.length) return guvenli + ' (<span class="cloze-blank" id="clozeBlankEl">_________</span>)';
       var verb = parts[0];
       var rest = parts.slice(1).map(function(p) { return p.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); }).join("\\s+");
-      var forms = PV_VERB_FORMS[verb];
+      var forms = Object.hasOwn(PV_VERB_FORMS, verb) && PV_VERB_FORMS[verb];
+      function blank(text, first) {
+        return '<span class="cloze-blank"' + (first ? ' id="clozeBlankEl"' : '') + ' data-answer="' + text + '">_____</span>';
+      }
       var verbPattern = forms
         ? "(?:" + forms.join("|") + ")"
         : (verb.length > 3 ? verb.slice(0, -1).replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "[a-zA-Z]*" : verb.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "[a-zA-Z]*");
       if (rest) {
         var exactRgx = new RegExp("\\b" + verbPattern + "\\s+" + rest + "\\b", "i");
         if (exactRgx.test(guvenli)) {
-          return guvenli.replace(exactRgx, '<span class="cloze-blank" id="pvClozeBlankEl">_________</span>');
+          return guvenli.replace(exactRgx, function(match) { return blank(match, true); });
         }
         var sepRgx = new RegExp("\\b(" + verbPattern + ")(\\s+(?:[a-zA-Z']+\\s+){1,3})(" + rest + ")\\b", "i");
         if (sepRgx.test(guvenli)) {
-          return guvenli.replace(sepRgx, '<span class="cloze-blank" id="pvClozeBlankEl">_____</span>$2<span class="cloze-blank">_____</span>');
+          return guvenli.replace(sepRgx, function(match, head, middle, particle) {
+            return blank(head, true) + middle + blank(particle, false);
+          });
         }
       }
       var fallbackRgx = new RegExp("\\b" + verbPattern + "\\b", "i");
       if (fallbackRgx.test(guvenli)) {
-        return guvenli.replace(fallbackRgx, '<span class="cloze-blank" id="pvClozeBlankEl">_________</span>');
+        return guvenli.replace(fallbackRgx, function(match) { return blank(match, true); });
       }
-      return guvenli + ' (<span class="cloze-blank" id="pvClozeBlankEl">_________</span>)';
+      return guvenli + ' (<span class="cloze-blank" id="clozeBlankEl">_________</span>)';
     }
 
-    function bolumDegistir(bolum) {
-      if (bolum === "phrasal") {
-        PV_MOD = "list";
-        sekmeDegistir("phrasalVerbs");
-      } else {
+    function bolumDegistir(section) {
+      if ((section === "phrasal") === PHRASAL) {
         sekmeDegistir("sheet1");
-      }
-    }
-
-    function pvSekmeAc(mod) {
-      pvGecisZamanlayiciTemizle();
-      PV_MOD = mod || "list";
-      PV_FLIPPED = false;
-      PV_OKUNAN_KART = "";
-      PV_SON_SORU_ANAHTARI = "";
-      PV_SECENEKLER_CACHE = { key: "", list: [] };
-      if (AKTIF_SEKME !== "phrasalVerbs") {
-        sekmeDegistir("phrasalVerbs");
         return;
       }
-      mobilMenuKapat();
-      sekmeButonlariniGuncelle();
-      tercihleriKaydet();
-      if (typeof updateWorkspaceHeading === "function") updateWorkspaceHeading();
-      pvCiz();
+      location.hash = section;
     }
 
-    function pvFiltreTemizle() {
-      var s = document.getElementById("pvSearchInput");
-      if (s) s.value = "";
-      var l = document.getElementById("pvLevelFilter");
-      if (l) l.value = "ALL";
-      pvSeviyeDegisti();
-    }
+    window.addEventListener("hashchange", function() {
+      if ((location.hash === "#phrasal") !== PHRASAL) location.reload();
+    });
 
-    function pvCiz(arkaPlanSenkronMu) {
-      var tumu = pvTumListeyiGetir();
-      var havuz = pvHavuzListesiniGetir();
-      var known = 0, learning = 0;
-      for (var c = 0; c < tumu.length; c++) {
-        if (tumu[c].durum === "biliyorum") known++;
-        else learning++;
-      }
-      var bList = document.getElementById("navBadge-pv-list");
-      if (bList) bList.innerText = String(tumu.length);
-      var bPool = document.getElementById("navBadge-pv-pool");
-      if (bPool) bPool.innerText = String(havuz.length);
-      var bLrn = document.getElementById("navBadge-pv-learning");
-      if (bLrn) bLrn.innerText = String(learning);
-      var bKnw = document.getElementById("navBadge-pv-known");
-      if (bKnw) bKnw.innerText = String(known);
-      var bFc = document.getElementById("navBadge-pv-flashcards");
-      if (bFc) bFc.innerText = String(learning);
-      if (AKTIF_SEKME !== "phrasalVerbs") return;
-
-      var isList = PV_MOD === "list" || PV_MOD === "learning" || PV_MOD === "known";
-      var isPool = PV_MOD === "pool";
-      var listPanel = document.getElementById("pvListPanel");
-      var poolPanel = document.getElementById("pvPoolPanel");
-      var studyPanel = document.getElementById("pvStudyPanel");
-      if (listPanel) listPanel.style.display = isList ? "block" : "none";
-      if (poolPanel) poolPanel.style.display = isPool ? "block" : "none";
-      if (studyPanel) studyPanel.style.display = (!isList && !isPool) ? "block" : "none";
-      if (!isList) {
-        var addBar = document.getElementById("pvAddBar");
-        if (addBar) addBar.classList.remove("open");
-      }
-
-      if (isList) {
-        pvListeCiz(tumu);
-      } else if (isPool) {
-        pvHavuzCiz(havuz);
-      } else {
-        pvCalismaCiz(tumu, arkaPlanSenkronMu);
-      }
-    }
-
-    function pvHavuzCiz(havuz) {
-      var total = havuz.length, transferred = 0, waiting = 0;
-      for (var i = 0; i < havuz.length; i++) {
-        if (havuz[i].aktarildi) transferred++;
-        else waiting++;
-      }
-      var kTot = document.getElementById("kpiPvPoolTotal");
-      if (kTot) kTot.innerText = "📦 Total Pool: " + total;
-      var kWait = document.getElementById("kpiPvPoolWaiting");
-      if (kWait) kWait.innerText = "⏳ Waiting: " + waiting;
-      var kTr = document.getElementById("kpiPvPoolTransferred");
-      if (kTr) kTr.innerText = "✅ Transferred: " + transferred;
-
-      var q = ((document.getElementById("pvPoolSearchInput") || {}).value || "").toLowerCase().trim();
-      var lvl = ((document.getElementById("pvPoolLevelFilter") || {}).value || "ALL");
-      var list = havuz.filter(function(h) {
-        if (lvl !== "ALL" && h.seviye !== lvl) return false;
-        if (q && (h.kelime + " " + h.anlam).toLowerCase().indexOf(q) === -1) return false;
-        return true;
-      });
-      list.sort(function(a, b) {
-        if (a.aktarildi !== b.aktarildi) return a.aktarildi ? 1 : -1;
-        return a.seviye.localeCompare(b.seviye) || a.kelime.localeCompare(b.kelime);
-      });
-
-      var visibleWaiting = 0, visibleSelected = 0;
-      var rows = [];
-      for (var j = 0; j < list.length; j++) {
-        var h = list[j];
-        var hk = h.kelime.toLowerCase().trim();
-        var checked = !!PV_HAVUZ_SECILENLER[hk];
-        if (!h.aktarildi) {
-          visibleWaiting++;
-          if (checked) visibleSelected++;
-        }
-        rows.push(
-          '<tr class="' + (h.aktarildi ? "havuz-row-done" : "") + '">' +
-            '<td class="center">' +
-              (h.aktarildi ? '' : '<input type="checkbox"' + (checked ? ' checked' : '') + ' onchange="pvHavuzSecimDegistir(\'' + escJs(h.kelime) + '\', this.checked)" aria-label="Select ' + escHtml(h.kelime) + '">') +
-            '</td>' +
-            '<td class="col-row">' + (j + 1) + '</td>' +
-            '<td class="col-lvl">' + escHtml(h.seviye) + '</td>' +
-            '<td class="col-word" onclick="kelimeOku(\'' + escJs(h.kelime) + '\', this)">' + escHtml(h.kelime) + '</td>' +
-            '<td class="center">' +
-              (h.aktarildi ? '<span class="havuz-badge-done">✅ Transferred</span>' : '<span class="havuz-badge-wait">⏳ Waiting</span>') +
-            '</td>' +
-            '<td>' +
-              (h.aktarildi
-                ? '<span style="color:#64748b;font-size:11.5px;">In All phrasal verbs</span>'
-                : '<button class="btn" onclick="pvHavuzTekAktar(\'' + escJs(h.kelime) + '\')">➕ Transfer</button>') +
-            '</td>' +
-          '</tr>'
-        );
-      }
-      var selAll = document.getElementById("pvPoolSelectAllCb");
-      if (selAll) selAll.checked = visibleWaiting > 0 && visibleSelected === visibleWaiting;
-      pvHavuzSecimButonGuncelle();
-      var body = document.getElementById("pvPoolBody");
-      if (body) {
-        body.innerHTML = rows.join("") || '<tr><td colspan="6" class="center" style="padding:14px;">No matching phrasal verbs in pool.</td></tr>';
-      }
-    }
-
-    function pvListeCiz(tumu) {
-      var q = ((document.getElementById("pvSearchInput") || {}).value || "").toLowerCase().trim();
-      var lvl = ((document.getElementById("pvLevelFilter") || {}).value || "ALL");
-      var clearBtn = document.getElementById("pvClearFiltersBtn");
-      if (clearBtn) clearBtn.hidden = !q && lvl === "ALL";
-      var list = tumu.filter(function(w) {
-        if (PV_MOD === "learning" && w.durum === "biliyorum") return false;
-        if (PV_MOD === "known" && w.durum !== "biliyorum") return false;
-        if (lvl !== "ALL" && w.seviye !== lvl) return false;
-        if (q && (w.kelime + " " + w.anlam + " " + w.ornek).toLowerCase().indexOf(q) === -1) return false;
-        return true;
-      });
-
-      var resCount = document.getElementById("pvResultCount");
-      if (resCount) resCount.textContent = list.length + (list.length === 1 ? " phrasal verb" : " phrasal verbs");
-
-      var rows = [];
-      for (var j = 0; j < list.length; j++) {
-        var x = list[j];
-        var isKnown = x.durum === "biliyorum";
-        rows.push(
-          '<tr class="' + (isKnown ? "row-known" : "") + '">' +
-            '<td class="col-row">' + (j + 1) + '</td>' +
-            '<td class="col-lvl">' + escHtml(x.seviye) + '</td>' +
-            '<td class="col-type">Phrasal Verb</td>' +
-            '<td class="col-mark">' +
-              '<div class="mark-split ' + (isKnown ? "biliyorum" : "bilmiyorum") + '">' +
-                '<div class="mark-half mark-top" onclick="pvDurumDegistir(\'' + escJs(x.kelime) + '\', \'biliyorum\')" title="Mark as Known">✓</div>' +
-                '<div class="mark-half mark-bot" onclick="pvDurumDegistir(\'' + escJs(x.kelime) + '\', \'bilmiyorum\')" title="Mark as Learning">✕</div>' +
-              '</div>' +
-            '</td>' +
-            '<td class="col-word" onclick="kelimeOku(\'' + escJs(x.kelime) + '\', this)">' +
-              escHtml(x.kelime) +
-              (x.ornek ? '<div class="word-hover-ex">' + ornekBicimlendir(x.ornek) + '</div>' : '') +
-            '</td>' +
-            '<td class="col-meaning">' + escHtml(x.anlam) + '</td>' +
-            '<td class="col-example" onclick="ornekOku(\'' + escJs(x.ornek) + '\', this)" title="Click to listen to the example sentence">' + escHtml(x.ornek) + '</td>' +
-            '<td class="col-status"><span class="status-pill ' + (isKnown ? "biliyorum" : "bilmiyorum") + '">' + (isKnown ? "Already known" : "Still learning") + '</span></td>' +
-          '</tr>'
-        );
-      }
-      var body = document.getElementById("phrasalVerbsBody");
-      if (body) {
-        body.innerHTML = rows.join("") || '<tr><td colspan="8" class="center" style="padding:14px;"><div class="empty-state"><strong>No matching phrasal verbs</strong><p>Try another search or clear your filters.</p><button class="btn" onclick="pvFiltreTemizle()">Clear filters</button></div></td></tr>';
-      }
-    }
-
-    function pvCalismaCiz(tumu, arkaPlanSenkronMu) {
-      var box = document.getElementById("pvStudyContainer");
-      if (!box) return;
-      if (PV_GECIS_TIMER) return;
-      var deck = pvDesteGetir();
-      if (!deck.length) {
-        PV_SON_SORU_ANAHTARI = "";
-        PV_OKUNAN_KART = "";
-        box.innerHTML =
-          '<div class="fc-empty">' +
-            '<div style="font-size:28px;margin-bottom:8px;">🎉</div>' +
-            '<div style="font-weight:700;color:#1e293b;margin-bottom:8px;">All Phrasal Verbs in this filter are marked as Known!</div>' +
-            '<div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;">' +
-              '<button class="fc-btn fc-btn-known" onclick="PV_PRATIK_TUMU = true; PV_INDEX = 0; pvCiz();">Practice All</button>' +
-              '<button class="fc-btn" onclick="pvTumunuSifirla()">↩️ Reset Known</button>' +
-              '<button class="fc-btn" onclick="pvModSec(\'list\')">📋 Back to List</button>' +
-            '</div>' +
-          '</div>';
-        return;
-      }
-
-      if (PV_INDEX >= deck.length) PV_INDEX = 0;
-      if (PV_INDEX < 0) PV_INDEX = deck.length - 1;
-      var card = deck[PV_INDEX];
-      var soruAnahtari = PV_MOD + ":" + (window.QUIZ_YON || "tr-en") + ":" + card.kelime.toLowerCase().trim();
-      if (arkaPlanSenkronMu && PV_SON_SORU_ANAHTARI === soruAnahtari && box.children.length > 0) return;
-      PV_SON_SORU_ANAHTARI = soruAnahtari;
-
-      if (PV_MOD === "flashcards") {
-        pvFlashcardCiz(box, deck, card);
-        pvOtomatikOku(card);
-      } else if (PV_MOD === "quiz") {
-        pvQuizCiz(box, deck, card, tumu);
-        pvOtomatikOku(card);
-      } else if (PV_MOD === "cloze") {
-        pvClozeCiz(box, deck, card, tumu);
-      }
-    }
-
-    function pvFlashcardCiz(box, deck, card) {
-      var pct = Math.round(((PV_INDEX + 1) / deck.length) * 100);
-      box.innerHTML =
-        '<div class="fc-top">' +
-          '<span>Card <b>' + (PV_INDEX + 1) + ' / ' + deck.length + '</b></span>' +
-          '<button class="btn" style="height:28px;padding:0 10px;" onclick="pvKaristir()" title="Shuffle cards">🔀 Shuffle</button>' +
-        '</div>' +
-        '<div class="fc-progress-track"><div class="fc-progress-bar" style="width:' + pct + '%;"></div></div>' +
-        '<div class="fc-scene" onclick="pvCevir()">' +
-          '<div class="fc-card' + (PV_FLIPPED ? ' flipped' : '') + '" id="pvCardInner">' +
-            '<div class="fc-face fc-front">' +
-              '<div class="fc-badges">' +
-                '<div class="fc-badge-group">' +
-                  '<span class="fc-lvl-badge">' + escHtml(card.seviye) + '</span>' +
-                  '<span class="fc-type-badge">Phrasal Verb</span>' +
-                '</div>' +
-                '<button class="btn" onclick="event.stopPropagation(); kelimeOku(\'' + escJs(card.kelime) + '\')" title="Listen pronunciation">🔊 Listen</button>' +
-              '</div>' +
-              '<div class="fc-center">' +
-                '<div class="fc-word">' + escHtml(card.kelime) + '</div>' +
-              '</div>' +
-              '<div class="fc-hint">Click or press Space to flip</div>' +
-            '</div>' +
-            '<div class="fc-face fc-back">' +
-              '<div class="fc-badges">' +
-                '<div class="fc-badge-group">' +
-                  '<span class="fc-lvl-badge">' + escHtml(card.seviye) + '</span>' +
-                  '<span class="fc-type-badge">Phrasal Verb</span>' +
-                  '<strong style="font-size:13px;color:#0f172a;margin-left:4px;">' + escHtml(card.kelime) + '</strong>' +
-                '</div>' +
-                '<button class="btn" onclick="event.stopPropagation(); kelimeOku(\'' + escJs(card.kelime) + '\')" title="Listen pronunciation">🔊</button>' +
-              '</div>' +
-              '<div class="fc-center">' +
-                '<div class="fc-meaning">' + escHtml(card.anlam) + '</div>' +
-                (card.ornek ? '<div class="fc-example" onclick="event.stopPropagation(); ornekOku(\'' + escJs(card.ornek) + '\', this)" title="Click to listen to the example sentence">' + ornekBicimlendir(card.ornek) + '</div>' : '') +
-              '</div>' +
-              '<div class="fc-hint">Click card to flip back ↻</div>' +
-            '</div>' +
-          '</div>' +
-        '</div>' +
-        '<div class="fc-controls">' +
-          '<button class="fc-btn" onclick="pvDegistir(-1)">← Previous</button>' +
-          '<button class="fc-btn" onclick="pvCevir()">↻ Flip</button>' +
-          '<button class="fc-btn" style="background:#fef2f2;border-color:#fecaca;color:#b91c1c;" onclick="pvDurumKaydet(\'' + escJs(card.kelime) + '\', \'bilmiyorum\'); pvDegistir(1);">Forgot</button>' +
-          '<button class="fc-btn fc-btn-known" onclick="pvDurumKaydet(\'' + escJs(card.kelime) + '\', \'biliyorum\'); PV_FLIPPED = false; PV_SON_SORU_ANAHTARI = \'\'; PV_OKUNAN_KART = \'\'; pvCiz();">I already know</button>' +
-          '<button class="fc-btn" onclick="pvDegistir(1)">Next ▶</button>' +
-        '</div>';
-    }
-
-    function pvQuizCiz(box, deck, card, tumu) {
-      var pct = Math.round(((PV_INDEX + 1) / deck.length) * 100);
-      var secenekler = pvSecenekleriUret(card, tumu);
-      var enTr = window.QUIZ_YON === "en-tr";
-
-      var btnHtml = [];
-      for (var i = 0; i < secenekler.length; i++) {
-        var sc = secenekler[i];
-        var secenekMetin = enTr ? sc.anlam : sc.kelime;
-        btnHtml.push(
-          '<button class="choice-btn" onclick="pvQuizSecenekSec(this, \'' + escJs(sc.kelime) + '\', \'' + escJs(card.kelime) + '\')">' +
-            (i + 1) + '. ' + escHtml(secenekMetin) +
-          '</button>'
-        );
-      }
-
-      box.innerHTML =
-        '<div class="fc-top">' +
-          '<span>Question <b>' + (PV_INDEX + 1) + ' / ' + deck.length + '</b></span>' +
-          '<button class="btn" style="height:28px;padding:0 10px;" onclick="pvKaristir()" title="Shuffle questions">🔀 Shuffle</button>' +
-        '</div>' +
-        '<div class="fc-progress-track"><div class="fc-progress-bar" style="width:' + pct + '%;"></div></div>' +
-        '<div class="study-box">' +
-          '<div class="fc-badges">' +
-            '<div class="fc-badge-group">' +
-              '<span class="fc-lvl-badge">' + escHtml(card.seviye) + '</span>' +
-              '<span class="fc-type-badge">Phrasal Verb</span>' +
-            '</div>' +
-            '<button class="btn" onclick="kelimeOku(\'' + escJs(card.kelime) + '\')" title="Listen pronunciation">🔊 Audio Hint</button>' +
-          '</div>' +
-          '<div class="fc-center" style="margin:18px 0 8px;">' +
-            '<div style="font-size:12px;color:#64748b;margin-bottom:6px;">' + (enTr ? 'Which Turkish meaning matches this phrasal verb?' : 'Which English phrasal verb matches this meaning?') + '</div>' +
-            '<div class="fc-meaning" style="margin-bottom:4px;">' + escHtml(enTr ? card.kelime : card.anlam) + '</div>' +
-          '</div>' +
-          '<div class="choice-grid">' + btnHtml.join("") + '</div>' +
-          '<div class="type-row">' +
-            '<input type="text" id="pvQuizTypeInput" class="type-inp" placeholder="' + (enTr ? 'Or type the Turkish meaning from memory...' : 'Or type the English phrasal verb from memory...') + '" onkeydown="if(event.key===\'Enter\') pvQuizYazKontrol(\'' + escJs(card.kelime) + '\')">' +
-            '<button class="fc-btn fc-btn-known" onclick="pvQuizYazKontrol(\'' + escJs(card.kelime) + '\')">Check ↵</button>' +
-          '</div>' +
-          '<div id="pvQuizFeedbackBox" style="display:none;margin-top:12px;border:2px solid #22c55e;background:#f0fdf4;" class="fc-example" onclick="ornekOku(\'' + escJs(card.ornek) + '\', this)" title="Click to listen to the example sentence"></div>' +
-        '</div>' +
-        '<div class="fc-controls">' +
-          '<button class="fc-btn" onclick="pvDegistir(-1)">← Previous</button>' +
-          '<button class="fc-btn" onclick="pvYonuDegistir()" aria-label="Switch translation direction">' + (enTr ? 'EN → TR' : 'TR → EN') + '</button>' +
-          '<button class="fc-btn" onclick="pvDegistir(1)">Skip →</button>' +
-        '</div>';
-    }
-
-    function pvKartBul(kelime) {
-      var k = (kelime || "").toLowerCase().trim();
-      var tumu = pvTumListeyiGetir();
-      for (var i = 0; i < tumu.length; i++) {
-        if (tumu[i].kelime.toLowerCase().trim() === k) return tumu[i];
-      }
-      return null;
-    }
-
-    function pvQuizSecenekSec(btnEl, secilen, dogru) {
-      if (PV_GECIS_TIMER) return;
-      var card = pvKartBul(dogru);
-      var fb = document.getElementById("pvQuizFeedbackBox");
-      if (secilen.toLowerCase() === dogru.toLowerCase()) {
-        pvGecisZamanlayiciTemizle();
-        btnEl.classList.add("correct");
-        kelimeOku(dogru);
-        if (fb && card && card.ornek) {
-          fb.style.display = "block";
-          fb.innerHTML = "✅ <b>" + escHtml(dogru) + " (" + escHtml(card.anlam) + "):</b> " + ornekBicimlendir(card.ornek);
-        }
-        PV_GECIS_TIMER = setTimeout(function() {
-          PV_GECIS_TIMER = null;
-          PV_SON_SORU_ANAHTARI = "";
-          PV_OKUNAN_KART = "";
-          PV_SECENEKLER_CACHE = { key: "", list: [] };
-          PV_INDEX++;
-          pvCiz();
-        }, QUIZ_CORRECT_DELAY_MS);
-      } else {
-        btnEl.classList.add("wrong");
-        if (fb && card && card.ornek) {
-          fb.style.display = "block";
-          fb.innerHTML = "💡 <b>Example (" + escHtml(dogru) + "):</b> " + ornekBicimlendir(card.ornek);
-        }
-        bildirimGoster("❌ Not '" + secilen + "'! Try again.");
-      }
-    }
-
-    function pvQuizYazKontrol(dogru) {
-      if (PV_GECIS_TIMER) return;
-      var inp = document.getElementById("pvQuizTypeInput");
-      if (!inp) return;
-      var yazilan = inp.value.trim();
-      if (!yazilan) return;
-      var card = pvKartBul(dogru);
-      var fb = document.getElementById("pvQuizFeedbackBox");
-      var enTr = window.QUIZ_YON === "en-tr";
-      var dogruMu = false;
-      if (enTr && card && card.anlam) {
-        var kucuk = yazilan.toLocaleLowerCase("tr-TR");
-        var anlamTam = card.anlam.trim().toLocaleLowerCase("tr-TR");
-        var parcalar = anlamTam.split(/[,;/()]+/).map(function(s) { return s.trim(); }).filter(Boolean);
-        dogruMu = (kucuk === anlamTam) || parcalar.indexOf(kucuk) !== -1 || (yazilan.toLowerCase() === dogru.toLowerCase());
-      } else {
-        dogruMu = (yazilan.toLowerCase().replace(/\s+/g, " ") === dogru.toLowerCase().replace(/\s+/g, " "));
-      }
-      if (dogruMu) {
-        pvGecisZamanlayiciTemizle();
-        inp.style.borderColor = "#16a34a";
-        inp.style.background = "#dcfce7";
-        kelimeOku(dogru);
-        if (fb && card && card.ornek) {
-          fb.style.display = "block";
-          fb.innerHTML = "✅ <b>" + escHtml(dogru) + " (" + escHtml(card.anlam) + "):</b> " + ornekBicimlendir(card.ornek);
-        }
-        PV_GECIS_TIMER = setTimeout(function() {
-          PV_GECIS_TIMER = null;
-          PV_SON_SORU_ANAHTARI = "";
-          PV_OKUNAN_KART = "";
-          PV_SECENEKLER_CACHE = { key: "", list: [] };
-          PV_INDEX++;
-          pvCiz();
-        }, QUIZ_CORRECT_DELAY_MS);
-      } else {
-        inp.style.borderColor = "#ef4444";
-        if (fb && card && card.ornek) {
-          fb.style.display = "block";
-          fb.innerHTML = "💡 <b>Example (" + escHtml(dogru) + "):</b> " + ornekBicimlendir(card.ornek);
-        }
-        var ipucu = (enTr && card && card.anlam) ? card.anlam.trim() : dogru;
-        bildirimGoster("❌ Hint: starts with '" + ipucu.slice(0, 3) + "...'");
-      }
-    }
-
-    function pvClozeCiz(box, deck, card, tumu) {
-      var pct = Math.round(((PV_INDEX + 1) / deck.length) * 100);
-      var ayrilmis = ornekCumleyiAyir(card.ornek);
-      var gizliCumle = pvCumledeGizle(ayrilmis.en, card.kelime);
-      var secenekler = pvSecenekleriUret(card, tumu);
-
-      var btnHtml = [];
-      for (var i = 0; i < secenekler.length; i++) {
-        var sc = secenekler[i];
-        btnHtml.push(
-          '<button class="choice-btn" onclick="pvClozeSecenekSec(this, \'' + escJs(sc.kelime) + '\', \'' + escJs(card.kelime) + '\')">' +
-            (i + 1) + '. ' + escHtml(sc.kelime) +
-          '</button>'
-        );
-      }
-
-      box.innerHTML =
-        '<div class="fc-top">' +
-          '<span>Question <b>' + (PV_INDEX + 1) + ' / ' + deck.length + '</b></span>' +
-          '<button class="btn" style="height:28px;padding:0 10px;" onclick="pvKaristir()" title="Shuffle questions">🔀 Shuffle</button>' +
-        '</div>' +
-        '<div class="fc-progress-track"><div class="fc-progress-bar" style="width:' + pct + '%;"></div></div>' +
-        '<div class="study-box">' +
-          '<div class="fc-badges">' +
-            '<div class="fc-badge-group">' +
-              '<span class="fc-lvl-badge">' + escHtml(card.seviye) + '</span>' +
-              '<span class="fc-type-badge">Phrasal Verb</span>' +
-            '</div>' +
-            '<button class="btn" onclick="kelimeOku(\'' + escJs(card.kelime) + '\')" title="Audio Hint">🔊 Audio Hint</button>' +
-          '</div>' +
-          '<div class="cloze-sentence">' + gizliCumle + '</div>' +
-          '<div class="cloze-hint">' +
-            '<div>💡 <b>Meaning:</b> ' + escHtml(card.anlam) + '</div>' +
-            (ayrilmis.tr ? '<div style="margin-top:3px;color:#135c37;">🇹🇷 <i>(' + escHtml(ayrilmis.tr) + ')</i></div>' : '') +
-          '</div>' +
-          '<div class="choice-grid">' + btnHtml.join("") + '</div>' +
-          '<div class="type-row">' +
-            '<input type="text" id="pvClozeTypeInput" class="type-inp" placeholder="Or type the missing phrasal verb here and press Enter..." onkeydown="if(event.key===\'Enter\') pvClozeYazKontrol(\'' + escJs(card.kelime) + '\')">' +
-            '<button class="fc-btn fc-btn-known" onclick="pvClozeYazKontrol(\'' + escJs(card.kelime) + '\')">Check ↵</button>' +
-          '</div>' +
-          '<div id="pvClozeFeedbackBox" style="display:none;margin-top:12px;" class="fc-example" onclick="ornekOku(\'' + escJs(card.ornek) + '\', this)" title="Click to listen to the example sentence"></div>' +
-        '</div>' +
-        '<div class="fc-controls">' +
-          '<button class="fc-btn" onclick="pvDegistir(-1)">← Previous</button>' +
-          '<button class="fc-btn" onclick="pvDegistir(1)">Skip →</button>' +
-        '</div>';
-    }
-
-    function pvClozeSecenekSec(btnEl, secilen, dogru) {
-      if (PV_GECIS_TIMER) return;
-      var card = pvKartBul(dogru);
-      var fb = document.getElementById("pvClozeFeedbackBox");
-      if (secilen.toLowerCase() === dogru.toLowerCase()) {
-        pvGecisZamanlayiciTemizle();
-        btnEl.classList.add("correct");
-        var blankEl = document.getElementById("pvClozeBlankEl");
-        if (blankEl) blankEl.innerText = dogru;
-        if (fb && card && card.ornek) {
-          fb.style.display = "block";
-          fb.style.borderColor = "#22c55e";
-          fb.style.background = "#f0fdf4";
-          fb.innerHTML = "✅ <b>" + escHtml(dogru) + ":</b> " + ornekBicimlendir(card.ornek);
-        }
-        kelimeOku(dogru);
-        PV_GECIS_TIMER = setTimeout(function() {
-          PV_GECIS_TIMER = null;
-          PV_SON_SORU_ANAHTARI = "";
-          PV_OKUNAN_KART = "";
-          PV_SECENEKLER_CACHE = { key: "", list: [] };
-          PV_INDEX++;
-          pvCiz();
-        }, QUIZ_CORRECT_DELAY_MS);
-      } else {
-        btnEl.classList.add("wrong");
-        bildirimGoster("❌ Not '" + secilen + "'! Try again.");
-      }
-    }
-
-    function pvClozeYazKontrol(dogru) {
-      if (PV_GECIS_TIMER) return;
-      var inp = document.getElementById("pvClozeTypeInput");
-      if (!inp) return;
-      var yazilan = inp.value.trim();
-      if (!yazilan) return;
-      var card = pvKartBul(dogru);
-      var fb = document.getElementById("pvClozeFeedbackBox");
-      if (yazilan.toLowerCase().replace(/\s+/g, " ") === dogru.toLowerCase().replace(/\s+/g, " ")) {
-        pvGecisZamanlayiciTemizle();
-        inp.style.borderColor = "#16a34a";
-        inp.style.background = "#dcfce7";
-        var blankEl = document.getElementById("pvClozeBlankEl");
-        if (blankEl) blankEl.innerText = dogru;
-        if (fb && card && card.ornek) {
-          fb.style.display = "block";
-          fb.style.borderColor = "#22c55e";
-          fb.style.background = "#f0fdf4";
-          fb.innerHTML = "✅ <b>" + escHtml(dogru) + ":</b> " + ornekBicimlendir(card.ornek);
-        }
-        kelimeOku(dogru);
-        PV_GECIS_TIMER = setTimeout(function() {
-          PV_GECIS_TIMER = null;
-          PV_SON_SORU_ANAHTARI = "";
-          PV_OKUNAN_KART = "";
-          PV_SECENEKLER_CACHE = { key: "", list: [] };
-          PV_INDEX++;
-          pvCiz();
-        }, QUIZ_CORRECT_DELAY_MS);
-      } else {
-        inp.style.borderColor = "#ef4444";
-        bildirimGoster("❌ Hint: starts with '" + dogru.slice(0, 3) + "...'");
-      }
-    }
-
-    /** Update the workspace from the same word counts used by the library. */
     function updateWorkspaceOverview(total, mastered) {
       var percent = total ? Math.round(mastered / total * 100) : 0;
       document.getElementById("masteryPercent").innerHTML = percent + "<span>%</span>";
       document.getElementById("masteryFill").style.width = percent + "%";
       document.getElementById("masteryProgress").setAttribute("aria-valuenow", percent);
-      document.getElementById("masteryCaption").textContent = mastered + " of " + total + " words mastered";
+      document.getElementById("masteryCaption").textContent = mastered + " of " + total + (PHRASAL ? " phrasal verbs mastered" : " words mastered");
       updateWorkspaceHeading();
     }
 
     /** Keep page context and navigation accessible across library and study views. */
     function updateWorkspaceHeading() {
-      var pvMod = typeof PV_MOD !== "undefined" ? PV_MOD : "list";
-      var isPvList = AKTIF_SEKME === "phrasalVerbs" && (pvMod === "list" || pvMod === "learning" || pvMod === "known");
-      var isPvPool = AKTIF_SEKME === "phrasalVerbs" && pvMod === "pool";
-      var isStudy = AKTIF_SEKME === "flashcards" || (AKTIF_SEKME === "phrasalVerbs" && !isPvList && !isPvPool);
-      document.querySelector(".workspace-panel").classList.toggle("words-panel", AKTIF_SEKME === "sheet1" || isPvList);
+      var isStudy = AKTIF_SEKME === "flashcards";
+      document.querySelector(".workspace-panel").classList.toggle("words-panel", AKTIF_SEKME === "sheet1");
       document.querySelector(".workspace-panel").classList.toggle("study-panel", isStudy);
       document.querySelector(".main-content").classList.toggle("study-layout", isStudy);
-      var views = {sheet1:"All words", sheetHavuz:"Word pool", phrasalVerbs:"All phrasal verbs", pool:"Still learning", knownPool:"Already known", learnedPool:"Learned", stats:"Statistics"};
+      var views = {sheet1:PHRASAL ? "All phrasal verbs" : "All words", sheetHavuz:PHRASAL ? "Phrasal verb pool" : "Word pool", pool:"Still learning", knownPool:"Already known", learnedPool:"Learned", stats:"Statistics"};
       var modes = {flashcards:"Flashcards", cloze:"Fill in the blank", quiz:"Quiz", confusables:"Similar words", listen:"Listening", match:"Word match"};
       var title = views[AKTIF_SEKME] || modes[AKTIF_MOD] || "Practice";
-      if (AKTIF_SEKME === "phrasalVerbs") {
-        var pvModeTitles = {list:"All phrasal verbs", pool:"Phrasal pool", learning:"Still learning", known:"Already known", flashcards:"Flashcards", quiz:"Quiz", cloze:"Fill in the blank"};
-        title = pvModeTitles[pvMod] || "All phrasal verbs";
-      }
       document.getElementById("workspaceTitle").textContent = title;
       document.getElementById("breadcrumbLabel").textContent = title;
       document.getElementById("addWordToggleBtn").hidden = AKTIF_SEKME !== "sheet1";
-      var addPvBtn = document.getElementById("addPvToggleBtn");
-      if (addPvBtn) addPvBtn.hidden = !isPvList;
-      document.getElementById("mainContent").classList.toggle("library-layout", AKTIF_SEKME === "sheet1");
+      var main = document.getElementById("mainContent");
+      main.classList.toggle("library-layout", AKTIF_SEKME === "sheet1");
+      main.classList.toggle("filterable-layout", !isStudy && AKTIF_SEKME !== "stats");
       document.querySelectorAll(".side-nav-btn").forEach(function(button) {
         if (button.classList.contains("active-mode")) button.setAttribute("aria-current", "page");
         else button.removeAttribute("aria-current");
@@ -7498,13 +5677,14 @@
 
     /** Show the number of matching rows rather than the unfiltered collection size. */
     function updateVisibleResultCount() {
-      var bodies = {sheet1:"sheet1Body", sheetHavuz:"sheetHavuzBody", phrasalVerbs:"phrasalVerbsBody", pool:"poolBody", knownPool:"knownPoolBody", learnedPool:"learnedPoolBody", stats:"statsBody"};
+      var bodies = {sheet1:"sheet1Body", sheetHavuz:"sheetHavuzBody", pool:"poolBody", knownPool:"knownPoolBody", learnedPool:"learnedPoolBody", stats:"statsBody"};
       var body = document.getElementById(bodies[AKTIF_SEKME]);
       var count = body ? body.querySelectorAll("tr > td:first-child:not([colspan])").length : 0;
       document.getElementById("clearFiltersBtn").hidden = !document.getElementById("searchInput").value.trim() && document.getElementById("levelFilter").value === "ALL";
       var result = document.getElementById("resultCount");
       result.hidden = !body;
-      result.textContent = count + (AKTIF_SEKME === "stats" ? (count === 1 ? " record" : " records") : (count === 1 ? " word" : " words"));
+      var unit = AKTIF_SEKME === "stats" ? "record" : PHRASAL ? "phrasal verb" : "word";
+      result.textContent = count + " " + unit + (count === 1 ? "" : "s");
     }
 
     /** Clear both library filters and persist the updated preference. */
@@ -7517,7 +5697,7 @@
 
     document.addEventListener("keydown", function(event) {
       var isEditing = /^(INPUT|SELECT|TEXTAREA)$/.test(event.target.tagName) || event.target.isContentEditable;
-      if (event.key === "/" && !isEditing && AKTIF_SEKME === "sheet1") { event.preventDefault(); document.getElementById("searchInput").focus(); }
+      if (event.key === "/" && !isEditing && document.getElementById("mainContent").classList.contains("filterable-layout")) { event.preventDefault(); document.getElementById("searchInput").focus(); }
       if (event.key === "Escape") { mobilMenuKapat(); document.getElementById("settingsMenu").open = false; }
     });
 
@@ -7526,25 +5706,107 @@
       if (!settings.contains(event.target)) settings.open = false;
     });
 
-    // Restore all saved button/tab/filter preferences, then render and live sync from Google Sheet
-    syncMobileNavigation();
+    function savedValue(key, fallback) {
+      try {
+        var value = JSON.parse(localStorage.getItem(key));
+        if (value == null || (Array.isArray(fallback) && !Array.isArray(value))) return fallback;
+        return value;
+      } catch (e) { return fallback; }
+    }
+
+    function mergeLibrary(preferred, extra) {
+      var seen = new Set();
+      return preferred.concat(extra).filter(function(item) {
+        var key = item && (item.kelime || "").trim().toLowerCase();
+        if (!key || seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      });
+    }
+
+    function loadLocalLibrary() {
+      var words = mergeLibrary(yerelOnbellekAl("kelime_son_sheet_words_v1") || [], WORD_LIBRARY);
+      if (PHRASAL) {
+        var active = new Set(savedValue("kelime_pv_active_v1", PHRASAL_VERBS_LIST.filter(function(item) { return item.starter; }).map(function(item) {
+          return item.kelime.toLowerCase();
+        })));
+        var oldWords = words.concat(savedValue("kelime_kisisel_eklenen_v1", [])).filter(function(item) {
+          return item && /phrasal/i.test(item.tur || "");
+        });
+        BASE_WORDS = mergeLibrary(savedValue("kelime_pv_custom_v1", []), oldWords.concat(PHRASAL_VERBS_LIST.filter(function(item) {
+          return active.has(item.kelime.toLowerCase());
+        })));
+        HAVUZ_KELIMELER = PHRASAL_VERBS_LIST;
+      } else {
+        BASE_WORDS = words;
+        HAVUZ_KELIMELER = mergeLibrary(yerelOnbellekAl("kelime_son_havuz_v1") || [], WORD_POOL.map(function(pair) {
+          return { seviye: pair[0], kelime: pair[1] };
+        }));
+      }
+      listeyiBirlestirVeHazirla(BASE_WORDS, true);
+    }
+
+    function importPreviousProgress() {
+      if (!PHRASAL && typeof previousWordProgress !== "undefined" && !localStorage.getItem("vocabulary_progress_imported_v1")) {
+        var stats = istatistikMapAl();
+        Object.keys(previousWordProgress.stats).forEach(function(key) {
+          var previous = previousWordProgress.stats[key];
+          var current = stats[key] || {};
+          stats[key] = Object.assign({}, previous, current, {
+            correct: Math.max(previous.correct || 0, current.correct || 0),
+            mistakes: Math.max(previous.mistakes || 0, current.mistakes || 0)
+          });
+        });
+        localStorage.setItem(collectionKey("kelime_istatistik_v1"), JSON.stringify(stats));
+        var states = Object.assign({}, previousWordProgress.states, kisiselDurumlariAl());
+        localStorage.setItem(collectionKey("kelime_kisisel_durum_v1"), JSON.stringify(states));
+        localStorage.setItem("vocabulary_progress_imported_v1", "1");
+      }
+      if (PHRASAL && !localStorage.getItem(collectionKey("kelime_kisisel_durum_v1"))) {
+        localStorage.setItem(collectionKey("kelime_kisisel_durum_v1"), JSON.stringify(savedValue("kelime_pv_durum_v1", {})));
+      }
+    }
+
+    function startVocabulary() {
+      try {
+        importPreviousProgress();
+      } catch (error) {
+        document.getElementById("syncText").textContent = "Storage unavailable";
+        bildirimGoster("Could not load saved progress in this browser.");
+      }
+      syncMobileNavigation();
+      tercihleriYukleVeUygula();
+      sekmeButonlariniGuncelle();
+      if (PHRASAL) {
+        document.querySelector("#topBtn-sheet1 .nav-label").lastChild.textContent = "All phrasal verbs";
+        document.querySelector("#topBtn-sheetHavuz .nav-label").lastChild.textContent = "Phrasal verb pool";
+        document.getElementById("addWordLabel").textContent = "Add phrasal verb";
+        document.getElementById("totalItemsLabel").textContent = "Total phrasal verbs";
+        document.getElementById("poolWordsTitle").textContent = "Phrasal verbs";
+        document.getElementById("knownPoolViewWordsTitle").textContent = "Already known phrasal verbs";
+        document.getElementById("learnedPoolViewWordsTitle").textContent = "Learned phrasal verbs";
+        document.getElementById("inKelime").placeholder = "Phrasal verb (e.g. Bring up)";
+        document.getElementById("inKelime").setAttribute("aria-label", "English phrasal verb");
+        document.querySelectorAll(".sheet-table th").forEach(function(heading) {
+          if (heading.textContent.startsWith("Word")) heading.textContent = heading.textContent.replace("Word", "Phrasal verb");
+        });
+        document.getElementById("inTur").value = "Phrasal Verb";
+        document.getElementById("inTur").disabled = true;
+        document.getElementById("searchInput").placeholder = "Search phrasal verbs, meanings, or examples…";
+      }
+      loadLocalLibrary();
+    }
+
     window.matchMedia("(max-width: 820px)").addEventListener("change", mobilMenuKapat);
-    tercihleriYukleVeUygula();
-    var onbellekHavuz = yerelOnbellekAl("kelime_son_havuz_v1");
-    if (onbellekHavuz) {
-      HAVUZ_KELIMELER = onbellekHavuz;
-    }
-    var onbellekWords = yerelOnbellekAl("kelime_son_sheet_words_v1");
-    if (onbellekWords) {
-      SHEET_KELIMELER = onbellekWords;
-      listeyiBirlestirVeHazirla(SHEET_KELIMELER, false);
+    // A file opened on the owner's computer may carry a private, one-time migration.
+    if (location.protocol === "file:" && !PHRASAL && !savedValue("vocabulary_progress_imported_v1", false)) {
+      var migration = document.createElement("script");
+      migration.src = "private/progress.js";
+      migration.onload = migration.onerror = startVocabulary;
+      document.head.appendChild(migration);
     } else {
-      listeyiBirlestirVeHazirla(FALLBACK_WORDS, false);
+      startVocabulary();
     }
-    verileriYukle(false);
-    setInterval(canliVerileriGuncelle, CANLI_SENKRON_ARALIGI_MS);
-    document.addEventListener("visibilitychange", canliVerileriGuncelle);
-    window.addEventListener("focus", canliVerileriGuncelle);
 
     window.addEventListener("pagehide", function() {
       if (AKTIF_SEKME === "flashcards") {
@@ -7561,7 +5823,8 @@
       }
     });
     window.addEventListener("storage", function(e) {
-      if (e && e.key === "kelime_istatistik_v1") {
+      if (e && [collectionKey("kelime_istatistik_v1"), collectionKey("kelime_kisisel_durum_v1"), collectionKey("kelime_kisisel_eklenen_v1")].includes(e.key)) {
+        loadLocalLibrary();
         istatistikTablosuCiz();
       }
     });

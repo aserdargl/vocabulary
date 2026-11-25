@@ -6,7 +6,6 @@ const { test } = require('node:test');
 const html = fs.readFileSync('index.html', 'utf8');
 const script = html.match(/<script>([\s\S]*?)<\/script>/)[1];
 const functions = script.match(/^    function \w+\([^\n]*\) \{[\s\S]*?^    \}/gm).join('\n');
-const backend = fs.readFileSync('Code.gs', 'utf8');
 const day = 86400000;
 const initialTime = +new Date(2026, 0, 1, 12);
 
@@ -40,7 +39,7 @@ function createApp(storage = new Map(), startTime = initialTime) {
     window: {},
     setTimeout: (fn, delay) => { timers.set(++timerId, { fn, delay }); return timerId; },
     clearTimeout: id => timers.delete(id),
-    TUM_KELIMELER: [], SHEET_KELIMELER: [], SON_YEREL_DEGISIM: {},
+    TUM_KELIMELER: [], BASE_WORDS: [], PHRASAL: false,
     MASTERED_REVIEW_DAYS: [30], REVIEW_LEARNING_BATCH: 3,
     REVIEW_DAY_MS: day, HEDEF_SAYI: 4, HEDEF_BIRIM: 'hafta',
     FC_SHUFFLED_KEYS: null, FC_INDEX: 0, FC_FLIPPED: false, FC_OKUNAN_KART: '',
@@ -48,14 +47,11 @@ function createApp(storage = new Map(), startTime = initialTime) {
     QUIZ_BEKLEYEN_ILERLEME: null, SON_CIZILEN_SORU_ANAHTARI: '',
     AKTIF_MOD: 'quiz', AKTIF_SEKME: 'sheet1', SES_ACIK: true,
     YAZI_BOYUTU: 13, BILINENLERI_GOSTER: true,
-    IKIZ_SOZLUK_HARITASI: {}, CANLI_SENKRON_ARALIGI_MS: 60000, SON_CANLI_SENKRON: 0,
+    IKIZ_SOZLUK_HARITASI: {},
     SECENEKLER_CACHE: { key: '', list: [] }, CALISMA_CEVAPLARI: {},
-    APPS_SCRIPT_URL: '', QUIZ_GECIS_TIMER: null, QUIZ_CORRECT_DELAY_MS: 30000,
-    OGRENME_SENKRON_TIMER: null, MATCH_DURUM: { seciliEn: null, seciliTr: null, eslesenler: {}, trSira: [], keySet: '' },
-    PHRASAL_VERBS_LIST: [], PV_MOD: 'list', PV_INDEX: 0, PV_FLIPPED: false,
-    PV_SHUFFLED_KEYS: null, PV_GECIS_TIMER: null, PV_SECENEKLER_CACHE: { key: '', list: [] },
-    PV_OKUNAN_KART: '', PV_SON_SORU_ANAHTARI: '', PV_PRATIK_TUMU: false, PV_VERB_FORMS: {},
-    PV_HAVUZ_SECILENLER: {}, PV_STARTER_COUNT: 15
+    QUIZ_GECIS_TIMER: null, QUIZ_CORRECT_DELAY_MS: 30000,
+    MATCH_DURUM: { seciliEn: null, seciliTr: null, eslesenler: {}, trSira: [], keySet: '' },
+    PHRASAL_VERBS_LIST: [], WORD_LIBRARY: [], WORD_POOL: []
   });
   vm.runInContext(functions, app);
   app.renderCount = 0;
@@ -75,7 +71,7 @@ function addWord(app, status = 'bilmiyorum', name = 'Recall', level = 'B2') {
     tarih: '', tur: 'Verb', okunus: '', durum: status, anlam: 'hatırlamak', ornek: '',
     biliyorum: status === 'biliyorum', bilmiyorum: status === 'bilmiyorum' };
   app.TUM_KELIMELER.push(word);
-  app.SHEET_KELIMELER.push({ ...word });
+  app.BASE_WORDS.push({ ...word });
   return word;
 }
 
@@ -328,7 +324,7 @@ for (const mode of ['flashcards', 'quiz']) {
   });
 }
 
-test('unchanged background sync preserves typed answers and feedback', () => {
+test('unchanged background reload preserves typed answers and feedback', () => {
   const app = studyApp('quiz'); const word = addWord(app);
   app.listeyiBirlestirVeHazirla([word], true); app.document.getElementById('fcContainer').innerHTML += '<div>feedback</div>';
   app.document.getElementById('quizTypeInput').value = 'partial'; const count = app.renderCount;
@@ -383,22 +379,6 @@ test('learning progress shows first-seen, mandatory duration, and separate statu
   assert.match(html, /id="learnedPoolView"/); assert.match(html, /id="knownPoolView"/);
 });
 
-test('newer server state wins without restoring deleted review fields or overwriting the earliest first-seen', () => {
-  const app = createApp();
-  app.istatistikMapKaydet({ recall: { learningVersion: 2, learningUpdatedAt: 10, firstSeenOn: '2025-01-01', learned: true, nextReviewAt: 999 } });
-  app.sunucuIstatistikleriniBirlestir({ recall: { learningVersion: 2, learningUpdatedAt: 20, firstSeenOn: '2026-01-01', learned: false, trainingStartedOn: '2026-01-01' } });
-  const st = app.istatistikMapAl().recall;
-  assert.equal(st.learned, false); assert.equal(st.nextReviewAt, undefined); assert.equal(st.firstSeenOn, '2025-01-01');
-});
-
-test('live refresh is throttled to a minute and waits while hidden', () => {
-  const app = createApp(); let syncs = 0;
-  app.verileriYukle = () => { syncs++; app.SON_CANLI_SENKRON = app.Date.now(); };
-  app.canliVerileriGuncelle(); app.canliVerileriGuncelle(); assert.equal(syncs, 1);
-  app.advance(1); app.document.hidden = true; app.canliVerileriGuncelle(); assert.equal(syncs, 1);
-  app.document.hidden = false; app.canliVerileriGuncelle(); assert.equal(syncs, 2);
-});
-
 test('an obsolete audio failure cannot speak over the current word', async () => {
   const app = createApp(); vm.runInContext(functions.match(/^    function kelimeOku\([^\n]*\) \{[\s\S]*?^    \}/m)[0], app);
   const requests = []; const spoken = [];
@@ -408,113 +388,106 @@ test('an obsolete audio failure cannot speak over the current word', async () =>
   requests[1].fail(); await Promise.resolve(); assert.deepEqual(spoken, ['Second']);
 });
 
-test('the Apps Script interface matches index.html and both scripts parse', () => {
-  new vm.Script(script); const app = vm.createContext({}); vm.runInContext(backend, app);
-  assert.equal(app.uygulamaHtmlGetir(), html);
+test('the standalone entry point parses and has no Sheets runtime', () => {
+  new vm.Script(script);
+  assert.doesNotMatch(html, /docs\.google\.com\/spreadsheets|script\.google\.com|google\.script\.run/);
 });
 
-function createServer() {
-  const sheets = new Map();
-  class Sheet {
-    constructor(name) { this.name = name; this.rows = []; }
-    getLastRow() { let n = this.rows.length; while (n && !(this.rows[n - 1] || []).some(v => v !== '' && v !== undefined)) n--; return n; }
-    getLastColumn() { return 12; }
-    getName() { return this.name; }
-    setFrozenRows() {} setColumnWidth() {} hideColumns() {}
-    getRange(row, col, height = 1, width = 1) {
-      const sheet = this;
-      const range = {
-        getValues: () => Array.from({length: height}, (_, y) => Array.from({length: width}, (_, x) => sheet.rows[row + y - 1]?.[col + x - 1] ?? '')),
-        getDisplayValues: () => range.getValues().map(r => r.map(v => typeof v === 'boolean' ? String(v).toUpperCase() : String(v))),
-        getDisplayValue: () => range.getDisplayValues()[0][0],
-        getValue: () => range.getValues()[0][0],
-        setValues(values) {
-          assert.equal(values.length, height); values.forEach((r, y) => {
-            assert.equal(r.length, width); sheet.rows[row + y - 1] ||= [];
-            r.forEach((value, x) => { sheet.rows[row + y - 1][col + x - 1] = value; });
-          }); return range;
-        },
-        setValue: value => range.setValues([[value]]),
-        setFormulas: values => range.setValues(values),
-        clearContent: () => range.setValues(Array.from({length: height}, () => Array(width).fill(''))),
-        setBackground: () => range, setFontColor: () => range, setFontWeight: () => range
-      };
-      return range;
-    }
+test('local collection loading preserves cached and added words alongside bundled words', () => {
+  const app = createApp();
+  app.WORD_LIBRARY = [{kelime: 'Recall'}, {kelime: 'New'}];
+  app.localStorage.setItem('kelime_son_sheet_words_v1', JSON.stringify([{row: 30, kelime:'Recall', anlam:'hatırlamak'}]));
+  app.kisiselEklenenKaydet([{kelime:'Custom'}]);
+  app.loadLocalLibrary();
+  assert.deepEqual(Array.from(app.TUM_KELIMELER, w => [w.row, w.kelime]), [[2,'Recall'], [3,'New'], [4,'Custom']]);
+  assert.equal(app.TUM_KELIMELER[0].anlam, 'hatırlamak');
+});
+
+test('phrasal practice uses the shared learning rules with its own marks and history', () => {
+  const storage = new Map();
+  const app = createApp(storage);
+  addWord(app, 'bilmiyorum', 'Call off');
+  app.kutucukDegisti(2, 'biliyorum', true, true);
+  app.PHRASAL = true;
+  app.PHRASAL_VERBS_LIST = [{kelime:'Call off', tur:'Phrasal Verb'}, {kelime:'Bring up', tur:'Phrasal Verb'}];
+  app.localStorage.setItem('kelime_pv_active_v1', '["call off"]');
+  app.loadLocalLibrary();
+  const phrase = app.TUM_KELIMELER[0];
+  assert.equal(phrase.durum, 'bilmiyorum');
+  assert.equal(app.TUM_KELIMELER.length, 1);
+  answer(app, phrase);
+  assert.equal(app.istatistikMapAl()['call off'].correct, 1);
+  app.PHRASAL = false;
+  assert.equal(app.kisiselDurumlariAl()['call off'], 'biliyorum');
+  assert.equal(app.istatistikMapAl()['call off'].correct || 0, 0);
+});
+
+test('the standalone phrasal catalogue supports pool transfer and cloze practice at every supplied level', async () => {
+  const app = createApp();
+  app.PHRASAL = true;
+  vm.runInContext(fs.readFileSync('library-data.js', 'utf8'), app);
+  vm.runInContext(script.match(/    var PV_VERB_FORMS = [\s\S]*?^    \};/m)[0], app);
+  app.loadLocalLibrary();
+  const pool = app.HAVUZ_KELIMELER;
+  assert.equal(new Set(pool.map(item => item.kelime.toLowerCase())).size, pool.length);
+  assert.deepEqual(Array.from(app.TUM_KELIMELER, item => item.kelime), Array.from(pool.filter(item => item.starter), item => item.kelime));
+  assert.ok(pool.length > app.TUM_KELIMELER.length);
+  for (const item of pool) {
+    const enriched = await app.kelimeBilgileriniZenginlestir(item.kelime, item.seviye);
+    assert.equal(enriched.anlam, item.anlam);
+    const {en, tr} = app.ornekCumleyiAyir(enriched.ornek);
+    assert.ok(tr && enriched.anlam);
+    assert.match(app.cumledeKelimeyiGizle(en, item.kelime), /data-answer=/, item.kelime);
   }
-  const ss = { getSheetByName: name => sheets.get(name) || null,
-    insertSheet: name => { const sheet = new Sheet(name); sheets.set(name, sheet); return sheet; },
-    getSheets: () => [...sheets.values()], getUrl: () => 'https://example.test/sheet' };
-  const words = ss.insertSheet('Words');
-  words.rows = [[], ['', '2026-01-01', 'Recall', '', '', 'Verb', 'B2', 'hatırlamak', '', '', false, true]];
-  const server = vm.createContext({ SpreadsheetApp: { getActiveSpreadsheet: () => ss, flush() {} },
-    LockService: { getScriptLock: () => ({ waitLock() {}, releaseLock() {} }) },
-    Utilities: { formatDate: () => '2026-01-01 12:00' }, Session: { getScriptTimeZone: () => 'Europe/Istanbul' } });
-  vm.runInContext(backend, server);
-  server.getSheetLayout_ = () => ({startRow:2, date:2, word:3, pron:4, audio:5, type:6, level:7, meaning:8, example:9, status:10, known:11, unknown:12});
-  return { server, ss, words };
-}
-
-test('Google Sheets persists first display, Goal progress, learned status and review dates across a fresh client', () => {
-  const {server, ss} = createServer(); const client = createApp(); const word = addWord(client);
-  client.kelimeGosteriminiKaydet(word);
-  const first = server.istatistikTopluSenkronizeEt(client.istatistikMapAl()).stats.recall;
-  assert.equal(first.firstSeenOn, '2026-01-01'); assert.equal(first.trainingStartedOn, '2026-01-01');
-  answer(client, word);
-  client.advance(1); answer(client, word);
-  client.advance(1); answer(client, word);
-  client.advance(26); answer(client, word);
-  server.istatistikTopluSenkronizeEt(client.istatistikMapAl());
-  const fresh = createApp();
-  fresh.sunucuIstatistikleriniBirlestir(server.istatistikleriOku_(ss));
-  fresh.listeyiBirlestirVeHazirla([{...word, durum:'beklemede', biliyorum:false}], true);
-  const state = fresh.istatistikMapAl().recall;
-  assert.equal(state.learned, true); assert.equal(state.correctDuringGoal, 3);
-  assert.equal(state.correctDays.length, 4); assert.equal(state.consecutiveCorrect, 4);
-  assert.equal(state.firstSeenOn, '2026-01-01'); assert.equal(state.reviewIntervalDays, 30);
-  assert.equal(fresh.TUM_KELIMELER[0].durum, 'ogrenildi');
-  assert.equal(ss.getSheetByName('Mistake Stats').rows[1][10], '2026-01-01');
+  const split = app.cumledeKelimeyiGizle('She wrote the number down.', 'Write down');
+  assert.match(split, /data-answer="wrote"/);
+  assert.match(split, /the number/);
+  assert.match(split, /data-answer="down"/);
 });
 
-test('Google Sheets rejects stale learning snapshots and removes old review fields after demotion', () => {
-  const {server, ss} = createServer();
-  const learned = {learningVersion:2, learningUpdatedAt:10, learned:true, firstSeenOn:'2025-11-01', nextReviewAt:999, correct:5};
-  server.istatistikTopluSenkronizeEt({recall:learned});
-  server.istatistikTopluSenkronizeEt({recall:{learningVersion:2, learningUpdatedAt:20, learned:false, firstSeenOn:'2025-11-01', trainingStartedOn:'2026-01-01', mistakes:1}});
-  server.istatistikTopluSenkronizeEt({recall:learned});
-  const state = server.istatistikleriOku_(ss).recall;
-  assert.equal(state.learned, false); assert.equal(state.nextReviewAt, undefined);
-  assert.equal(state.correct, 5); assert.equal(state.mistakes, 1);
+test('local migration keeps newer browser marks and imports the saved history only once', () => {
+  const app = createApp();
+  app.previousWordProgress = {
+    states: {recall:'biliyorum', preserve:'biliyorum'},
+    stats: {recall:{correct:8, mistakes:2}}
+  };
+  app.kisiselDurumKaydet('Preserve','bilmiyorum');
+  app.istatistikMapKaydet({recall:{correct:2, mistakes:4, firstSeenOn:'2025-10-12'}});
+  app.importPreviousProgress();
+  assert.equal(app.kisiselDurumlariAl().preserve, 'bilmiyorum');
+  assert.equal(app.kisiselDurumlariAl().recall, 'biliyorum');
+  assert.deepEqual({...app.istatistikMapAl().recall}, {correct:8, mistakes:4, firstSeenOn:'2025-10-12'});
+  app.kisiselDurumKaydet('Recall','bilmiyorum');
+  app.importPreviousProgress();
+  assert.equal(app.kisiselDurumlariAl().recall, 'bilmiyorum');
 });
 
-test('retrying the same answer request cannot inflate Google Sheets counters', () => {
-  const {server,ss} = createServer();
-  const entry = {learningVersion:2, learningUpdatedAt:1, firstSeenOn:'2026-01-01', trainingStartedOn:'2026-01-01', correctDuringGoal:1, correct:1, mistakes:0};
-  server.istatistikKaydet('Recall', true, 'Quiz', entry);
-  server.istatistikKaydet('Recall', true, 'Quiz', entry);
-  const saved = server.istatistikleriOku_(ss).recall;
-  assert.equal(saved.correct, 1); assert.equal(saved.correctDuringGoal, 1);
+test('legacy phrasal selection, custom meanings and marks migrate without changing Words', () => {
+  const app = createApp();
+  app.PHRASAL = true;
+  app.PHRASAL_VERBS_LIST = [{kelime:'Call off'}, {kelime:'Bring up'}];
+  app.localStorage.setItem('kelime_pv_active_v1', '["bring up"]');
+  app.localStorage.setItem('kelime_pv_custom_v1', '[{"kelime":"Test out","anlam":"denemek"}]');
+  app.localStorage.setItem('kelime_pv_durum_v1', '{"test out":"biliyorum"}');
+  app.importPreviousProgress();
+  app.loadLocalLibrary();
+  assert.deepEqual(Array.from(app.TUM_KELIMELER, w => w.kelime), ['Test out','Bring up']);
+  assert.equal(app.TUM_KELIMELER[0].durum, 'biliyorum');
+  assert.equal(app.TUM_KELIMELER[0].anlam, 'denemek');
+  assert.equal(app.localStorage.getItem('kelime_kisisel_durum_v1'), null);
 });
 
-test('atomic status changes keep manual Known and Learned separate and reject delayed status writes', () => {
-  const {server,ss,words} = createServer();
-  server.durumGuncelle(2, 'ogrenildi', {learningVersion:2, learningUpdatedAt:10, learned:true, manualKnown:false, correct:5});
-  assert.equal(words.rows[1][10], false); assert.equal(words.rows[1][11], false);
-  assert.equal(server.verileriGetir().words[0].durum, 'ogrenildi');
-  server.durumGuncelle(2, 'bilmiyorum', {learningVersion:2, learningUpdatedAt:20, learned:false, manualKnown:false, mistakes:1});
-  server.durumGuncelle(2, 'ogrenildi', {learningVersion:2, learningUpdatedAt:10, learned:true});
-  assert.equal(words.rows[1][11], true); assert.equal(server.istatistikleriOku_(ss).recall.learned, false);
-  server.durumGuncelle(2, 'biliyorum', {learningVersion:2, learningUpdatedAt:30, learned:false, manualKnown:true});
-  assert.equal(words.rows[1][10], true); assert.equal(server.verileriGetir().words[0].durum, 'biliyorum');
-});
-
-test('first display is scheduled for server sync even before the first answer', async () => {
-  const app = studyApp(); addWord(app); const requests = [];
-  app.APPS_SCRIPT_URL = 'https://example.test';
-  app.fetch = (url, options) => { requests.push(JSON.parse(options.body)); return Promise.resolve({json:()=>Promise.resolve({ok:true})}); };
-  app.tabloyuCiz(); app.runTimer(300); await Promise.resolve();
-  assert.equal(requests[0].action, 'syncStats');
-  assert.equal(requests[0].stats.recall.firstSeenOn, '2026-01-01');
+test('one mark button cycles unknown, known, unknown and survives reload', () => {
+  const storage = new Map(); const app = createApp(storage);
+  const word = addWord(app);
+  const click = () => {
+    const markup = app.durumKutusuHtml(word.row, word.durum);
+    assert.equal((markup.match(/<button/g) || []).length, 1);
+    app.durumSec({closest: () => ({querySelector: () => null}), getAttribute: () => markup.match(/aria-pressed="(true|false)"/)[1]}, word.row);
+  };
+  click(); assert.match(app.durumKutusuHtml(word.row, word.durum), /✓<\/button>/);
+  click(); assert.match(app.durumKutusuHtml(word.row, word.durum), /✕<\/button>/);
+  assert.equal(createApp(storage).kisiselDurumlariAl().recall, 'bilmiyorum');
 });
 
 test('real library rendering keeps manual Known and Learned in different tables with row numbers', () => {
@@ -532,23 +505,12 @@ test('real library rendering keeps manual Known and Learned in different tables 
 });
 
 
-test('stale word status cannot restore Learned after a newer server demotion', () => {
+test('stale word status cannot restore Learned after a newer local demotion', () => {
   const app = createApp(); const word = learnedWord(app);
   const old = {...word}; app.istatistikMapKaydet({recall:{learningVersion:2, learningUpdatedAt:app.Date.now()+1, learned:false, manualKnown:false, firstSeenOn:'2025-11-01', trainingStartedOn:'2026-01-01'}});
   app.listeyiBirlestirVeHazirla([old], true);
   assert.equal(app.TUM_KELIMELER[0].durum, 'bilmiyorum');
   assert.equal(app.aktifHavuzuGetir().length, 1);
-});
-
-test('editing a Known checkbox in Google Sheets also separates it from Learned state', () => {
-  const {server,ss,words} = createServer();
-  server.durumGuncelle(2, 'ogrenildi', {learningVersion:2, learningUpdatedAt:10, learned:true, manualKnown:false});
-  words.rows[1][10] = true;
-  const layout = server.getSheetLayout_(); layout.audio = -1; server.getSheetLayout_ = () => layout;
-  server.onEdit({range:{getSheet:()=>words, getColumn:()=>11, getNumColumns:()=>1, getRow:()=>2, getNumRows:()=>1}});
-  const state = server.istatistikleriOku_(ss).recall;
-  assert.equal(state.manualKnown, true); assert.equal(state.learned, false);
-  assert.equal(server.verileriGetir().words[0].durum, 'biliyorum');
 });
 
 test('the real quiz handler and automatic next question require 3 different days after the Goal when never answered during Goal', () => {
@@ -564,7 +526,7 @@ test('the real quiz handler and automatic next question require 3 different days
   assert.equal(app.aktifHavuzuGetir().length, 0);
 });
 
-test('an unchanged live sync waits for the final check once the Goal expires', () => {
+test('an unchanged local reload waits for the final check once the Goal expires', () => {
   const app = createApp(); const word = addWord(app);
   answer(app, word);
   app.advance(1); answer(app, word);
@@ -576,15 +538,6 @@ test('an unchanged live sync waits for the final check once the Goal expires', (
 });
 
 for (const mode of ['flashcards', 'quiz']) {
-  test(mode + ': opening practice fetches fresh words even immediately after a sync', () => {
-    const app = studyApp(mode); addWord(app);
-    app.SON_CANLI_SENKRON = app.Date.now();
-    let syncs = 0;
-    app.verileriYukle = () => { syncs++; };
-    app.calismaModuAc(mode);
-    assert.equal(syncs, 1);
-    assert.deepEqual(app.spoken, ['Recall']);
-  });
   test(mode + ': automatic pronunciation starts without downloading audio and cancels the old recording', async () => {
     const app = studyApp(mode); addWord(app);
     const utterances = []; let paused = 0;
@@ -612,7 +565,7 @@ test('quiz resumes from the exact question after answering several questions, ex
   app.AKTIF_MOD = 'quiz';
   app.AKTIF_SEKME = 'flashcards';
   app.ikizKarsilastirmaKutusuHtml = () => '';
-  app.mobilMenuKapat = app.sekmeButonlariniGuncelle = app.canliVerileriGuncelle = () => {};
+  app.mobilMenuKapat = app.sekmeButonlariniGuncelle = () => {};
   app.tabloyuCiz = () => { app.renderCount++; app.dortHaftaHatasizKontrolEt(); app.fcCiz(app.aktifHavuzuGetir()); };
   const names = ['Alpha', 'Bravo', 'Charlie', 'Delta', 'Echo', 'Foxtrot'];
   names.forEach(n => addWord(app, 'bilmiyorum', n));
@@ -639,7 +592,7 @@ test('quiz resumes from the exact question after answering several questions, ex
 
   // Simulate full reload from localStorage -> should still resume at Echo (index 4)
   app = createApp(storage);
-  app.mobilMenuKapat = app.sekmeButonlariniGuncelle = app.canliVerileriGuncelle = app.yaziBoyutuUygula = app.sesDurumuUygula = app.hedefHaftaSecicileriGuncelle = () => {};
+  app.mobilMenuKapat = app.sekmeButonlariniGuncelle = app.yaziBoyutuUygula = app.sesDurumuUygula = app.hedefHaftaSecicileriGuncelle = () => {};
   app.tabloyuCiz = () => { app.renderCount++; app.dortHaftaHatasizKontrolEt(); app.fcCiz(app.aktifHavuzuGetir()); };
   names.forEach(n => addWord(app, 'bilmiyorum', n));
   app.tercihleriYukleVeUygula();
@@ -653,7 +606,7 @@ test('words are distributed equally: low-exposure words catch up before high-exp
   app.AKTIF_MOD = 'quiz';
   app.AKTIF_SEKME = 'flashcards';
   app.ikizKarsilastirmaKutusuHtml = () => '';
-  app.mobilMenuKapat = app.sekmeButonlariniGuncelle = app.canliVerileriGuncelle = () => {};
+  app.mobilMenuKapat = app.sekmeButonlariniGuncelle = () => {};
   app.tabloyuCiz = () => { app.renderCount++; app.dortHaftaHatasizKontrolEt(); app.fcCiz(app.aktifHavuzuGetir()); };
 
   // 4 words seen 4 times, 2 words seen 10 times
