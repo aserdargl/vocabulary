@@ -41,14 +41,20 @@ function createApp(storage = new Map(), startTime = initialTime) {
     setTimeout: (fn, delay) => { timers.set(++timerId, { fn, delay }); return timerId; },
     clearTimeout: id => timers.delete(id),
     TUM_KELIMELER: [], SHEET_KELIMELER: [], SON_YEREL_DEGISIM: {},
-    MASTERED_REVIEW_DAYS: [7, 14, 30], REVIEW_LEARNING_BATCH: 3,
+    MASTERED_REVIEW_DAYS: [30], REVIEW_LEARNING_BATCH: 3,
     REVIEW_DAY_MS: day, HEDEF_SAYI: 4, HEDEF_BIRIM: 'hafta',
     FC_SHUFFLED_KEYS: null, FC_INDEX: 0, FC_FLIPPED: false, FC_OKUNAN_KART: '',
+    MOD_KONUMLARI: {}, DENGELI_DESTE_TUR_ADIM: 0, DENGELI_DESTE_MIGRASYON_GEREKLI: false,
+    QUIZ_BEKLEYEN_ILERLEME: null, SON_CIZILEN_SORU_ANAHTARI: '',
     AKTIF_MOD: 'quiz', AKTIF_SEKME: 'sheet1', SES_ACIK: true,
+    YAZI_BOYUTU: 13, BILINENLERI_GOSTER: true,
     IKIZ_SOZLUK_HARITASI: {}, CANLI_SENKRON_ARALIGI_MS: 60000, SON_CANLI_SENKRON: 0,
     SECENEKLER_CACHE: { key: '', list: [] }, CALISMA_CEVAPLARI: {},
-    APPS_SCRIPT_URL: '', QUIZ_GECIS_TIMER: null, QUIZ_CORRECT_DELAY_MS: 1000,
-    OGRENME_SENKRON_TIMER: null, MATCH_DURUM: { seciliEn: null, seciliTr: null, eslesenler: {}, trSira: [], keySet: '' }
+    APPS_SCRIPT_URL: '', QUIZ_GECIS_TIMER: null, QUIZ_CORRECT_DELAY_MS: 30000,
+    OGRENME_SENKRON_TIMER: null, MATCH_DURUM: { seciliEn: null, seciliTr: null, eslesenler: {}, trSira: [], keySet: '' },
+    PHRASAL_VERBS_LIST: [], PV_MOD: 'list', PV_INDEX: 0, PV_FLIPPED: false,
+    PV_SHUFFLED_KEYS: null, PV_GECIS_TIMER: null, PV_SECENEKLER_CACHE: { key: '', list: [] },
+    PV_OKUNAN_KART: '', PV_SON_SORU_ANAHTARI: '', PV_PRATIK_TUMU: false, PV_VERB_FORMS: {}
   });
   vm.runInContext(functions, app);
   app.renderCount = 0;
@@ -77,8 +83,9 @@ function learnedWord(app, name = 'Recall', level = 'B2') {
   const map = app.istatistikMapAl();
   map[name.toLowerCase()] = { learningVersion: 2, learningUpdatedAt: app.Date.now(),
     learned: true, manualKnown: false, firstSeenOn: '2025-11-01', trainingStartedOn: '2025-11-01',
-    correctDuringGoal: 5, correctAfterGoal: 0, correct: 5, mistakes: 0,
-    nextReviewAt: app.Date.now() - 1, reviewIntervalDays: 7 };
+    correctDuringGoal: 5, correctAfterGoal: 1, correctDays: ['2025-11-01', '2025-11-02', '2025-11-03'],
+    consecutiveCorrect: 3, correct: 5, mistakes: 0,
+    nextReviewAt: app.Date.now() - 1, reviewIntervalDays: 30 };
   app.istatistikMapKaydet(map);
   return word;
 }
@@ -126,66 +133,95 @@ test('first-seen date survives reload, later answers and mistakes', () => {
   assert.equal(app.istatistikMapAl().recall.firstSeenOn, '2026-01-01');
 });
 
-test('five or more correct answers during 4 weeks never graduate before the Goal ends', () => {
+test('same-day cramming never graduates; 3 distinct days during Goal require Goal completion plus 1 final check', () => {
   const app = createApp(); const word = addWord(app);
   for (let i = 0; i < 8; i++) answer(app, word);
   assert.equal(word.durum, 'bilmiyorum');
-  assert.equal(app.istatistikMapAl().recall.correctDuringGoal, 8);
-  app.advance(27); app.dortHaftaHatasizKontrolEt();
+  assert.equal(app.istatistikMapAl().recall.correctDays.length, 1);
+  app.advance(1); answer(app, word);
+  app.advance(1); answer(app, word);
+  assert.equal(app.istatistikMapAl().recall.correctDays.length, 3);
+  app.advance(25); app.dortHaftaHatasizKontrolEt();
   assert.equal(word.durum, 'bilmiyorum');
   app.advance(1); app.dortHaftaHatasizKontrolEt();
+  // Goal ended (day 28), but still requires 1 final check after Goal
+  assert.equal(word.durum, 'bilmiyorum');
+  answer(app, word);
   assert.equal(word.durum, 'ogrenildi');
-  assert.equal(app.istatistikMapAl().recall.nextReviewAt, app.Date.now() + 7 * day);
+  assert.equal(app.istatistikMapAl().recall.nextReviewAt, app.Date.now() + 30 * day);
   assert.equal(app.kisiselDurumlariAl().recall, 'ogrenildi');
 });
 
-test('4 weeks with no answers: week 5 needs exactly three correct encounters', () => {
+test('4 weeks with no answers: after Goal ends, requires correct answers on 3 different days', () => {
   const app = createApp(); const word = addWord(app);
   app.kelimeGosteriminiKaydet(word);
   app.advance(35); app.dortHaftaHatasizKontrolEt();
   assert.equal(word.durum, 'bilmiyorum');
-  for (let i = 1; i <= 3; i++) {
-    answer(app, word);
-    assert.equal(word.durum, i === 3 ? 'ogrenildi' : 'bilmiyorum');
-    assert.equal(app.istatistikMapAl().recall.correctAfterGoal, i);
-  }
+  // Multiple answers on the same day only count as 1 distinct day
+  answer(app, word); answer(app, word); answer(app, word);
+  assert.equal(word.durum, 'bilmiyorum');
+  assert.equal(app.istatistikMapAl().recall.correctDays.length, 1);
+  app.advance(1); answer(app, word);
+  assert.equal(word.durum, 'bilmiyorum');
+  assert.equal(app.istatistikMapAl().recall.correctDays.length, 2);
+  app.advance(1); answer(app, word);
+  assert.equal(word.durum, 'ogrenildi');
+  assert.equal(app.istatistikMapAl().recall.correctDays.length, 3);
 });
 
-test('five lifetime answers split across the Goal do not bypass the three later confirmations', () => {
+test('2 distinct days during Goal plus 1 final check on a 3rd day after Goal graduates', () => {
   const app = createApp(); const word = addWord(app);
-  for (let i = 0; i < 3; i++) answer(app, word);
-  app.advance(28);
-  answer(app, word); answer(app, word);
+  answer(app, word);
+  app.advance(2); answer(app, word);
+  app.advance(26);
   assert.equal(word.durum, 'bilmiyorum');
   answer(app, word);
   assert.equal(word.durum, 'ogrenildi');
 });
 
-test('wrong later confirmation resets confirmation count and cannot immediately graduate', () => {
+test('wrong answer resets consecutive streak and final check; requires 2 consecutive correct answers to graduate', () => {
   const app = createApp(); const word = addWord(app);
-  app.kelimeGosteriminiKaydet(word); app.advance(35);
-  answer(app, word); answer(app, word); answer(app, word, false);
+  answer(app, word);
+  app.advance(1); answer(app, word);
+  app.advance(1); answer(app, word);
+  app.advance(26);
+  answer(app, word, false);
+  assert.equal(app.istatistikMapAl().recall.consecutiveCorrect, 0);
   assert.equal(app.istatistikMapAl().recall.correctAfterGoal, 0);
-  answer(app, word); answer(app, word);
+  answer(app, word);
   assert.equal(word.durum, 'bilmiyorum');
-  answer(app, word); assert.equal(word.durum, 'ogrenildi');
+  assert.equal(app.istatistikMapAl().recall.consecutiveCorrect, 1);
+  answer(app, word);
+  assert.equal(word.durum, 'ogrenildi');
 });
 
-test('a recent error prevents automatic graduation at the Goal boundary', () => {
+test('a recent error during Goal prevents graduation on first check after Goal and requires 2 consecutive correct answers', () => {
   const app = createApp(); const word = addWord(app);
-  for (let i = 0; i < 5; i++) answer(app, word);
-  answer(app, word, false); app.advance(28); app.dortHaftaHatasizKontrolEt();
+  answer(app, word);
+  app.advance(1); answer(app, word);
+  app.advance(1); answer(app, word);
+  answer(app, word, false);
+  app.advance(26); app.dortHaftaHatasizKontrolEt();
   assert.equal(word.durum, 'bilmiyorum');
-  answer(app, word); assert.equal(word.durum, 'ogrenildi');
+  answer(app, word);
+  assert.equal(word.durum, 'bilmiyorum');
+  answer(app, word);
+  assert.equal(word.durum, 'ogrenildi');
 });
 
 test('day Goal uses calendar days; changing Goal duration does not rewrite first-seen date', () => {
   const app = createApp(); const word = addWord(app);
   app.HEDEF_BIRIM = 'gun'; app.HEDEF_SAYI = 2;
-  for (let i = 0; i < 5; i++) answer(app, word);
-  app.advance(1); app.dortHaftaHatasizKontrolEt(); assert.equal(word.durum, 'bilmiyorum');
-  app.HEDEF_SAYI = 3; app.advance(1); app.dortHaftaHatasizKontrolEt(); assert.equal(word.durum, 'bilmiyorum');
-  app.advance(1); app.dortHaftaHatasizKontrolEt(); assert.equal(word.durum, 'ogrenildi');
+  answer(app, word);
+  app.advance(1); answer(app, word);
+  app.dortHaftaHatasizKontrolEt(); assert.equal(word.durum, 'bilmiyorum');
+  app.HEDEF_SAYI = 3;
+  app.advance(1); answer(app, word);
+  assert.equal(word.durum, 'bilmiyorum');
+  app.advance(1);
+  assert.equal(word.durum, 'bilmiyorum');
+  answer(app, word);
+  assert.equal(word.durum, 'ogrenildi');
   assert.equal(app.istatistikMapAl().recall.firstSeenOn, '2026-01-01');
 });
 
@@ -203,10 +239,10 @@ for (const mode of ['flashcards', 'quiz', 'cloze', 'listen', 'confusables', 'mat
   });
 }
 
-test('learned words of all levels use 7, 14 and recurring 30-day retention intervals', () => {
+test('learned words of all levels use recurring 30-day monthly retention intervals', () => {
   for (const level of ['A1', 'B1', 'B2', 'C1', 'C2']) {
     const app = createApp(); const word = learnedWord(app, 'Recall', level);
-    for (const interval of [14, 30, 30]) {
+    for (const interval of [30, 30, 30]) {
       const stats = app.istatistikMapAl(); stats.recall.nextReviewAt = app.Date.now() - 1; app.istatistikMapKaydet(stats);
       answer(app, word);
       assert.equal(app.istatistikMapAl().recall.nextReviewAt, app.Date.now() + interval * day);
@@ -218,24 +254,31 @@ test('learned words of all levels use 7, 14 and recurring 30-day retention inter
 
 test('an early correct review never postpones the next review', () => {
   const app = createApp(); const word = learnedWord(app);
-  const stats = app.istatistikMapAl(); stats.recall.nextReviewAt = app.Date.now() + 7 * day; app.istatistikMapKaydet(stats);
+  const stats = app.istatistikMapAl(); stats.recall.nextReviewAt = app.Date.now() + 30 * day; app.istatistikMapKaydet(stats);
   answer(app, word);
-  assert.equal(app.istatistikMapAl().recall.nextReviewAt, app.Date.now() + 7 * day);
+  assert.equal(app.istatistikMapAl().recall.nextReviewAt, app.Date.now() + 30 * day);
 });
 
-test('forgotten Learned word restarts a full Goal while keeping its original first-seen and lifetime counts', () => {
+test('forgotten Learned word restarts a full Goal from scratch while keeping its original first-seen and lifetime counts', () => {
   const app = createApp(); const word = learnedWord(app);
   answer(app, word, false);
   const stats = app.istatistikMapAl().recall;
+  assert.equal(word.durum, 'bilmiyorum');
   assert.equal(stats.trainingStartedOn, '2026-01-01');
   assert.equal(stats.firstSeenOn, '2025-11-01');
+  assert.deepEqual(Array.from(stats.correctDays), []);
+  assert.equal(stats.consecutiveCorrect, 0);
   assert.equal(stats.correct, 5); assert.equal(stats.mistakes, 1);
   assert.equal(stats.nextReviewAt, undefined);
-  for (let i = 0; i < 5; i++) answer(app, word);
+  answer(app, word);
+  app.advance(1); answer(app, word);
+  app.advance(1); answer(app, word);
   assert.equal(word.durum, 'bilmiyorum');
-  app.advance(28); app.dortHaftaHatasizKontrolEt();
+  app.advance(26); app.dortHaftaHatasizKontrolEt();
+  assert.equal(word.durum, 'bilmiyorum');
+  answer(app, word);
   assert.equal(word.durum, 'ogrenildi');
-  assert.equal(app.istatistikMapAl().recall.reviewIntervalDays, 7);
+  assert.equal(app.istatistikMapAl().recall.reviewIntervalDays, 30);
 });
 
 test('manual Known action is separate from learning and is never demoted by a stray exercise callback', () => {
@@ -416,15 +459,18 @@ test('Google Sheets persists first display, Goal progress, learned status and re
   client.kelimeGosteriminiKaydet(word);
   const first = server.istatistikTopluSenkronizeEt(client.istatistikMapAl()).stats.recall;
   assert.equal(first.firstSeenOn, '2026-01-01'); assert.equal(first.trainingStartedOn, '2026-01-01');
-  for (let i = 0; i < 5; i++) answer(client, word);
-  client.advance(28); client.dortHaftaHatasizKontrolEt();
+  answer(client, word);
+  client.advance(1); answer(client, word);
+  client.advance(1); answer(client, word);
+  client.advance(26); answer(client, word);
   server.istatistikTopluSenkronizeEt(client.istatistikMapAl());
   const fresh = createApp();
   fresh.sunucuIstatistikleriniBirlestir(server.istatistikleriOku_(ss));
   fresh.listeyiBirlestirVeHazirla([{...word, durum:'beklemede', biliyorum:false}], true);
   const state = fresh.istatistikMapAl().recall;
-  assert.equal(state.learned, true); assert.equal(state.correctDuringGoal, 5);
-  assert.equal(state.firstSeenOn, '2026-01-01'); assert.equal(state.reviewIntervalDays, 7);
+  assert.equal(state.learned, true); assert.equal(state.correctDuringGoal, 3);
+  assert.equal(state.correctDays.length, 4); assert.equal(state.consecutiveCorrect, 4);
+  assert.equal(state.firstSeenOn, '2026-01-01'); assert.equal(state.reviewIntervalDays, 30);
   assert.equal(fresh.TUM_KELIMELER[0].durum, 'ogrenildi');
   assert.equal(ss.getSheetByName('Mistake Stats').rows[1][10], '2026-01-01');
 });
@@ -470,16 +516,17 @@ test('first display is scheduled for server sync even before the first answer', 
   assert.equal(requests[0].stats.recall.firstSeenOn, '2026-01-01');
 });
 
-test('real library rendering keeps manual Known and Learned in different tables', () => {
-  const app = createApp(); addWord(app, 'biliyorum', 'Manual'); learnedWord(app); addWord(app, 'beklemede', 'Learning');
+test('real library rendering keeps manual Known and Learned in different tables with row numbers', () => {
+  const app = createApp(); addWord(app, 'biliyorum', 'Manual'); addWord(app, 'biliyorum', 'ManualTwo'); learnedWord(app); addWord(app, 'beklemede', 'Learning');
   vm.runInContext(functions.match(/^    function tabloyuCiz\([^\n]*\) \{[\s\S]*?^    \}/m)[0], app);
   app.updateWorkspaceOverview = app.havuzTablosuCiz = app.updateVisibleResultCount = () => {};
   app.tabloyuCiz();
-  assert.match(app.document.getElementById('knownPoolBody').innerHTML, /Manual/);
+  assert.match(app.document.getElementById('knownPoolBody').innerHTML, /<tr class="row-known"><td class="col-row">1<\/td>[\s\S]*Manual/);
+  assert.match(app.document.getElementById('knownPoolBody').innerHTML, /<tr class="row-known"><td class="col-row">2<\/td>[\s\S]*ManualTwo/);
   assert.doesNotMatch(app.document.getElementById('knownPoolBody').innerHTML, /Recall/);
-  assert.match(app.document.getElementById('learnedPoolBody').innerHTML, /Recall/);
+  assert.match(app.document.getElementById('learnedPoolBody').innerHTML, /<tr><td class="col-row">1<\/td>[\s\S]*Recall/);
   assert.doesNotMatch(app.document.getElementById('learnedPoolBody').innerHTML, /Manual/);
-  assert.match(app.document.getElementById('poolBody').innerHTML, /Learning/);
+  assert.match(app.document.getElementById('poolBody').innerHTML, /<tr><td class="col-row">1<\/td>[\s\S]*Learning/);
   assert.doesNotMatch(app.document.getElementById('poolBody').innerHTML, /Recall|Manual/);
 });
 
@@ -503,22 +550,27 @@ test('editing a Known checkbox in Google Sheets also separates it from Learned s
   assert.equal(server.verileriGetir().words[0].durum, 'biliyorum');
 });
 
-test('the real quiz handler and automatic next question require three separate encounters after the Goal', () => {
+test('the real quiz handler and automatic next question require 3 different days after the Goal when never answered during Goal', () => {
   const app = studyApp('quiz'); const word = addWord(app); app.ikizKarsilastirmaKutusuHtml = () => '';
   app.tabloyuCiz(); app.advance(35);
   for (let i = 1; i <= 3; i++) {
+    if (i > 1) app.advance(1);
     app.quizSecenekSec({classList:{add(){}}},word.kelime,word.kelime,word.row);
-    assert.equal(app.istatistikMapAl().recall.correctAfterGoal, i);
+    assert.equal(app.istatistikMapAl().recall.correctDays.length, i);
     assert.equal(word.durum, i === 3 ? 'ogrenildi' : 'bilmiyorum');
-    app.runTimer(1000);
+    app.runTimer(30000);
   }
   assert.equal(app.aktifHavuzuGetir().length, 0);
 });
 
-test('an unchanged live sync graduates five prior successes once the Goal actually expires', () => {
+test('an unchanged live sync waits for the final check once the Goal expires', () => {
   const app = createApp(); const word = addWord(app);
-  for (let i = 0; i < 5; i++) answer(app,word);
-  app.advance(28); app.listeyiBirlestirVeHazirla([{...word}], true);
+  answer(app, word);
+  app.advance(1); answer(app, word);
+  app.advance(1); answer(app, word);
+  app.advance(26); app.listeyiBirlestirVeHazirla([{...word}], true);
+  assert.equal(app.TUM_KELIMELER[0].durum, 'bilmiyorum');
+  answer(app, app.TUM_KELIMELER[0]);
   assert.equal(app.TUM_KELIMELER[0].durum, 'ogrenildi');
 });
 
@@ -552,3 +604,94 @@ for (const mode of ['flashcards', 'quiz']) {
     app.SES_ACIK = false; app.fcDegistir(1); assert.equal(utterances.length, 1);
   });
 }
+
+test('quiz resumes from the exact question after answering several questions, exiting, and reloading', () => {
+  const storage = new Map();
+  let app = createApp(storage);
+  app.AKTIF_MOD = 'quiz';
+  app.AKTIF_SEKME = 'flashcards';
+  app.ikizKarsilastirmaKutusuHtml = () => '';
+  app.mobilMenuKapat = app.sekmeButonlariniGuncelle = app.canliVerileriGuncelle = () => {};
+  app.tabloyuCiz = () => { app.renderCount++; app.dortHaftaHatasizKontrolEt(); app.fcCiz(app.aktifHavuzuGetir()); };
+  const names = ['Alpha', 'Bravo', 'Charlie', 'Delta', 'Echo', 'Foxtrot'];
+  names.forEach(n => addWord(app, 'bilmiyorum', n));
+
+  app.tabloyuCiz();
+  for (let i = 0; i < 3; i++) {
+    const deck = app.fcDestesiniGetir(app.aktifHavuzuGetir());
+    const card = deck[app.FC_INDEX];
+    app.quizSecenekSec({ classList: { add() {} } }, card.kelime, card.kelime, card.row);
+    app.runTimer(30000);
+  }
+  assert.equal(app.FC_INDEX, 3);
+  assert.equal(app.fcDestesiniGetir(app.aktifHavuzuGetir())[app.FC_INDEX].kelime, 'Delta');
+
+  // Answer question 4 and exit immediately BEFORE the 1-second auto-advance timer fires
+  const fourth = app.fcDestesiniGetir(app.aktifHavuzuGetir())[app.FC_INDEX];
+  app.quizSecenekSec({ classList: { add() {} } }, fourth.kelime, fourth.kelime, fourth.row);
+  app.sekmeDegistir('sheet1');
+
+  // Re-enter quiz in the same session -> should resume at Echo (index 4), not Alpha (index 0)
+  app.calismaModuAc('quiz');
+  assert.equal(app.FC_INDEX, 4);
+  assert.equal(app.fcDestesiniGetir(app.aktifHavuzuGetir())[app.FC_INDEX].kelime, 'Echo');
+
+  // Simulate full reload from localStorage -> should still resume at Echo (index 4)
+  app = createApp(storage);
+  app.mobilMenuKapat = app.sekmeButonlariniGuncelle = app.canliVerileriGuncelle = app.yaziBoyutuUygula = app.sesDurumuUygula = app.hedefHaftaSecicileriGuncelle = () => {};
+  app.tabloyuCiz = () => { app.renderCount++; app.dortHaftaHatasizKontrolEt(); app.fcCiz(app.aktifHavuzuGetir()); };
+  names.forEach(n => addWord(app, 'bilmiyorum', n));
+  app.tercihleriYukleVeUygula();
+  app.calismaModuAc('quiz');
+  assert.equal(app.FC_INDEX, 4);
+  assert.equal(app.fcDestesiniGetir(app.aktifHavuzuGetir())[app.FC_INDEX].kelime, 'Echo');
+});
+
+test('words are distributed equally: low-exposure words catch up before high-exposure words repeat', () => {
+  const app = createApp();
+  app.AKTIF_MOD = 'quiz';
+  app.AKTIF_SEKME = 'flashcards';
+  app.ikizKarsilastirmaKutusuHtml = () => '';
+  app.mobilMenuKapat = app.sekmeButonlariniGuncelle = app.canliVerileriGuncelle = () => {};
+  app.tabloyuCiz = () => { app.renderCount++; app.dortHaftaHatasizKontrolEt(); app.fcCiz(app.aktifHavuzuGetir()); };
+
+  // 4 words seen 4 times, 2 words seen 10 times
+  const lowWords = ['Low1', 'Low2', 'Low3', 'Low4'];
+  const highWords = ['High1', 'High2'];
+  [...highWords, ...lowWords].forEach(n => addWord(app, 'bilmiyorum', n));
+  const stats = {};
+  lowWords.forEach(n => { stats[n.toLowerCase()] = { learningVersion: 2, correct: 4, mistakes: 0, seenCount: 4 }; });
+  highWords.forEach(n => { stats[n.toLowerCase()] = { learningVersion: 2, correct: 10, mistakes: 0, seenCount: 10 }; });
+  app.istatistikMapKaydet(stats);
+
+  app.tabloyuCiz();
+  const seenInNext24 = [];
+  for (let step = 0; step < 24; step++) {
+    const deck = app.fcDestesiniGetir(app.aktifHavuzuGetir());
+    const card = deck[app.FC_INDEX];
+    seenInNext24.push(card.kelime);
+    app.quizSecenekSec({ classList: { add() {} } }, card.kelime, card.kelime, card.row);
+    app.runTimer(30000);
+  }
+
+  // During the 24 catch-up steps (4 words * 6 rounds = 24), High1 and High2 must NOT appear
+  assert.ok(!seenInNext24.includes('High1'));
+  assert.ok(!seenInNext24.includes('High2'));
+
+  // All 6 words should now have exact equal exposure count of 10!
+  const finalStats = app.istatistikMapAl();
+  for (const name of [...lowWords, ...highWords]) {
+    assert.equal(app.kelimeGorulmeSayisiAl(name, finalStats), 10);
+  }
+
+  // Next 6 steps should show every single word (including High1 and High2) exactly once
+  const nextRound = [];
+  for (let step = 0; step < 6; step++) {
+    const deck = app.fcDestesiniGetir(app.aktifHavuzuGetir());
+    const card = deck[app.FC_INDEX];
+    nextRound.push(card.kelime);
+    app.quizSecenekSec({ classList: { add() {} } }, card.kelime, card.kelime, card.row);
+    app.runTimer(30000);
+  }
+  assert.equal(new Set(nextRound).size, 6);
+});
