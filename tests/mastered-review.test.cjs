@@ -54,7 +54,8 @@ function createApp(storage = new Map(), startTime = initialTime) {
     OGRENME_SENKRON_TIMER: null, MATCH_DURUM: { seciliEn: null, seciliTr: null, eslesenler: {}, trSira: [], keySet: '' },
     PHRASAL_VERBS_LIST: [], PV_MOD: 'list', PV_INDEX: 0, PV_FLIPPED: false,
     PV_SHUFFLED_KEYS: null, PV_GECIS_TIMER: null, PV_SECENEKLER_CACHE: { key: '', list: [] },
-    PV_OKUNAN_KART: '', PV_SON_SORU_ANAHTARI: '', PV_PRATIK_TUMU: false, PV_VERB_FORMS: {}
+    PV_OKUNAN_KART: '', PV_SON_SORU_ANAHTARI: '', PV_PRATIK_TUMU: false, PV_VERB_FORMS: {},
+    PV_HAVUZ_SECILENLER: {}, PV_STARTER_COUNT: 15
   });
   vm.runInContext(functions, app);
   app.renderCount = 0;

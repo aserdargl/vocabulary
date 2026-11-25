@@ -1754,6 +1754,28 @@
     #phrasalVerbsView .toolbar { padding:12px; }
     #phrasalVerbsView .table-wrap { padding:0; }
     #phrasalVerbsView .fc-wrap { margin-top:0; }
+    #pvPoolPanel { padding:16px; min-width:0; }
+    #pvPoolPanel .stats-kpi-bar { padding:0 0 16px; background:transparent; gap:14px; max-width:none; }
+    #pvPoolPanel .stats-kpis { gap:8px; }
+    #pvPoolPanel .pool-actions { display:flex; align-items:center; flex-wrap:wrap; gap:8px; width:100%; }
+    #pvPoolPanel .pool-actions .inp, #pvPoolPanel .pool-actions .btn { min-height:34px; height:auto; }
+    #pvPoolPanel .pool-random { display:flex; align-items:center; flex-wrap:wrap; gap:6px; padding:5px; border:1px solid var(--line); border-radius:8px; background:#f6f8f4; }
+    #pvPoolPanel .pool-random label { padding-left:5px; color:var(--muted); font-size:12px; }
+    #pvPoolPanel #pvPoolRandomCount { width:54px; text-align:center; background:white; }
+    #pvPoolPanel #pvPoolRandomTransferBtn { background:var(--accent); border-color:var(--accent); color:white; }
+    #pvPoolPanel .pool-card { min-width:0; border:1px solid var(--line); border-radius:10px; background:white; overflow:hidden; }
+    #pvPoolPanel .pool-card h3 { padding:13px 14px; font-size:13px; font-weight:600; color:var(--ink); }
+    #pvPoolPanel .pool-table-scroll { max-width:100%; overflow-x:auto; scrollbar-width:thin; }
+    #pvPoolPanel .sheet-table { table-layout:fixed; min-width:640px; }
+    #pvPoolPanel .sheet-table th { padding:10px; font-size:11px; letter-spacing:0; text-transform:none; white-space:normal; }
+    #pvPoolPanel .sheet-table td { padding:10px; overflow-wrap:anywhere; }
+    #pvPoolPanel .pool-words th:nth-child(1) { width:36px; }
+    #pvPoolPanel .pool-words th:nth-child(2) { width:42px; }
+    #pvPoolPanel .pool-words th:nth-child(3) { width:60px; }
+    #pvPoolPanel .pool-words th:nth-child(5) { width:125px; }
+    #pvPoolPanel .pool-words th:nth-child(6) { width:180px; }
+    #pvPoolPanel .havuz-badge-wait, #pvPoolPanel .havuz-badge-done { border:0; border-radius:20px; padding:4px 9px; white-space:nowrap; font-size:11px; font-weight:500; }
+    #pvPoolPanel input[type="checkbox"] { width:15px; height:15px; accent-color:var(--accent); cursor:pointer; }
   </style>
 </head>
 <body>
@@ -1848,7 +1870,11 @@
       <div class="sidebar-menu-group" id="sidebarPhrasalMenu" style="display:none;">
         <button class="side-nav-btn" id="topBtn-pv-list" onclick="pvSekmeAc('list')" title="All Phrasal Verbs Table">
           <span class="nav-label"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>All phrasal verbs</span>
-          <span class="side-nav-badge" id="navBadge-pv-list">60</span>
+          <span class="side-nav-badge" id="navBadge-pv-list">-</span>
+        </button>
+        <button class="side-nav-btn" id="topBtn-pv-pool" onclick="pvSekmeAc('pool')" title="Phrasal Verb Pool — Candidate phrasal verbs to transfer into All phrasal verbs">
+          <span class="nav-label"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 3 10 5-10 5L2 8l10-5Zm-9 9 9 5 9-5M3 16l9 5 9-5"/></svg>Phrasal pool</span>
+          <span class="side-nav-badge" id="navBadge-pv-pool">-</span>
         </button>
         <button class="side-nav-btn" id="topBtn-pv-learning" onclick="pvSekmeAc('learning')" title="Phrasal Verbs still learning">
           <span class="nav-label"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Still learning</span>
@@ -2141,6 +2167,49 @@
               <tbody id="phrasalVerbsBody"></tbody>
             </table>
           </div>
+        </div>
+
+        <div id="pvPoolPanel" style="display:none;">
+          <div class="stats-kpi-bar">
+            <div class="stats-kpis">
+              <span class="stats-kpi" id="kpiPvPoolTotal">📦 Total Pool: 0</span>
+              <span class="stats-kpi" style="background:#fef3c7;border-color:#fcd34d;color:#92400e;" id="kpiPvPoolWaiting">⏳ Waiting: 0</span>
+              <span class="stats-kpi ok" id="kpiPvPoolTransferred">✅ Transferred: 0</span>
+            </div>
+            <div class="pool-actions">
+              <input type="search" id="pvPoolSearchInput" class="inp" placeholder="Search phrasal pool…" aria-label="Search phrasal pool" oninput="pvCiz()" style="min-width:170px;">
+              <select id="pvPoolLevelFilter" class="inp" aria-label="Filter phrasal pool by level" onchange="pvCiz()">
+                <option value="ALL">All levels</option>
+                <option value="B1">B1</option>
+                <option value="B2">B2</option>
+                <option value="C1">C1</option>
+              </select>
+              <details><summary>Random transfer</summary><div class="pool-random">
+                <label for="pvPoolRandomCount">Count</label>
+                <input type="number" id="pvPoolRandomCount" class="inp" min="1" max="50" value="5">
+                <button class="btn" id="pvPoolRandomTransferBtn" onclick="pvHavuzdanRastgeleAktar()">🎲 Transfer Random</button>
+              </div></details>
+              <button class="btn btn-green" id="pvPoolSelectedTransferBtn" onclick="pvHavuzSecilenleriAktar()">➕ Transfer Selected (0)</button>
+            </div>
+          </div>
+          <section class="pool-card" aria-labelledby="pvPoolWordsTitle">
+            <h3 id="pvPoolWordsTitle">Pool phrasal verbs</h3>
+            <div class="pool-table-scroll" role="region" aria-label="Phrasal verb pool and transfer actions" tabindex="0">
+              <table class="sheet-table pool-words">
+                <thead>
+                  <tr>
+                    <th class="center"><input type="checkbox" id="pvPoolSelectAllCb" onchange="pvHavuzTumunuSecDegistir(this.checked)" aria-label="Select all visible waiting phrasal verbs"></th>
+                    <th class="col-row">#</th>
+                    <th class="center">Level</th>
+                    <th>Phrasal Verb · click to listen</th>
+                    <th class="center">Status</th>
+                    <th>Transfer to All phrasal verbs</th>
+                  </tr>
+                </thead>
+                <tbody id="pvPoolBody"></tbody>
+              </table>
+            </div>
+          </section>
         </div>
 
         <div id="pvStudyPanel" style="display:none;">
@@ -3691,7 +3760,7 @@
         if (addBarEl && p.addBarOpen) addBarEl.classList.add("open");
 
         if (p.aktifMod) AKTIF_MOD = p.aktifMod;
-        if (p.pvMod && (p.pvMod === "list" || p.pvMod === "learning" || p.pvMod === "known" || p.pvMod === "flashcards" || p.pvMod === "quiz" || p.pvMod === "cloze")) PV_MOD = p.pvMod;
+        if (p.pvMod && (p.pvMod === "list" || p.pvMod === "pool" || p.pvMod === "learning" || p.pvMod === "known" || p.pvMod === "flashcards" || p.pvMod === "quiz" || p.pvMod === "cloze")) PV_MOD = p.pvMod;
         if (p.aktifSekme) AKTIF_SEKME = p.aktifSekme;
 
         document.getElementById("sheet1View").style.display = AKTIF_SEKME === "sheet1" ? "block" : "none";
@@ -3746,7 +3815,7 @@
       if (wMenu) wMenu.style.display = isPv ? "none" : "flex";
       var pMenu = document.getElementById("sidebarPhrasalMenu");
       if (pMenu) pMenu.style.display = isPv ? "flex" : "none";
-      var pvNavModes = ["list", "learning", "known", "flashcards", "cloze", "quiz"];
+      var pvNavModes = ["list", "pool", "learning", "known", "flashcards", "cloze", "quiz"];
       for (var pIdx = 0; pIdx < pvNavModes.length; pIdx++) {
         var pm = pvNavModes[pIdx];
         var pmEl = document.getElementById("topBtn-pv-" + pm);
@@ -6369,7 +6438,47 @@
       { kelime: "Drop off", seviye: "B2", tur: "Phrasal Verb", anlam: "Bırakmak (arabayla); uyuyakalmak; azalmak", ornek: "I can drop off the package at the post office for you. (Paketi senin için postaneye bırakabilirim.)" },
       { kelime: "Fill out", seviye: "B1", tur: "Phrasal Verb", anlam: "Form doldurmak", ornek: "Please fill out this registration form and sign at the bottom. (Lütfen bu kayıt formunu doldurun ve altını imzalayın.)" },
       { kelime: "Hang out", seviye: "B1", tur: "Phrasal Verb", anlam: "Takılmak, vakit geçirmek", ornek: "We usually hang out at the cafe near the library. (Genellikle kütüphanenin yanındaki kafede takılırız.)" },
-      { kelime: "Check out", seviye: "B1", tur: "Phrasal Verb", anlam: "Göz atmak, incelemek; otelden çıkış yapmak", ornek: "You should check out that new documentary on ocean life. (Okyanus yaşamı hakkındaki o yeni belgesele göz atmalısın.)" }
+      { kelime: "Check out", seviye: "B1", tur: "Phrasal Verb", anlam: "Göz atmak, incelemek; otelden çıkış yapmak", ornek: "You should check out that new documentary on ocean life. (Okyanus yaşamı hakkındaki o yeni belgesele göz atmalısın.)" },
+      { kelime: "Account for", seviye: "C1", tur: "Phrasal Verb", anlam: "Açıklamak, hesabını vermek; oranını oluşturmak", ornek: "Exports account for more than half of the company revenue. (İhracat, şirket gelirinin yarısından fazlasını oluşturuyor.)" },
+      { kelime: "Add up", seviye: "B2", tur: "Phrasal Verb", anlam: "Mantıklı gelmek, tutmak; toplamak", ornek: "His story did not add up when we checked the dates. (Tarihleri kontrol ettiğimizde hikayesi tutmadı.)" },
+      { kelime: "Blow up", seviye: "B2", tur: "Phrasal Verb", anlam: "Patlamak; öfkeden köpürmek; şişirmek", ornek: "A small disagreement quickly blew up into a major argument. (Küçük bir anlaşmazlık hızla büyük bir tartışmaya dönüştü.)" },
+      { kelime: "Break into", seviye: "B2", tur: "Phrasal Verb", anlam: "Zorla girmek; yeni bir sektöre adım atmak", ornek: "Thieves broke into the jewelry store overnight. (Hırsızlar gece boyunca kuyumcuya zorla girdi.)" },
+      { kelime: "Break out", seviye: "B2", tur: "Phrasal Verb", anlam: "Patlak vermek (yangın, savaş); kaçmak", ornek: "A fire broke out in the warehouse early this morning. (Bu sabah erken saatlerde depoda yangın çıktı.)" },
+      { kelime: "Break up", seviye: "B1", tur: "Phrasal Verb", anlam: "Ayrılmak (ilişki); dağılmak, sona ermek", ornek: "They decided to break up after three years together. (Üç yıl birlikte olduktan sonra ayrılmaya karar verdiler.)" },
+      { kelime: "Burn out", seviye: "B2", tur: "Phrasal Verb", anlam: "Tükenmek, aşırı yorulmak", ornek: "If you keep working twelve hours a day, you will burn out. (Günde on iki saat çalışmaya devam edersen tükenirsin.)" },
+      { kelime: "Calm down", seviye: "B1", tur: "Phrasal Verb", anlam: "Sakinleşmek, yatışmak", ornek: "Take a deep breath and calm down before answering. (Cevap vermeden önce derin bir nefes al ve sakinleş.)" },
+      { kelime: "Carry on", seviye: "B1", tur: "Phrasal Verb", anlam: "Devam etmek, sürdürmek", ornek: "Despite the interruption, the speaker carried on smoothly. (Kesintiye rağmen konuşmacı sorunsuzca devam etti.)" },
+      { kelime: "Cheer up", seviye: "B1", tur: "Phrasal Verb", anlam: "Neşelenmek, keyfi yerine gelmek", ornek: "A walk in the sunshine always helps me cheer up. (Güneşte yürüyüş yapmak her zaman neşelenmeme yardımcı olur.)" },
+      { kelime: "Clear up", seviye: "B2", tur: "Phrasal Verb", anlam: "Açıklığa kavuşturmak; (hava) açmak; toparlamak", ornek: "Let us schedule a quick call to clear up the misunderstanding. (Yanlış anlaşılmayı gidermek için kısa bir görüşme ayarlayalım.)" },
+      { kelime: "Close down", seviye: "B2", tur: "Phrasal Verb", anlam: "Kapanmak, faaliyetini durdurmak (işletme)", ornek: "Several small bookstores closed down during the recession. (Durgunluk sırasında birkaç küçük kitapçı kapandı.)" },
+      { kelime: "Come down with", seviye: "B2", tur: "Phrasal Verb", anlam: "Hastalığa yakalanmak", ornek: "I think I am coming down with a cold. (Sanırım soğuk algınlığına yakalanıyorum.)" },
+      { kelime: "Count on", seviye: "B2", tur: "Phrasal Verb", anlam: "Güvenmek, bel bağlamak", ornek: "You can always count on her to meet a tight deadline. (Sıkı bir teslim tarihine uyması konusunda ona her zaman güvenebilirsin.)" },
+      { kelime: "Cut off", seviye: "B2", tur: "Phrasal Verb", anlam: "Kesmek (elektrik, iletişim, sözünü)", ornek: "The storm cut off electricity to the entire valley. (Fırtına tüm vadinin elektriğini kesti.)" },
+      { kelime: "Deal with", seviye: "B1", tur: "Phrasal Verb", anlam: "İlgilenmek, başa çıkmak, ele almak", ornek: "Customer support deals with hundreds of tickets every day. (Müşteri desteği her gün yüzlerce taleple ilgileniyor.)" },
+      { kelime: "Do without", seviye: "B2", tur: "Phrasal Verb", anlam: "... olmadan idare etmek", ornek: "We will have to do without a car for a few days. (Birkaç gün arabasız idare etmek zorunda kalacağız.)" },
+      { kelime: "Drop out", seviye: "B2", tur: "Phrasal Verb", anlam: "Okulu/yarışı bırakmak, çekilmek", ornek: "He dropped out of college to launch his own software company. (Kendi yazılım şirketini kurmak için üniversiteyi bıraktı.)" },
+      { kelime: "Face up to", seviye: "C1", tur: "Phrasal Verb", anlam: "Yüzleşmek, kabullenmek (zor bir gerçeği)", ornek: "We must face up to the financial risks of the project. (Projenin finansal riskleriyle yüzleşmeliyiz.)" },
+      { kelime: "Fall behind", seviye: "B2", tur: "Phrasal Verb", anlam: "Geri kalmak, geride kalmak", ornek: "After missing two weeks of class, she fell behind in math. (İki hafta dersi kaçırdıktan sonra matematikte geri kaldı.)" },
+      { kelime: "Get by", seviye: "B2", tur: "Phrasal Verb", anlam: "Geçinmek, idare etmek", ornek: "My French is basic, but it is enough to get by while traveling. (Fransızcam temel düzeyde ama seyahat ederken idare etmeye yetiyor.)" },
+      { kelime: "Get rid of", seviye: "B1", tur: "Phrasal Verb", anlam: "Kurtulmak, elden çıkarmak", ornek: "It is time to get rid of all those broken cables. (Tüm o bozuk kablolardan kurtulma zamanı geldi.)" },
+      { kelime: "Go ahead", seviye: "B1", tur: "Phrasal Verb", anlam: "Devam etmek, başlamak, buyurmak", ornek: "The board approved the plan, so we can go ahead next week. (Kurul planı onayladı, bu yüzden gelecek hafta başlayabiliriz.)" },
+      { kelime: "Grow up", seviye: "B1", tur: "Phrasal Verb", anlam: "Büyümek, yetişmek", ornek: "She grew up in a small coastal town near Antalya. (Antalya yakınlarında küçük bir sahil kasabasında büyüdü.)" },
+      { kelime: "Hold back", seviye: "C1", tur: "Phrasal Verb", anlam: "Kendini tutmak, engellemek, gizlemek", ornek: "He could barely hold back his excitement after winning. (Kazandıktan sonra heyecanını zor tuttu.)" },
+      { kelime: "Leave out", seviye: "B2", tur: "Phrasal Verb", anlam: "Dışarıda bırakmak, atlamak, dahil etmemek", ornek: "Please do not leave out any important details in the summary. (Lütfen özette hiçbir önemli detayı atlama.)" },
+      { kelime: "Live up to", seviye: "C1", tur: "Phrasal Verb", anlam: "Beklentileri karşılamak, layık olmak", ornek: "The sequel did not quite live up to the original movie. (Devam filmi ilk filmin beklentilerini pek karşılamadı.)" },
+      { kelime: "Look down on", seviye: "C1", tur: "Phrasal Verb", anlam: "Küçümsemek, tepeden bakmak", ornek: "You should never look down on someone because of their job. (Kimseyi işi yüzünden asla küçümsememelisin.)" },
+      { kelime: "Miss out on", seviye: "B2", tur: "Phrasal Verb", anlam: "Fırsatı kaçırmak, mahrum kalmak", ornek: "Book early so you do not miss out on the discount. (İndirimi kaçırmamak için erken rezervasyon yap.)" },
+      { kelime: "Pass out", seviye: "B2", tur: "Phrasal Verb", anlam: "Bayılmak; dağıtmak", ornek: "He nearly passed out from standing in the hot sun all day. (Bütün gün kızgın güneşin altında durmaktan neredeyse bayılıyordu.)" },
+      { kelime: "Put aside", seviye: "B2", tur: "Phrasal Verb", anlam: "Bir kenara koymak (para, zaman, anlaşmazlık)", ornek: "They try to put aside a little money every month for travel. (Seyahat için her ay biraz para kenara koymaya çalışıyorlar.)" },
+      { kelime: "Put forward", seviye: "C1", tur: "Phrasal Verb", anlam: "Öne sürmek, teklif etmek", ornek: "She put forward a strong proposal for reducing waste. (Atıkları azaltmak için güçlü bir öneri sundu.)" },
+      { kelime: "Set off", seviye: "B2", tur: "Phrasal Verb", anlam: "Yola çıkmak; tetiklemek (alarm vb.)", ornek: "We set off at dawn to avoid heavy highway traffic. (Yoğun otoyol trafiğinden kaçınmak için şafakta yola çıktık.)" },
+      { kelime: "Sign up", seviye: "B1", tur: "Phrasal Verb", anlam: "Kayıt olmak, üye olmak", ornek: "Over fifty employees signed up for the first-aid workshop. (Elliden fazla çalışan ilk yardım atölyesine kayıt oldu.)" },
+      { kelime: "Slow down", seviye: "B1", tur: "Phrasal Verb", anlam: "Yavaşlamak, hızını azaltmak", ornek: "You need to slow down when driving through a school zone. (Okul bölgesinden geçerken yavaşlaman gerekir.)" },
+      { kelime: "Speak up", seviye: "B1", tur: "Phrasal Verb", anlam: "Sesini yükseltmek; fikrini açıkça söylemek", ornek: "Could you speak up a bit so everyone in the back can hear? (Arkadaki herkesin duyabilmesi için biraz daha yüksek sesle konuşabilir misin?)" },
+      { kelime: "Stick to", seviye: "B2", tur: "Phrasal Verb", anlam: "Sadık kalmak, bağlı kalmak (plan, diyet, kural)", ornek: "It is important to stick to your study schedule every week. (Her hafta çalışma programına sadık kalmak önemlidir.)" },
+      { kelime: "Think over", seviye: "B2", tur: "Phrasal Verb", anlam: "İyice düşünmek, enine boyuna değerlendirmek", ornek: "Take the weekend to think over the contract before signing. (İmzalamadan önce sözleşmeyi iyice düşünmek için hafta sonunu kullan.)" },
+      { kelime: "Throw away", seviye: "B1", tur: "Phrasal Verb", anlam: "Çöpe atmak; boşa harcamak (fırsat)", ornek: "Do not throw away that receipt in case we need a refund. (İade gerekirse diye o fişi çöpe atma.)" },
+      { kelime: "Try out", seviye: "B1", tur: "Phrasal Verb", anlam: "Denemek, test etmek", ornek: "Let us try out the new recipe this Saturday evening. (Bu cumartesi akşamı yeni tarifi deneyelim.)" }
     ];
 
     var PV_MOD = "list";
@@ -6381,6 +6490,137 @@
     var PV_OKUNAN_KART = "";
     var PV_SON_SORU_ANAHTARI = "";
     var PV_PRATIK_TUMU = false;
+    var PV_HAVUZ_SECILENLER = {};
+    var PV_STARTER_COUNT = 15;
+
+    function pvAktifSetAl() {
+      try {
+        var raw = localStorage.getItem("kelime_pv_active_v1");
+        if (raw) {
+          var arr = JSON.parse(raw);
+          if (Array.isArray(arr)) return arr;
+        }
+      } catch (e) {}
+      var starterCount = typeof PV_STARTER_COUNT !== "undefined" ? PV_STARTER_COUNT : 15;
+      var starter = [];
+      for (var i = 0; i < Math.min(starterCount, PHRASAL_VERBS_LIST.length); i++) {
+        starter.push(PHRASAL_VERBS_LIST[i].kelime.toLowerCase().trim());
+      }
+      pvAktifSetKaydet(starter);
+      return starter;
+    }
+
+    function pvAktifSetKaydet(arr) {
+      try { localStorage.setItem("kelime_pv_active_v1", JSON.stringify(arr || [])); } catch (e) {}
+    }
+
+    function pvHavuzListesiniGetir() {
+      var aktifArr = pvAktifSetAl();
+      var aktifMap = {};
+      for (var a = 0; a < aktifArr.length; a++) aktifMap[aktifArr[a]] = true;
+      var sonuc = [];
+      for (var i = 0; i < PHRASAL_VERBS_LIST.length; i++) {
+        var item = PHRASAL_VERBS_LIST[i];
+        var k = item.kelime.toLowerCase().trim();
+        sonuc.push({
+          kelime: item.kelime,
+          seviye: item.seviye || "B2",
+          tur: "Phrasal Verb",
+          anlam: item.anlam || "",
+          ornek: item.ornek || "",
+          aktarildi: !!aktifMap[k]
+        });
+      }
+      return sonuc;
+    }
+
+    function pvHavuzSecimDegistir(kelime, seciliMi) {
+      var k = (kelime || "").toLowerCase().trim();
+      if (!k) return;
+      if (seciliMi) PV_HAVUZ_SECILENLER[k] = true;
+      else delete PV_HAVUZ_SECILENLER[k];
+      pvHavuzSecimButonGuncelle();
+    }
+
+    function pvHavuzSecimButonGuncelle() {
+      var n = Object.keys(PV_HAVUZ_SECILENLER).length;
+      var btn = document.getElementById("pvPoolSelectedTransferBtn");
+      if (btn) btn.innerText = "➕ Transfer Selected (" + n + ")";
+    }
+
+    function pvHavuzTumunuSecDegistir(seciliMi) {
+      var q = ((document.getElementById("pvPoolSearchInput") || {}).value || "").toLowerCase().trim();
+      var lvl = ((document.getElementById("pvPoolLevelFilter") || {}).value || "ALL");
+      var havuz = pvHavuzListesiniGetir();
+      for (var i = 0; i < havuz.length; i++) {
+        var h = havuz[i];
+        if (h.aktarildi) continue;
+        if (lvl !== "ALL" && h.seviye !== lvl) continue;
+        if (q && (h.kelime + " " + h.anlam).toLowerCase().indexOf(q) === -1) continue;
+        var k = h.kelime.toLowerCase().trim();
+        if (seciliMi) PV_HAVUZ_SECILENLER[k] = true;
+        else delete PV_HAVUZ_SECILENLER[k];
+      }
+      pvCiz();
+    }
+
+    function pvHavuzdanAktar(kelimeListesi) {
+      if (!kelimeListesi || !kelimeListesi.length) return;
+      var aktif = pvAktifSetAl();
+      var map = {};
+      for (var i = 0; i < aktif.length; i++) map[aktif[i]] = true;
+      var eklenen = 0;
+      for (var j = 0; j < kelimeListesi.length; j++) {
+        var k = (kelimeListesi[j] || "").toLowerCase().trim();
+        if (k && !map[k]) {
+          aktif.push(k);
+          map[k] = true;
+          delete PV_HAVUZ_SECILENLER[k];
+          eklenen++;
+        }
+      }
+      if (eklenen > 0) {
+        pvAktifSetKaydet(aktif);
+        bildirimGoster("✅ Transferred " + eklenen + " phrasal verb" + (eklenen === 1 ? "" : "s") + " to All phrasal verbs");
+        pvCiz();
+      }
+    }
+
+    function pvHavuzTekAktar(kelime) {
+      pvHavuzdanAktar([kelime]);
+    }
+
+    function pvHavuzSecilenleriAktar() {
+      var keys = Object.keys(PV_HAVUZ_SECILENLER);
+      if (!keys.length) {
+        bildirimGoster("ℹ️ Please select phrasal verbs to transfer first.");
+        return;
+      }
+      pvHavuzdanAktar(keys);
+    }
+
+    function pvHavuzdanRastgeleAktar() {
+      var adetEl = document.getElementById("pvPoolRandomCount");
+      var adet = adetEl ? parseInt(adetEl.value, 10) : 5;
+      if (isNaN(adet) || adet < 1) adet = 5;
+      if (adet > 50) adet = 50;
+      var lvl = ((document.getElementById("pvPoolLevelFilter") || {}).value || "ALL");
+      var bekleyenler = pvHavuzListesiniGetir().filter(function(h) {
+        if (h.aktarildi) return false;
+        if (lvl !== "ALL" && h.seviye !== lvl) return false;
+        return true;
+      });
+      if (!bekleyenler.length) {
+        bildirimGoster("🎉 No waiting phrasal verbs left in this filter.");
+        return;
+      }
+      for (var i = bekleyenler.length - 1; i > 0; i--) {
+        var r = Math.floor(Math.random() * (i + 1));
+        var tmp = bekleyenler[i]; bekleyenler[i] = bekleyenler[r]; bekleyenler[r] = tmp;
+      }
+      var secilen = bekleyenler.slice(0, adet).map(function(h) { return h.kelime; });
+      pvHavuzdanAktar(secilen);
+    }
 
     function pvGecisZamanlayiciTemizle() {
       if (PV_GECIS_TIMER) {
@@ -6412,6 +6652,9 @@
     function pvTumListeyiGetir() {
       var durumMap = pvDurumMapAl();
       var ozel = pvOzelEklenenleriAl();
+      var aktifArr = pvAktifSetAl();
+      var aktifMap = {};
+      for (var a = 0; a < aktifArr.length; a++) aktifMap[aktifArr[a]] = true;
       var map = {};
       var sonuc = [];
       function ekle(item) {
@@ -6436,7 +6679,10 @@
           if (tw && (tw.tur || "").toLowerCase().indexOf("phrasal") !== -1) ekle(tw);
         }
       }
-      for (var m = 0; m < PHRASAL_VERBS_LIST.length; m++) ekle(PHRASAL_VERBS_LIST[m]);
+      for (var m = 0; m < PHRASAL_VERBS_LIST.length; m++) {
+        var pk = PHRASAL_VERBS_LIST[m].kelime.toLowerCase().trim();
+        if (aktifMap[pk]) ekle(PHRASAL_VERBS_LIST[m]);
+      }
       return sonuc;
     }
 
@@ -6624,21 +6870,27 @@
     }
 
     var PV_VERB_FORMS = {
+      blow: ["blow", "blows", "blowing", "blew", "blown"],
       bring: ["bring", "brings", "bringing", "brought"],
       break: ["break", "breaks", "breaking", "broke", "broken"],
+      carry: ["carry", "carries", "carrying", "carried"],
       catch: ["catch", "catches", "catching", "caught"],
       come: ["come", "comes", "coming", "came"],
       cut: ["cut", "cuts", "cutting"],
+      deal: ["deal", "deals", "dealing", "dealt"],
+      do: ["do", "does", "doing", "did", "done"],
       drop: ["drop", "drops", "dropping", "dropped"],
       fall: ["fall", "falls", "falling", "fell", "fallen"],
       find: ["find", "finds", "finding", "found"],
       get: ["get", "gets", "getting", "got", "gotten"],
       give: ["give", "gives", "giving", "gave", "given"],
       go: ["go", "goes", "going", "went", "gone"],
+      grow: ["grow", "grows", "growing", "grew", "grown"],
       hang: ["hang", "hangs", "hanging", "hung", "hanged"],
       hold: ["hold", "holds", "holding", "held"],
       keep: ["keep", "keeps", "keeping", "kept"],
       lay: ["lay", "lays", "laying", "laid"],
+      leave: ["leave", "leaves", "leaving", "left"],
       let: ["let", "lets", "letting"],
       make: ["make", "makes", "making", "made"],
       pay: ["pay", "pays", "paying", "paid"],
@@ -6646,8 +6898,13 @@
       run: ["run", "runs", "running", "ran"],
       set: ["set", "sets", "setting"],
       show: ["show", "shows", "showing", "showed", "shown"],
+      speak: ["speak", "speaks", "speaking", "spoke", "spoken"],
       stand: ["stand", "stands", "standing", "stood"],
+      stick: ["stick", "sticks", "sticking", "stuck"],
       take: ["take", "takes", "taking", "took", "taken"],
+      think: ["think", "thinks", "thinking", "thought"],
+      throw: ["throw", "throws", "throwing", "threw", "thrown"],
+      try: ["try", "tries", "trying", "tried"],
       wear: ["wear", "wears", "wearing", "wore", "worn"],
       wind: ["wind", "winds", "winding", "wound"]
     };
@@ -6717,6 +6974,7 @@
 
     function pvCiz(arkaPlanSenkronMu) {
       var tumu = pvTumListeyiGetir();
+      var havuz = pvHavuzListesiniGetir();
       var known = 0, learning = 0;
       for (var c = 0; c < tumu.length; c++) {
         if (tumu[c].durum === "biliyorum") known++;
@@ -6724,6 +6982,8 @@
       }
       var bList = document.getElementById("navBadge-pv-list");
       if (bList) bList.innerText = String(tumu.length);
+      var bPool = document.getElementById("navBadge-pv-pool");
+      if (bPool) bPool.innerText = String(havuz.length);
       var bLrn = document.getElementById("navBadge-pv-learning");
       if (bLrn) bLrn.innerText = String(learning);
       var bKnw = document.getElementById("navBadge-pv-known");
@@ -6733,10 +6993,13 @@
       if (AKTIF_SEKME !== "phrasalVerbs") return;
 
       var isList = PV_MOD === "list" || PV_MOD === "learning" || PV_MOD === "known";
+      var isPool = PV_MOD === "pool";
       var listPanel = document.getElementById("pvListPanel");
+      var poolPanel = document.getElementById("pvPoolPanel");
       var studyPanel = document.getElementById("pvStudyPanel");
       if (listPanel) listPanel.style.display = isList ? "block" : "none";
-      if (studyPanel) studyPanel.style.display = isList ? "none" : "block";
+      if (poolPanel) poolPanel.style.display = isPool ? "block" : "none";
+      if (studyPanel) studyPanel.style.display = (!isList && !isPool) ? "block" : "none";
       if (!isList) {
         var addBar = document.getElementById("pvAddBar");
         if (addBar) addBar.classList.remove("open");
@@ -6744,8 +7007,73 @@
 
       if (isList) {
         pvListeCiz(tumu);
+      } else if (isPool) {
+        pvHavuzCiz(havuz);
       } else {
         pvCalismaCiz(tumu, arkaPlanSenkronMu);
+      }
+    }
+
+    function pvHavuzCiz(havuz) {
+      var total = havuz.length, transferred = 0, waiting = 0;
+      for (var i = 0; i < havuz.length; i++) {
+        if (havuz[i].aktarildi) transferred++;
+        else waiting++;
+      }
+      var kTot = document.getElementById("kpiPvPoolTotal");
+      if (kTot) kTot.innerText = "📦 Total Pool: " + total;
+      var kWait = document.getElementById("kpiPvPoolWaiting");
+      if (kWait) kWait.innerText = "⏳ Waiting: " + waiting;
+      var kTr = document.getElementById("kpiPvPoolTransferred");
+      if (kTr) kTr.innerText = "✅ Transferred: " + transferred;
+
+      var q = ((document.getElementById("pvPoolSearchInput") || {}).value || "").toLowerCase().trim();
+      var lvl = ((document.getElementById("pvPoolLevelFilter") || {}).value || "ALL");
+      var list = havuz.filter(function(h) {
+        if (lvl !== "ALL" && h.seviye !== lvl) return false;
+        if (q && (h.kelime + " " + h.anlam).toLowerCase().indexOf(q) === -1) return false;
+        return true;
+      });
+      list.sort(function(a, b) {
+        if (a.aktarildi !== b.aktarildi) return a.aktarildi ? 1 : -1;
+        return a.seviye.localeCompare(b.seviye) || a.kelime.localeCompare(b.kelime);
+      });
+
+      var visibleWaiting = 0, visibleSelected = 0;
+      var rows = [];
+      for (var j = 0; j < list.length; j++) {
+        var h = list[j];
+        var hk = h.kelime.toLowerCase().trim();
+        var checked = !!PV_HAVUZ_SECILENLER[hk];
+        if (!h.aktarildi) {
+          visibleWaiting++;
+          if (checked) visibleSelected++;
+        }
+        rows.push(
+          '<tr class="' + (h.aktarildi ? "havuz-row-done" : "") + '">' +
+            '<td class="center">' +
+              (h.aktarildi ? '' : '<input type="checkbox"' + (checked ? ' checked' : '') + ' onchange="pvHavuzSecimDegistir(\'' + escJs(h.kelime) + '\', this.checked)" aria-label="Select ' + escHtml(h.kelime) + '">') +
+            '</td>' +
+            '<td class="col-row">' + (j + 1) + '</td>' +
+            '<td class="col-lvl">' + escHtml(h.seviye) + '</td>' +
+            '<td class="col-word" onclick="kelimeOku(\'' + escJs(h.kelime) + '\', this)">' + escHtml(h.kelime) + '</td>' +
+            '<td class="center">' +
+              (h.aktarildi ? '<span class="havuz-badge-done">✅ Transferred</span>' : '<span class="havuz-badge-wait">⏳ Waiting</span>') +
+            '</td>' +
+            '<td>' +
+              (h.aktarildi
+                ? '<span style="color:#64748b;font-size:11.5px;">In All phrasal verbs</span>'
+                : '<button class="btn" onclick="pvHavuzTekAktar(\'' + escJs(h.kelime) + '\')">➕ Transfer</button>') +
+            '</td>' +
+          '</tr>'
+        );
+      }
+      var selAll = document.getElementById("pvPoolSelectAllCb");
+      if (selAll) selAll.checked = visibleWaiting > 0 && visibleSelected === visibleWaiting;
+      pvHavuzSecimButonGuncelle();
+      var body = document.getElementById("pvPoolBody");
+      if (body) {
+        body.innerHTML = rows.join("") || '<tr><td colspan="6" class="center" style="padding:14px;">No matching phrasal verbs in pool.</td></tr>';
       }
     }
 
@@ -7144,7 +7472,8 @@
     function updateWorkspaceHeading() {
       var pvMod = typeof PV_MOD !== "undefined" ? PV_MOD : "list";
       var isPvList = AKTIF_SEKME === "phrasalVerbs" && (pvMod === "list" || pvMod === "learning" || pvMod === "known");
-      var isStudy = AKTIF_SEKME === "flashcards" || (AKTIF_SEKME === "phrasalVerbs" && !isPvList);
+      var isPvPool = AKTIF_SEKME === "phrasalVerbs" && pvMod === "pool";
+      var isStudy = AKTIF_SEKME === "flashcards" || (AKTIF_SEKME === "phrasalVerbs" && !isPvList && !isPvPool);
       document.querySelector(".workspace-panel").classList.toggle("words-panel", AKTIF_SEKME === "sheet1" || isPvList);
       document.querySelector(".workspace-panel").classList.toggle("study-panel", isStudy);
       document.querySelector(".main-content").classList.toggle("study-layout", isStudy);
@@ -7152,7 +7481,7 @@
       var modes = {flashcards:"Flashcards", cloze:"Fill in the blank", quiz:"Quiz", confusables:"Similar words", listen:"Listening", match:"Word match"};
       var title = views[AKTIF_SEKME] || modes[AKTIF_MOD] || "Practice";
       if (AKTIF_SEKME === "phrasalVerbs") {
-        var pvModeTitles = {list:"All phrasal verbs", learning:"Still learning", known:"Already known", flashcards:"Flashcards", quiz:"Quiz", cloze:"Fill in the blank"};
+        var pvModeTitles = {list:"All phrasal verbs", pool:"Phrasal pool", learning:"Still learning", known:"Already known", flashcards:"Flashcards", quiz:"Quiz", cloze:"Fill in the blank"};
         title = pvModeTitles[pvMod] || "All phrasal verbs";
       }
       document.getElementById("workspaceTitle").textContent = title;
