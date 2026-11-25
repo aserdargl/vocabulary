@@ -376,7 +376,7 @@ test('learning progress shows first-seen, mandatory duration, and separate statu
   app.istatistikTablosuCiz();
   assert.match(app.document.getElementById('statsBody').innerHTML, /01\.01\.2026/);
   assert.match(app.document.getElementById('statsBody').innerHTML, /0\/28 days/);
-  assert.match(html, /id="learnedPoolView"/); assert.match(html, /id="knownPoolView"/);
+  assert.match(html, /id="learnedPoolBody"/); assert.match(html, /id="knownPoolBody"/);
 });
 
 test('an obsolete audio failure cannot speak over the current word', async () => {
